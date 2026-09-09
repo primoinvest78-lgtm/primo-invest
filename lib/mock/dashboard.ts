@@ -22,6 +22,7 @@ import {
 export type SidebarItem = {
   label: string;
   icon: LucideIcon;
+  href: string;
   active?: boolean;
   badge?: string;
 };
@@ -87,47 +88,47 @@ export type RecentActivityItem = {
 export const navigationGroups: SidebarGroup[] = [
   {
     items: [
-      { label: "Dashboard", icon: LayoutDashboard, active: true },
+      { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", active: true },
     ],
   },
   {
     title: "Relacionamento",
     items: [
-      { label: "Clientes", icon: Users },
-      { label: "Leads", icon: MessageSquareText },
-      { label: "Oportunidades", icon: TrendingUp },
-      { label: "Tarefas", icon: FolderKanban },
+      { label: "Clientes", icon: Users, href: "/clientes" },
+      { label: "Leads", icon: MessageSquareText, href: "/leads" },
+      { label: "Oportunidades", icon: TrendingUp, href: "/oportunidades" },
+      { label: "Tarefas", icon: FolderKanban, href: "/tarefas" },
     ],
   },
   {
     title: "Patrimônio",
     items: [
-      { label: "Visão geral", icon: Gauge },
-      { label: "Investimentos", icon: BriefcaseBusiness },
-      { label: "Contas", icon: Landmark },
-      { label: "Passivos", icon: CreditCard },
-      { label: "Metas", icon: PiggyBank },
+      { label: "Visão geral", icon: Gauge, href: "/patrimonio" },
+      { label: "Investimentos", icon: BriefcaseBusiness, href: "/patrimonio/investimentos" },
+      { label: "Contas", icon: Landmark, href: "/patrimonio/contas" },
+      { label: "Passivos", icon: CreditCard, href: "/patrimonio/passivos" },
+      { label: "Metas", icon: PiggyBank, href: "/patrimonio/metas" },
     ],
   },
   {
     title: "Consórcios",
     items: [
-      { label: "Contratos", icon: Building2 },
-      { label: "Parcelas", icon: Wallet },
-      { label: "Lances", icon: ArrowUpRight },
+      { label: "Contratos", icon: Building2, href: "/consorcios/contratos" },
+      { label: "Parcelas", icon: Wallet, href: "/consorcios/parcelas" },
+      { label: "Lances", icon: ArrowUpRight, href: "/consorcios/lances" },
     ],
   },
   {
     title: "Documentos",
     items: [
-      { label: "Cofre digital", icon: ShieldCheck },
-      { label: "Documentos", icon: FileText },
+      { label: "Cofre digital", icon: ShieldCheck, href: "/documentos/cofre" },
+      { label: "Documentos", icon: FileText, href: "/documentos/documentos" },
     ],
   },
-  { items: [{ label: "Relatórios", icon: CircleDollarSign }] },
-  { items: [{ label: "Integrações", icon: ChevronRight }] },
-  { items: [{ label: "Inteligência", icon: TrendingUp }] },
-  { items: [{ label: "Administração", icon: FolderKanban }] },
+  { items: [{ label: "Relatórios", icon: CircleDollarSign, href: "/relatorios" }] },
+  { items: [{ label: "Integrações", icon: ChevronRight, href: "/integracoes" }] },
+  { items: [{ label: "Inteligência", icon: TrendingUp, href: "/inteligencia" }] },
+  { items: [{ label: "Administração", icon: FolderKanban, href: "/administracao" }] },
 ];
 
 export const kpis: KpiCardData[] = [
