@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escopo — PRIMO INVEST</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
+:root{
+ --navy:#071A2D; --blue:#123E68; --blue2:#1F5F96; --gold:#C9A45C;
+ --gold2:#E3C982; --ink:#142235; --muted:#64748B; --light:#F5F7FA;
+ --white:#fff; --line:#DCE3EA; --green:#18794E; --red:#9B2C2C;
+}
+*{box-sizing:border-box} body{margin:0;background:#eef2f6;color:var(--ink);font-family:'DM Sans',Arial,sans-serif;line-height:1.6}
+.page{width:210mm;min-height:297mm;margin:18px auto;background:white;padding:22mm 19mm;box-shadow:0 8px 35px #071a2d20;page-break-after:always}
+.cover{background:linear-gradient(145deg,var(--navy),#0C3153);color:white;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.cover:after{content:"";position:absolute;width:420px;height:420px;border:1px solid #c9a45c55;border-radius:50%;right:-180px;top:80px}
+.kicker{letter-spacing:3px;text-transform:uppercase;color:var(--gold2);font-size:12px;font-weight:700}
+h1,h2,h3{font-family:'Manrope',sans-serif;color:var(--navy)}
+.cover h1{font-size:42px;line-height:1.08;color:white;max-width:650px}
+.cover .sub{font-size:18px;color:#dce8f3;max-width:620px}
+.goldline{width:90px;height:3px;background:var(--gold);margin:22px 0}
+h2{font-size:25px;margin-top:0;border-bottom:2px solid #e8edf2;padding-bottom:10px}
+h3{font-size:17px;margin-bottom:5px}
+p{margin:8px 0 13px}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{border:1px solid var(--line);border-radius:12px;padding:17px;background:#fff}
+.card.dark{background:var(--navy);color:white;border-color:var(--navy)}
+.card.dark h3{color:var(--gold2)}
+.card.gold{border-left:4px solid var(--gold);background:#fffaf0}
+.card.in{border-left:4px solid var(--green)}
+.card.out{border-left:4px solid var(--red)}
+ul{padding-left:20px} li{margin:5px 0}
+.tag{display:inline-block;padding:5px 10px;border-radius:20px;background:#eaf2f9;color:var(--blue);font-size:12px;font-weight:700;margin:3px}
+.arch{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;font-family:monospace}
+.flow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:center}.step{background:var(--navy);color:white;padding:9px 12px;border-radius:8px;font-size:12px}.arrow{color:var(--gold);font-weight:bold}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f5f7fa;color:var(--navy)}
+.note{background:#eef6ff;border-left:4px solid var(--blue2);padding:13px 15px;border-radius:7px}
+.warn{background:#fff8e8;border-left:4px solid var(--gold);padding:13px 15px;border-radius:7px}
+.footer{font-size:11px;color:#8794a3;margin-top:28px;border-top:1px solid var(--line);padding-top:10px}
+.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.meta div{background:#0c3153;border:1px solid #c9a45c44;border-radius:10px;padding:12px}
+.meta small{display:block;color:var(--gold2);letter-spacing:1px;text-transform:uppercase;font-size:10px;font-weight:700}
+@media print{body{background:white}.page{margin:0;box-shadow:none}}
+</style>
+</head>
+<body>
+
+<section class="page cover">
+<div>
+<div class="kicker">Documento de escopo • Versão 1.0</div>
+<h1>PRIMO INVEST</h1>
+<div class="goldline"></div>
+<p class="sub">Escopo inicial do CRM empresarial para relacionamento, vendas, consórcios, investimentos, documentos, tarefas e indicadores — em um único ambiente.</p>
+<div class="meta">
+<div><small>Produto</small>PRIMO INVEST</div>
+<div><small>Status</small>Alinhamento — pré-desenvolvimento</div>
+<div><small>Data</small>Setembro de 2026</div>
+</div>
+</div>
+<div>
+<p><strong>Base deste documento</strong></p>
+<p style="color:#dce8f3">A proposta inicial de CRM financeiro preparada para o Andersom (documento de alinhamento, setembro de 2026). Este escopo transforma aquela proposta em limites de entrega: o que entra na primeira versão, o que fica para depois e o que não será construído agora.</p>
+<p style="color:#b9c9d8;font-size:13px">Nenhuma aplicação será desenvolvida até este escopo ser validado. Requisitos legais, regulatórios e operacionais permanecem sujeitos à confirmação da empresa.</p>
+</div>
+</section>
+
+<section class="page">
+<h2>1. Objetivo do produto</h2>
+<p>O PRIMO INVEST é um <strong>CRM empresarial para uma operação de investimentos e consórcios</strong>. Não é apenas um cadastro de clientes: deve apoiar o acompanhamento comercial e o relacionamento do início do lead até o cliente ativo.</p>
+<div class="grid">
+<div class="card"><h3>Relacionamento</h3><p>Cadastro, histórico de contatos, atividades, tarefas, reuniões e acompanhamento contínuo.</p></div>
+<div class="card"><h3>Vendas</h3><p>Leads, oportunidades, propostas e etapas da negociação, com pipeline visual.</p></div>
+<div class="card"><h3>Investimentos</h3><p>Registro de produtos, posições e movimentações conforme a operação real — sem inventar regras financeiras.</p></div>
+<div class="card"><h3>Consórcios</h3><p>Grupos, cotas, cartas de crédito, parcelas, lances e contemplações.</p></div>
+<div class="card"><h3>Gestão</h3><p>Painéis para o gestor entender a empresa, a equipe e o que precisa de atenção agora.</p></div>
+<div class="card"><h3>Segurança</h3><p>Usuários, permissões, histórico de alterações e cuidados com dados pessoais.</p></div>
+</div>
+<div class="note"><strong>Natureza do sistema:</strong> gestão e relacionamento. Qualquer função de recomendação, execução ou operação de investimentos só entra no produto depois de definida a atividade efetiva da empresa e as exigências aplicáveis.</div>
+</section>
+
+<section class="page">
+<h2>2. O que este escopo decide</h2>
+<p>Este documento fecha o recorte de produto para planejamento. Não substitui requisitos detalhados, arquitetura nem telas finais.</p>
+<table>
+<tr><th>Decide</th><th>Não decide ainda</th></tr>
+<tr><td>Visão do produto e módulos</td><td>Stack técnica, hospedagem e fornecedores</td></tr>
+<tr><td>Primeira versão (MVP) versus evoluções</td><td>Cálculos financeiros, suitability operacional e regras de consórcio da empresa</td></tr>
+<tr><td>Princípios de experiência e identidade visual</td><td>Layout pixel a pixel de cada tela</td></tr>
+<tr><td>Perfis de acesso previstos</td><td>Matriz final de permissões por campo</td></tr>
+<tr><td>Fora de escopo da v1</td><td>Políticas jurídicas de LGPD, retenção e bases legais (validação do responsável competente)</td></tr>
+</table>
+<h3>Premissas</h3>
+<ul>
+<li>O nome comercial do sistema é <strong>PRIMO INVEST</strong>.</li>
+<li>A primeira entrega deve ser útil no dia a dia comercial, não um “site bonito”.</li>
+<li>Etapas de funil, campos de cliente e produtos serão adaptados à operação real após as respostas do Andersom.</li>
+<li>Números de mockups da proposta original são ilustrativos e não representam dados da empresa.</li>
+</ul>
+</section>
+
+<section class="page">
+<h2>3. Usuários previstos</h2>
+<p>Perfis iniciais extraídos da proposta. A lista pode ser reduzida ou ampliada após confirmação de quantas pessoas usarão o sistema.</p>
+<table>
+<tr><th>Perfil</th><th>Intenção de uso</th></tr>
+<tr><td>Administrador</td><td>Configurar usuários, permissões e parâmetros gerais.</td></tr>
+<tr><td>Gestor</td><td>Acompanhar indicadores, pipeline, equipe e alertas.</td></tr>
+<tr><td>Consultor</td><td>Tratar leads, oportunidades e relacionamento com clientes sob sua responsabilidade.</td></tr>
+<tr><td>Operacional</td><td>Apoiar cadastros, documentos, tarefas e rotinas do dia a dia.</td></tr>
+<tr><td>Financeiro</td><td>Visualizar informações operacionais/financeiras permitidas, sem acesso irrestrito a tudo.</td></tr>
+</table>
+<div class="warn"><strong>Pendente de confirmação:</strong> quantidade de usuários, se haverá restrição de carteira (o consultor só vê os próprios clientes) e se existe sistema atual a substituir ou integrar.</div>
+</section>
+
+<section class="page">
+<h2>4. Escopo da primeira versão (MVP)</h2>
+<p>A proposta original já priorizou a primeira versão. O MVP do PRIMO INVEST entrega o núcleo de CRM comercial com segurança básica. Consórcios, investimentos profundos, relatórios avançados e integrações ficam para fases seguintes.</p>
+<div class="arch">Login e usuários → Dashboard → Clientes → Leads → Pipeline → Oportunidades → Tarefas → Documentos → Notificações → Permissões</div>
+<table>
+<tr><th>Módulo</th><th>Entrega na v1</th></tr>
+<tr><td>Acesso</td><td>Login, sessão, usuários ativos/inativos e troca de senha.</td></tr>
+<tr><td>Permissões</td><td>Perfis acima com controle de visualizar, criar, alterar, excluir e exportar por tipo de informação (nível inicial, não campo a campo).</td></tr>
+<tr><td>Dashboard</td><td>Indicadores comerciais e operacionais essenciais, mais lista de “o que precisa de atenção agora”.</td></tr>
+<tr><td>Clientes</td><td>Cadastro, ficha única, contatos, observações, linha do tempo e vínculo com oportunidades, tarefas e documentos.</td></tr>
+<tr><td>Leads</td><td>Captura manual, origem (site, WhatsApp, Instagram, Google, indicação, evento, tráfego pago, manual), qualificação e conversão em cliente.</td></tr>
+<tr><td>Oportunidades e pipeline</td><td>Etapas visuais: Novo lead → Qualificação → Contato → Reunião → Proposta → Negociação → Fechamento. Alerta de oportunidade parada.</td></tr>
+<tr><td>Tarefas</td><td>Atividade, prazo, responsável, prioridade e status; tarefas atrasadas visíveis no dashboard.</td></tr>
+<tr><td>Documentos</td><td>Upload, organização por cliente, status de pendência e controle básico de acesso. Versionamento simples (histórico de arquivos).</td></tr>
+<tr><td>Notificações</td><td>Avisos internos discretos: propostas aguardando, cliente sem contato, documento pendente, tarefas atrasadas.</td></tr>
+<tr><td>Auditoria</td><td>Histórico das alterações relevantes (quem, quando, o quê).</td></tr>
+<tr><td>Aparência</td><td>Tema claro e tema escuro; identidade azul profundo, azul corporativo, branco e dourado discreto.</td></tr>
+</table>
+</section>
+
+<section class="page">
+<h2>5. Detalhamento do MVP — dashboard e clientes</h2>
+<h3>Dashboard (centro de comando)</h3>
+<p>Deve responder primeiro: <strong>“O que precisa da minha atenção agora?”</strong> — e depois mostrar números.</p>
+<div class="grid">
+<div class="card in"><h3>Comercial (v1)</h3><ul><li>Novos leads</li><li>Leads qualificados</li><li>Oportunidades abertas</li><li>Negócios ganhos e perdidos</li><li>Taxa de conversão</li><li>Ticket médio (quando houver valor na oportunidade)</li></ul></div>
+<div class="card in"><h3>Operacional (v1)</h3><ul><li>Clientes ativos</li><li>Tarefas pendentes e atrasadas</li><li>Propostas aguardando retorno</li><li>Documentos pendentes</li><li>Clientes sem contato há X dias</li></ul></div>
+</div>
+<p class="muted">Indicadores de consórcios (contratos, cartas, parcelas, lances, contemplações) entram na fase de Consórcios, não no MVP.</p>
+<h3>Ficha do cliente</h3>
+<div class="arch">Cadastro • Contatos • Histórico • Tarefas • Oportunidades<br>Documentos • Observações • Comunicações • Linha do tempo</div>
+<p>Investimentos e consórcios aparecem na ficha somente quando esses módulos forem liberados. Na v1 a ficha já deve ter espaço estrutural para esses vínculos, sem operação completa.</p>
+<table>
+<tr><th>Bloco</th><th>O que acompanhar na v1</th></tr>
+<tr><td>Dados cadastrais</td><td>Pessoa física/jurídica, contatos e campos indispensáveis (lista final após confirmação).</td></tr>
+<tr><td>Relacionamento</td><td>Último contato, próximo contato e histórico.</td></tr>
+<tr><td>Negociação</td><td>Oportunidades, propostas e estágio atual.</td></tr>
+<tr><td>Documentos</td><td>Arquivos, status e pendências.</td></tr>
+</table>
+</section>
+
+<section class="page">
+<h2>6. Detalhamento do MVP — comercial e operação</h2>
+<h3>Funil padrão (adaptável)</h3>
+<div class="flow">
+<div class="step">Novo lead</div><span class="arrow">→</span>
+<div class="step">Qualificação</div><span class="arrow">→</span>
+<div class="step">Contato</div><span class="arrow">→</span>
+<div class="step">Reunião</div><span class="arrow">→</span>
+<div class="step">Proposta</div><span class="arrow">→</span>
+<div class="step">Negociação</div><span class="arrow">→</span>
+<div class="step">Fechamento</div>
+</div>
+<p>Ganho e perda devem registrar motivo. Oportunidade sem movimentação por muitos dias deve ser sinalizada ao responsável.</p>
+<h3>Tarefas, documentos e avisos</h3>
+<ul>
+<li>Agenda com responsável, prazo, prioridade e status.</li>
+<li>Documentos ligados ao cliente (e, quando existir, à oportunidade).</li>
+<li>Notificações úteis e em volume controlado — sem excesso.</li>
+<li>Exemplos de avisos aceitos: propostas aguardando retorno; cliente há 10 dias sem contato; documento pendente; tarefas atrasadas.</li>
+</ul>
+<h3>Experiência obrigatória na v1</h3>
+<ul>
+<li>Aparência de empresa financeira de alto padrão: elegante, confiável, moderna e objetiva.</li>
+<li>Cada interação com finalidade: confirmação antes de ações destrutivas ou irreversíveis.</li>
+<li>Filtros simples; indicadores visuais de pendência e prioridade.</li>
+<li>Estados de carregamento e espera claros.</li>
+<li>Modo claro e modo escuro.</li>
+<li>Tipografia: <strong>Manrope</strong> em títulos; <strong>DM Sans</strong> em textos, formulários e tabelas.</li>
+<li>Princípio visual: luxo com moderação — qualidade de layout, espaçamento e consistência, sem excesso de efeitos.</li>
+</ul>
+</section>
+
+<section class="page">
+<h2>7. Fora do escopo da primeira versão</h2>
+<p>Itens previstos na proposta, mas explicitamente <strong>não construídos na v1</strong>.</p>
+<div class="grid">
+<div class="card out"><h3>Consórcios (módulo completo)</h3><p>Administradora, grupo, cota, categoria, crédito, prazo, parcelas, lances, contemplação e utilização do crédito.</p></div>
+<div class="card out"><h3>Investimentos (módulo completo)</h3><p>Catálogo de produtos, posições, movimentações e perfil/suitability operacional.</p></div>
+<div class="card out"><h3>Relatórios avançados</h3><p>Além dos indicadores do dashboard. Relatórios específicos serão definidos com o Andersom.</p></div>
+<div class="card out"><h3>Integrações</h3><p>WhatsApp, site, Instagram, Google Ads, Open Finance e qualquer API externa.</p></div>
+<div class="card out"><h3>IA e inteligência avançada</h3><p>Assistente, resumos automáticos e motor preditivo. Na v1 há apenas regras simples de alerta.</p></div>
+<div class="card out"><h3>App nativo e execução de investimentos</h3><p>Não há aplicativo móvel nativo nem compra, venda, custódia ou recomendação automatizada de ativos.</p></div>
+</div>
+<div class="note"><strong>Reserva estrutural:</strong> o desenho da v1 deve permitir evoluir para consórcios, investimentos e integrações sem refazer o cadastro de clientes e o comercial.</div>
+</section>
+
+<section class="page">
+<h2>8. Fases posteriores (visão de produto)</h2>
+<p>Depois do MVP, o PRIMO INVEST deve poder crescer até se tornar a plataforma central de relacionamento e operação comercial.</p>
+<h3>Fase 2 — Consórcios</h3>
+<div class="arch">Cliente → Grupo → Cota → Carta de crédito → Parcelas → Lances → Contemplação → Utilização do crédito</div>
+<ul>
+<li>Dados do contrato: administradora, grupo, cota, categoria, crédito, prazo e situação.</li>
+<li>Parcelas pagas e pendentes.</li>
+<li>Lances: ofertas, datas, valores e resultado.</li>
+<li>Contemplação: modalidade (sorteio ou lance, conforme o processo da empresa), data, valor do crédito e etapas seguintes.</li>
+<li>Indicadores de consórcio no dashboard.</li>
+</ul>
+<p class="muted">Conceitos de contemplação seguem referência do Banco Central; o sistema só implementa os procedimentos e contratos realmente usados pela empresa.</p>
+<h3>Fase 3 — Investimentos</h3>
+<ul>
+<li>Cadastro dos produtos/serviços efetivamente oferecidos.</li>
+<li>Posições e movimentações que a empresa precisa controlar.</li>
+<li>Informações de adequação ao perfil do cliente <em>quando aplicável</em> e após definição regulatória.</li>
+</ul>
+<p class="note"><strong>Conformidade:</strong> a CVM trata suitability como adequação de produtos, serviços e operações ao perfil do cliente. Este módulo não será programado com regras inventadas. Antes de qualquer cálculo ou recomendação, a empresa informa quais dados registra e quais regras segue.</p>
+</section>
+
+<section class="page">
+<h2>9. Evoluções possíveis (não comprometidas)</h2>
+<p>Não fazem parte de cronograma nem de compromisso de entrega. Ficam registradas como direção de produto.</p>
+<div class="grid">
+<div class="card"><h3>WhatsApp</h3><p>Relacionamento e histórico de conversas, conforme ferramenta escolhida.</p></div>
+<div class="card"><h3>Open Finance</h3><p>Somente se houver modelo de negócio, fornecedor e autorização do cliente.</p></div>
+<div class="card"><h3>Inteligência operacional</h3><p>Priorização de clientes sem contato, oportunidades paradas e tarefas críticas.</p></div>
+<div class="card"><h3>Assistente de IA</h3><p>Consulta, resumos e apoio à equipe, sempre dentro das regras e permissões do sistema.</p></div>
+</div>
+<h3>Segurança e privacidade em todas as fases</h3>
+<ul>
+<li>Perfis e permissões desde a v1.</li>
+<li>Rastreabilidade de alterações relevantes.</li>
+<li>LGPD considerada no desenho (minimização, controle de acesso, possibilidade de exportação/exclusão futura).</li>
+<li>Bases legais, políticas de retenção e responsabilidades jurídicas: validação do responsável competente da empresa — fora do papel deste escopo técnico.</li>
+</ul>
+</section>
+
+<section class="page">
+<h2>10. Critérios de aceite da v1</h2>
+<p>A primeira versão será considerada entregue quando os itens abaixo funcionarem de ponta a ponta, com os dois temas visuais, sem as fases 2 e 3.</p>
+<ul>
+<li>Usuário autorizado entra, navega apenas o que o perfil permite e sai com segurança.</li>
+<li>Gestor vê no dashboard indicadores comerciais/operacionais e uma fila de atenção (atrasos, propostas paradas, documentos pendentes, clientes sem contato).</li>
+<li>Equipe cadastra lead com origem, avança no pipeline, registra proposta/negociação e fecha ganho ou perda com motivo.</li>
+<li>Lead pode ser convertido em cliente; a ficha reúne cadastro, histórico, tarefas, oportunidades, documentos e linha do tempo.</li>
+<li>Tarefas têm responsável, prazo e status; atrasos geram aviso.</li>
+<li>Documentos podem ser enviados, associados ao cliente e marcados como pendentes ou concluídos.</li>
+<li>Alterações relevantes ficam no histórico.</li>
+<li>Ações destrutivas pedem confirmação; filtros e estados de carregamento existem nas listagens principais.</li>
+<li>Não há integração externa, módulo completo de consórcio, módulo completo de investimento, execução de ordens nem assistente de IA.</li>
+</ul>
+<div class="warn"><strong>Não aceite da v1:</strong> copiar Salesforce, HubSpot ou qualquer plataforma. As referências de mercado da proposta original servem só como boas práticas de CRM.</div>
+</section>
+
+<section class="page">
+<h2>11. Fora de escopo absoluto (neste ciclo)</h2>
+<ul>
+<li>Instalação de dependências, geração da aplicação, infraestrutura em nuvem e código de produto — até validação deste documento.</li>
+<li>Recomendação automatizada de investimentos, execução de operações, custódia, home broker ou Open Finance.</li>
+<li>Cálculos de rentabilidade, IR, marcações a mercado ou regras de lance/contemplação sem confirmação da operação real.</li>
+<li>Migração completa de dados de outro sistema (só será planejada se a empresa informar o sistema atual).</li>
+<li>Aplicativo nativo iOS/Android e portal público do cliente (área logada para o cliente final) na v1.</li>
+<li>Definição jurídica de compliance, contratos, políticas de privacidade e licenciamento de atividade regulada.</li>
+</ul>
+<h3>Riscos já reconhecidos</h3>
+<table>
+<tr><th>Risco</th><th>Efeito</th><th>Mitigação neste ciclo</th></tr>
+<tr><td>Produtos e consórcios ainda não detalhados</td><td>Módulos financeiros errados</td><td>Adiar fases 2 e 3 até respostas oficiais</td></tr>
+<tr><td>Funil diferente do proposto</td><td>Retrabalho de pipeline</td><td>Etapas configuráveis após confirmação</td></tr>
+<tr><td>Exigências de CVM / BCB / LGPD</td><td>Funcionalidade indevida</td><td>Sistema de gestão apenas; validação com responsáveis da empresa</td></tr>
+<tr><td>Volume de notificações</td><td>Ruído operacional</td><td>Poucos alertos, todos acionáveis</td></tr>
+</table>
+</section>
+
+<section class="page">
+<h2>12. Pendências para fechar o escopo</h2>
+<p>Perguntas da proposta original, mantidas aqui porque ainda não há respostas registradas. Sem elas, a v1 segue com os padrões deste documento; as fases 2 e 3 não avançam.</p>
+<table>
+<tr><th>#</th><th>Pergunta</th><th>Impacto</th></tr>
+<tr><td>1</td><td>A ideia geral corresponde ao que a empresa imaginava?</td><td>Validação ou corte de módulos</td></tr>
+<tr><td>2</td><td>Quais produtos de investimento vocês trabalham?</td><td>Fase 3</td></tr>
+<tr><td>3</td><td>Quais tipos de consórcio vocês trabalham?</td><td>Fase 2</td></tr>
+<tr><td>4</td><td>Como recebem e acompanham leads hoje?</td><td>Origens, funil e MVP</td></tr>
+<tr><td>5</td><td>Quantas pessoas utilizarão o sistema?</td><td>Perfis e permissões</td></tr>
+<tr><td>6</td><td>Existe sistema atual para substituir ou integrar?</td><td>Fora da v1, salvo decisão explícita</td></tr>
+<tr><td>7</td><td>Quais informações são indispensáveis no cadastro do cliente?</td><td>Campos da ficha v1</td></tr>
+<tr><td>8</td><td>Quais relatórios são desejados?</td><td>Dashboard v1 vs. fase posterior</td></tr>
+<tr><td>9</td><td>O que retirar desta proposta?</td><td>Redução de escopo</td></tr>
+<tr><td>10</td><td>O que acrescentar?</td><td>Inclusão consciente, não implícita</td></tr>
+</table>
+<div class="note">Até essas respostas, o PRIMO INVEST permanece em <strong>pré-desenvolvimento</strong>: documentação e alinhamento apenas.</div>
+</section>
+
+<section class="page">
+<h2>13. Próximos passos (sem construir o sistema ainda)</h2>
+<div class="flow">
+<div class="step">1. Validar este escopo</div><span class="arrow">→</span>
+<div class="step">2. Responder pendências</div><span class="arrow">→</span>
+<div class="step">3. Requisitos detalhados</div><span class="arrow">→</span>
+<div class="step">4. Arquitetura</div><span class="arrow">→</span>
+<div class="step">5. Desenho de telas</div><span class="arrow">→</span>
+<div class="step">6. Construção</div>
+</div>
+<ul>
+<li><strong>Agora:</strong> revisão deste escopo com o Andersom.</li>
+<li><strong>Em seguida:</strong> requisitos funcionais e não funcionais da v1 (casos de uso, campos, regras de alerta).</li>
+<li><strong>Depois:</strong> arquitetura e identidade aplicada às telas.</li>
+<li><strong>Só então:</strong> desenvolvimento, testes e entrega da v1.</li>
+</ul>
+<h3>Referências (contexto, não cópia)</h3>
+<ul>
+<li>Salesforce Financial Services — CRM e visão 360 do cliente.</li>
+<li>HubSpot Pipeline — gestão visual de leads e atividades.</li>
+<li>CVM — suitability, quando o módulo de investimentos existir.</li>
+<li>Banco Central — conceitos de consórcio (grupo, cota, lance, contemplação).</li>
+</ul>
+<p class="footer">PRIMO INVEST • Documento de escopo v1.0 • Setembro de 2026 • Derivado da proposta inicial de CRM financeiro para Andersom • Não constitui código, instalação nem início da aplicação</p>
+</section>
+
+</body>
+</html>
