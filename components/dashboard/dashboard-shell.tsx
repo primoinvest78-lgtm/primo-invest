@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+
 import {
   allocationData,
   attentionItems,
@@ -17,6 +18,7 @@ import {
   relationshipSummary,
   wealthTrend,
 } from "@/lib/mock/dashboard";
+
 import { AllocationChart } from "./allocation-chart";
 import { AttentionPanel } from "./attention-panel";
 import { DashboardHeader } from "./dashboard-header";
@@ -27,33 +29,56 @@ import { RecentActivity } from "./recent-activity";
 import { RelationshipSummary } from "./relationship-summary";
 import { WealthChart } from "./wealth-chart";
 
-const periods = ["Hoje", "7 dias", "30 dias", "90 dias", "12 meses", "Personalizado"];
+const periods = [
+  "Hoje",
+  "7 dias",
+  "30 dias",
+  "90 dias",
+  "12 meses",
+  "Personalizado",
+];
 
 export function DashboardShell() {
   const pathname = usePathname();
   const [selectedPeriod, setSelectedPeriod] = useState("12 meses");
 
   return (
-    <div className="min-h-screen bg-[#071A2D] text-white">
-      <div className="flex min-h-screen">
-        <aside className="hidden w-[280px] shrink-0 flex-col border-r border-white/10 bg-[#061827] lg:flex">
-          <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-            <div className="relative h-11 w-11 overflow-hidden rounded-lg bg-white/5 ring-1 ring-white/10">
-              <Image src="/primo-invest-logo.png" alt="Primo Invest" width={44} height={44} />
+    <div className="min-h-screen w-full bg-[#010A42] text-white">
+      <div className="flex min-h-screen w-full">
+        {/* SIDEBAR */}
+        <aside className="hidden w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#010A42] lg:flex">
+          {/* BRAND */}
+          <div className="flex h-[76px] shrink-0 items-center gap-3 border-b border-white/10 px-6">
+            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-white/10">
+              <Image
+                src="/primo-invest-logo.png"
+                alt="Primo Invest"
+                width={44}
+                height={44}
+                className="h-11 w-11 object-contain"
+              />
             </div>
-            <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#E3C982]">
+
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#7FC8FF]">
                 Primo
               </div>
-              <div className="text-lg font-semibold tracking-[0.12em] text-white">INVEST</div>
+
+              <div className="text-[18px] font-bold tracking-[0.12em] text-white">
+                INVEST
+              </div>
             </div>
           </div>
 
-          <nav className="flex-1 overflow-y-auto px-3 py-4">
+          {/* NAVIGATION */}
+          <nav className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
             {navigationGroups.map((group, groupIndex) => (
-              <div key={`${group.title ?? "general"}-${groupIndex}`} className="mb-5">
+              <div
+                key={`${group.title ?? "general"}-${groupIndex}`}
+                className="mb-6 last:mb-0"
+              >
                 {group.title ? (
-                  <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
+                  <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8FA8D1]">
                     {group.title}
                   </p>
                 ) : null}
@@ -61,32 +86,50 @@ export function DashboardShell() {
                 <ul className="space-y-1">
                   {group.items.map((item) => {
                     const Icon = item.icon;
-                    const isActive = pathname === item.href || (item.href === "/dashboard" && pathname === "/");
+
+                    const isActive =
+                      pathname === item.href ||
+                      (item.href === "/dashboard" && pathname === "/");
 
                     return (
                       <li key={item.label}>
                         <Link
                           href={item.href}
                           className={[
-                            "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-all duration-200",
+                            "group flex min-h-[46px] w-full items-center gap-3 rounded-xl px-3 py-2.5",
+                            "text-left text-[14px] font-medium",
+                            "transition-colors duration-150",
                             isActive
-                              ? "bg-[linear-gradient(90deg,rgba(18,62,104,0.55),rgba(201,164,92,0.12))] text-white ring-1 ring-[#C9A45C]/30"
-                              : "text-white/75 hover:bg-white/5 hover:text-white",
+                              ? "bg-[#012294] text-white shadow-[0_8px_24px_rgba(0,105,254,0.16)]"
+                              : "text-[#D6E2F5] hover:bg-white/[0.06] hover:text-white",
                           ].join(" ")}
                         >
                           <span
                             className={[
-                              "flex h-8 w-8 items-center justify-center rounded-lg border",
+                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border",
+                              "transition-colors duration-150",
                               isActive
-                                ? "border-[#C9A45C]/30 bg-[#123E68]/30 text-[#E3C982]"
-                                : "border-white/10 bg-white/5 text-white/70",
+                                ? "border-[#0069FE]/40 bg-[#0069FE]/20 text-[#E7FBFE]"
+                                : "border-white/10 bg-white/[0.04] text-[#AFC4E5] group-hover:border-[#0069FE]/30 group-hover:text-white",
                             ].join(" ")}
                           >
-                            <Icon className="h-4 w-4" />
+                            <Icon className="h-[17px] w-[17px]" />
                           </span>
-                          <span className="flex-1 font-medium">{item.label}</span>
+
+                          <span className="min-w-0 flex-1 truncate">
+                            {item.label}
+                          </span>
+
                           {item.badge ? (
-                            <span className="rounded-full border border-white/10 bg-white/5 px-1.5 py-0.5 text-[9px] font-semibold text-[#E3C982]">
+                            <span
+                              className={[
+                                "shrink-0 rounded-full border px-2 py-0.5",
+                                "text-[10px] font-semibold",
+                                isActive
+                                  ? "border-white/15 bg-white/10 text-white"
+                                  : "border-white/10 bg-white/[0.04] text-[#B8CBE8]",
+                              ].join(" ")}
+                            >
                               {item.badge}
                             </span>
                           ) : null}
@@ -100,76 +143,137 @@ export function DashboardShell() {
           </nav>
         </aside>
 
-        <div className="flex-1">
+        {/* APPLICATION */}
+        <div className="flex min-w-0 flex-1 flex-col bg-[#010A42]">
           <DashboardHeader />
 
-          <main className="px-4 pb-8 pt-5 md:px-6 xl:px-8">
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: "easeOut" }} className="space-y-6">
-              <div className="mb-2 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">Dashboard</p>
-                  <h1 className="mt-2 text-3xl font-bold tracking-[-0.06em] text-white">Dashboard</h1>
-                  <p className="mt-1 text-sm text-white/70">Visão consolidada da operação e do patrimônio</p>
+          <main className="min-w-0 flex-1 px-5 pb-10 pt-6 md:px-7 xl:px-9">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.25,
+                ease: "easeOut",
+              }}
+              className="mx-auto w-full max-w-[1800px] space-y-6"
+            >
+              {/* PAGE HEADER */}
+              <section className="flex min-w-0 flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8FA8D1]">
+                    Dashboard
+                  </p>
+
+                  <h1 className="mt-2 text-[32px] font-bold leading-tight tracking-[-0.04em] text-white md:text-[36px]">
+                    Dashboard
+                  </h1>
+
+                  <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#B8CBE8]">
+                    Visão consolidada da operação e do patrimônio.
+                  </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  {periods.map((period) => (
-                    <button
-                      key={period}
-                      type="button"
-                      onClick={() => setSelectedPeriod(period)}
-                      className={[
-                        "rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                        selectedPeriod === period
-                          ? "border-[#C9A45C] bg-[#C9A45C] text-[#071A2D] shadow-[0_8px_18px_rgba(201,164,92,0.2)]"
-                          : "border-white/10 bg-[#0B2238] text-white/70 hover:border-[#1F5F96] hover:text-white",
-                      ].join(" ")}
-                    >
-                      {period}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                {/* PERIOD FILTER */}
+                <div className="flex max-w-full flex-wrap items-center gap-2">
+                  {periods.map((period) => {
+                    const active = selectedPeriod === period;
 
-              <div className="rounded-2xl border border-white/10 bg-[#0B2238] p-4 shadow-[0_12px_30px_rgba(0,0,0,0.18)] md:p-5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">Resumo operacional</p>
-                    <h2 className="mt-2 text-2xl font-bold tracking-[-0.05em] text-white">Bom dia, Anderson</h2>
-                    <p className="mt-1 text-sm text-white/70">Veja o que precisa da sua atenção hoje.</p>
+                    return (
+                      <button
+                        key={period}
+                        type="button"
+                        onClick={() => setSelectedPeriod(period)}
+                        className={[
+                          "min-h-9 rounded-full border px-3.5 py-2",
+                          "text-xs font-semibold whitespace-nowrap",
+                          "transition-colors duration-150",
+                          active
+                            ? "border-[#0069FE] bg-[#0069FE] text-white"
+                            : "border-white/10 bg-[#07144F] text-[#B8CBE8] hover:border-[#0069FE]/50 hover:text-white",
+                        ].join(" ")}
+                      >
+                        {period}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              {/* OPERATIONAL SUMMARY */}
+              <section className="min-w-0 rounded-2xl border border-white/10 bg-[#07144F] p-5 md:p-6">
+                <div className="flex min-w-0 flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7FC8FF]">
+                      Resumo operacional
+                    </p>
+
+                    <h2 className="mt-2 text-[24px] font-bold leading-tight tracking-[-0.035em] text-white md:text-[27px]">
+                      Bom dia, Anderson
+                    </h2>
+
+                    <p className="mt-2 text-[14px] leading-6 text-[#B8CBE8]">
+                      Veja o que precisa da sua atenção hoje.
+                    </p>
                   </div>
 
-                  <div className="inline-flex items-center gap-2 self-start rounded-full border border-white/10 bg-[#122b43] px-3 py-2 text-xs font-medium text-white">
-                    <span className="h-2 w-2 rounded-full bg-[#18794E]" />
-                    Ambiente: Produção
-                    <ChevronDown className="h-3.5 w-3.5 text-white/60" />
+                  <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/10 bg-[#012294]/50 px-4 py-2.5 text-xs font-semibold text-white md:self-center">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-[#35C98A]" />
+
+                    <span>Ambiente: Produção</span>
+
+                    <ChevronDown className="h-4 w-4 text-[#AFC4E5]" />
                   </div>
                 </div>
-              </div>
+              </section>
 
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {/* KPI GRID */}
+              <section className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {kpis.map((kpi) => (
-                  <KpiCard key={kpi.title} {...kpi} />
+                  <div key={kpi.title} className="min-w-0">
+                    <KpiCard {...kpi} />
+                  </div>
                 ))}
-              </div>
+              </section>
 
-              <div className="mt-2 grid gap-6 xl:grid-cols-[1.7fr_0.95fr]">
-                <div className="space-y-6">
-                  <WealthChart data={wealthTrend} />
+              {/* MAIN ANALYTICS */}
+              <section className="grid min-w-0 grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,1.7fr)_minmax(380px,0.95fr)]">
+                {/* PRIMARY COLUMN */}
+                <div className="min-w-0 space-y-6">
+                  <div className="min-w-0">
+                    <WealthChart data={wealthTrend} />
+                  </div>
 
-                  <div className="grid gap-6 xl:grid-cols-2">
-                    <AttentionPanel items={attentionItems} />
-                    <RelationshipSummary items={relationshipSummary} />
+                  {/* ATTENTION + RELATIONSHIP */}
+                  <div className="grid min-w-0 grid-cols-1 gap-6 2xl:grid-cols-2">
+                    <div className="min-w-0">
+                      <AttentionPanel items={attentionItems} />
+                    </div>
+
+                    <div className="min-w-0">
+                      <RelationshipSummary items={relationshipSummary} />
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <AllocationChart data={allocationData} />
-                  <PipelineSummary stages={pipelineStages} />
-                  <GoalsSummary items={goals} />
-                  <RecentActivity items={recentActivities} />
+                {/* SECONDARY COLUMN */}
+                <div className="min-w-0 space-y-6">
+                  <div className="min-w-0">
+                    <AllocationChart data={allocationData} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <PipelineSummary stages={pipelineStages} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <GoalsSummary items={goals} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <RecentActivity items={recentActivities} />
+                  </div>
                 </div>
-              </div>
+              </section>
             </motion.div>
           </main>
         </div>
