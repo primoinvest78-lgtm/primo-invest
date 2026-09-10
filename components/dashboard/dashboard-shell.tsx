@@ -43,10 +43,10 @@ export function DashboardShell() {
   const [selectedPeriod, setSelectedPeriod] = useState("12 meses");
 
   return (
-    <div className="min-h-screen w-full bg-[#010A42] text-white">
+    <div className="min-h-screen w-full bg-[#000079] text-white">
       <div className="flex min-h-screen w-full">
         {/* SIDEBAR */}
-        <aside className="hidden w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#010A42] lg:flex">
+        <aside className="hidden w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#000079] lg:flex">
           {/* BRAND */}
           <div className="flex h-[76px] shrink-0 items-center gap-3 border-b border-white/10 px-6">
             <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-white/10">
@@ -60,7 +60,7 @@ export function DashboardShell() {
             </div>
 
             <div className="min-w-0">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#7FC8FF]">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#E7FBFE]">
                 Primo
               </div>
 
@@ -78,7 +78,7 @@ export function DashboardShell() {
                 className="mb-6 last:mb-0"
               >
                 {group.title ? (
-                  <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8FA8D1]">
+                  <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9BB5E5]">
                     {group.title}
                   </p>
                 ) : null}
@@ -100,8 +100,8 @@ export function DashboardShell() {
                             "text-left text-[14px] font-medium",
                             "transition-colors duration-150",
                             isActive
-                              ? "bg-[#012294] text-white shadow-[0_8px_24px_rgba(0,105,254,0.16)]"
-                              : "text-[#D6E2F5] hover:bg-white/[0.06] hover:text-white",
+                              ? "bg-[#1707FA] text-white shadow-[0_8px_24px_rgba(23,7,250,0.22)]"
+                              : "text-[#DDE7FA] hover:bg-white/[0.06] hover:text-white",
                           ].join(" ")}
                         >
                           <span
@@ -109,8 +109,8 @@ export function DashboardShell() {
                               "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border",
                               "transition-colors duration-150",
                               isActive
-                                ? "border-[#0069FE]/40 bg-[#0069FE]/20 text-[#E7FBFE]"
-                                : "border-white/10 bg-white/[0.04] text-[#AFC4E5] group-hover:border-[#0069FE]/30 group-hover:text-white",
+                                ? "border-white/20 bg-white/10 text-white"
+                                : "border-white/10 bg-white/[0.04] text-[#B9CBEA] group-hover:border-[#1707FA]/50 group-hover:text-white",
                             ].join(" ")}
                           >
                             <Icon className="h-[17px] w-[17px]" />
@@ -126,8 +126,8 @@ export function DashboardShell() {
                                 "shrink-0 rounded-full border px-2 py-0.5",
                                 "text-[10px] font-semibold",
                                 isActive
-                                  ? "border-white/15 bg-white/10 text-white"
-                                  : "border-white/10 bg-white/[0.04] text-[#B8CBE8]",
+                                  ? "border-white/20 bg-white/10 text-white"
+                                  : "border-white/10 bg-white/[0.04] text-[#B9CBEA]",
                               ].join(" ")}
                             >
                               {item.badge}
@@ -144,7 +144,7 @@ export function DashboardShell() {
         </aside>
 
         {/* APPLICATION */}
-        <div className="flex min-w-0 flex-1 flex-col bg-[#010A42]">
+        <div className="flex min-w-0 flex-1 flex-col bg-[#000079]">
           <DashboardHeader />
 
           <main className="min-w-0 flex-1 px-5 pb-10 pt-6 md:px-7 xl:px-9">
@@ -160,7 +160,7 @@ export function DashboardShell() {
               {/* PAGE HEADER */}
               <section className="flex min-w-0 flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#8FA8D1]">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#9BB5E5]">
                     Dashboard
                   </p>
 
@@ -168,7 +168,7 @@ export function DashboardShell() {
                     Dashboard
                   </h1>
 
-                  <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#B8CBE8]">
+                  <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#DDE7FA]">
                     Visão consolidada da operação e do patrimônio.
                   </p>
                 </div>
@@ -188,8 +188,8 @@ export function DashboardShell() {
                           "text-xs font-semibold whitespace-nowrap",
                           "transition-colors duration-150",
                           active
-                            ? "border-[#0069FE] bg-[#0069FE] text-white"
-                            : "border-white/10 bg-[#07144F] text-[#B8CBE8] hover:border-[#0069FE]/50 hover:text-white",
+                            ? "border-[#1707FA] bg-[#1707FA] text-white"
+                            : "border-white/10 bg-[#060299] text-[#DDE7FA] hover:border-[#1707FA]/60 hover:text-white",
                         ].join(" ")}
                       >
                         {period}
@@ -200,10 +200,10 @@ export function DashboardShell() {
               </section>
 
               {/* OPERATIONAL SUMMARY */}
-              <section className="min-w-0 rounded-2xl border border-white/10 bg-[#07144F] p-5 md:p-6">
+              <section className="min-w-0 rounded-2xl border border-white/10 bg-[#060299] p-5 md:p-6">
                 <div className="flex min-w-0 flex-col gap-5 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7FC8FF]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E7FBFE]">
                       Resumo operacional
                     </p>
 
@@ -211,17 +211,17 @@ export function DashboardShell() {
                       Bom dia, Anderson
                     </h2>
 
-                    <p className="mt-2 text-[14px] leading-6 text-[#B8CBE8]">
+                    <p className="mt-2 text-[14px] leading-6 text-[#DDE7FA]">
                       Veja o que precisa da sua atenção hoje.
                     </p>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/10 bg-[#012294]/50 px-4 py-2.5 text-xs font-semibold text-white md:self-center">
+                  <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-white/10 bg-[#000079] px-4 py-2.5 text-xs font-semibold text-white md:self-center">
                     <span className="h-2 w-2 shrink-0 rounded-full bg-[#35C98A]" />
 
                     <span>Ambiente: Produção</span>
 
-                    <ChevronDown className="h-4 w-4 text-[#AFC4E5]" />
+                    <ChevronDown className="h-4 w-4 text-[#B9CBEA]" />
                   </div>
                 </div>
               </section>
