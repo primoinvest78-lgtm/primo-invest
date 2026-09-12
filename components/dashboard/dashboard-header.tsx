@@ -1,9 +1,12 @@
 "use client";
 
-import { Bell, ChevronDown, Menu, Moon, Search, Sun } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import type { Theme } from "@/lib/hooks/use-theme";
+import { createClient } from "@/lib/supabase/client";
 
 export function DashboardHeader({
   theme,
@@ -17,6 +20,15 @@ export function DashboardHeader({
   onOpenMenu: () => void;
 }) {
   const isLight = theme === "light";
+  const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-secondary-foreground/10 bg-secondary/95 backdrop-blur-md">
@@ -89,26 +101,53 @@ export function DashboardHeader({
             </span>
           </button>
 
-          <button
-            type="button"
-            className="flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-2.5 sm:px-3"
-          >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
-              A
-            </span>
-
-            <span className="hidden text-left sm:block">
-              <span className="block text-[13px] font-semibold text-foreground">
-                Anderson
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-expanded={menuOpen}
+              aria-label="Menu do usuário"
+              className="flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-2.5 sm:px-3"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
+                A
               </span>
 
-              <span className="mt-0.5 block text-label font-bold uppercase text-muted-foreground">
-                Diretor
-              </span>
-            </span>
+              <span className="hidden text-left sm:block">
+                <span className="block text-[13px] font-semibold text-foreground">
+                  Anderson
+                </span>
 
-            <ChevronDown className="hidden h-4 w-4 text-muted-foreground sm:block" />
-          </button>
+                <span className="mt-0.5 block text-label font-bold uppercase text-muted-foreground">
+                  Diretor
+                </span>
+              </span>
+
+              <ChevronDown className="hidden h-4 w-4 text-muted-foreground sm:block" />
+            </button>
+
+            {menuOpen ? (
+              <>
+                <button
+                  type="button"
+                  aria-label="Fechar menu"
+                  className="fixed inset-0 z-40 cursor-default"
+                  onClick={() => setMenuOpen(false)}
+                />
+
+                <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-44 overflow-hidden rounded-xl border border-border bg-card shadow-card-lg">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </button>
+                </div>
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
     </header>
