@@ -11,49 +11,51 @@
  * pelo bloco @theme abaixo, ex.: bg-card, text-foreground,
  * text-muted-foreground) em vez de hex hardcoded.
  *
- * Dark: padrão institucional
- * Light: tema alternativo
+ * O produto é predominantemente branco/cinza claro. Azul-marinho
+ * é cor de BLOCO (header, sidebar, nav ativo) — nunca de superfície
+ * geral de página ou card. Verde-menta é a cor de destaque/ação.
+ * ":root" e ".light" representam duas variações claras (a primeira
+ * levemente tonalizada, a segunda branco puro); nenhuma delas usa
+ * azul como fundo de página ou de card.
  *
  * Paleta de marca:
- * Navy profundo   #000079
- * Navy            #060299
- * Blue            #0C04B9
- * Blue forte      #1105D9
- * Blue elétrico   #1707FA  (primary)
- * Light Blue      #E7FBFE
- * White           #FFFFFF
+ * Azul-marinho    #101B3D → #122B54  (header, sidebar, títulos, nav ativo)
+ * Verde-menta     #2ECC9B → #34D399  (CTAs, sucesso, destaque, gráfico primário)
+ * Fundo principal #FFFFFF
+ * Fundo alt.      #F7F8FA
+ * Texto de apoio  #6B7280
  */
 
 :root {
   /* Core */
-  --background: #000079;
-  --foreground: #ffffff;
+  --background: #f7f8fa;
+  --foreground: #101b3d;
 
-  /* Surfaces */
-  --card: #060299;
-  --card-foreground: #ffffff;
-  --popover: #060299;
-  --popover-foreground: #ffffff;
+  /* Surfaces — cards são sempre brancos, nunca azuis */
+  --card: #ffffff;
+  --card-foreground: #101b3d;
+  --popover: #ffffff;
+  --popover-foreground: #101b3d;
 
-  /* Brand */
-  --primary: #1707fa;
-  --primary-foreground: #ffffff;
+  /* Brand — verde-menta é a cor de ação/destaque */
+  --primary: #2ecc9b;
+  --primary-foreground: #101b3d;
 
-  /* Secondary */
-  --secondary: #0c04b9;
+  /* Secondary — bloco azul-marinho fixo (header, sidebar, nav ativo) */
+  --secondary: #101b3d;
   --secondary-foreground: #ffffff;
 
-  /* Muted (subtle surfaces / de-emphasized text) */
-  --muted: #0a0f66;
-  --muted-foreground: #afc1df;
+  /* Muted (superfícies sutis / texto de apoio) */
+  --muted: #edf0f4;
+  --muted-foreground: #6b7280;
 
-  /* Accent */
-  --accent: #e7fbfe;
-  --accent-foreground: #000079;
+  /* Accent — ênfase tipográfica (eyebrows, títulos secundários) */
+  --accent: #122b54;
+  --accent-foreground: #ffffff;
 
   /* Semantic status */
-  --success: #19a974;
-  --success-foreground: #06231a;
+  --success: #16a97d;
+  --success-foreground: #ffffff;
   --warning: #f5a623;
   --warning-foreground: #2b1900;
   --info: #38bdf8;
@@ -62,28 +64,28 @@
   --destructive-foreground: #2b0007;
 
   /* System */
-  --border: rgba(231, 251, 254, 0.14);
-  --input: rgba(231, 251, 254, 0.1);
-  --ring: #1707fa;
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #2ecc9b;
 
   /* Radius */
   --radius: 0.875rem;
 
-  /* Chart sequence — brand blues, constant across temas */
-  --chart-1: #1707fa;
-  --chart-2: #1105d9;
-  --chart-3: #0c04b9;
-  --chart-4: #060299;
-  --chart-5: #000079;
+  /* Chart sequence — verde-menta como cor principal, variações compatíveis */
+  --chart-1: #2ecc9b;
+  --chart-2: #101b3d;
+  --chart-3: #34d399;
+  --chart-4: #6b7280;
+  --chart-5: #122b54;
 
-  /* Shadows — mesma escala em dark/light, cor fixa (não segue superfície) */
-  --shadow-card: 0 14px 32px rgba(0, 0, 40, 0.18);
-  --shadow-card-hover: 0 18px 38px rgba(0, 0, 40, 0.24);
-  --shadow-card-lg: 0 16px 36px rgba(0, 0, 40, 0.28);
-  --shadow-ring-primary-sm: 0 0 0 3px rgba(23, 7, 250, 0.08);
-  --shadow-ring-primary-md: 0 0 0 3px rgba(23, 7, 250, 0.14);
-  --shadow-ring-primary-lg: 0 0 0 4px rgba(23, 7, 250, 0.16);
-  --shadow-nav-active: 0 8px 24px rgba(23, 7, 250, 0.22);
+  /* Shadows — mesma escala em ambos os temas, cor fixa (não segue superfície) */
+  --shadow-card: 0 8px 20px rgba(16, 27, 61, 0.08);
+  --shadow-card-hover: 0 12px 28px rgba(16, 27, 61, 0.12);
+  --shadow-card-lg: 0 16px 32px rgba(16, 27, 61, 0.14);
+  --shadow-ring-primary-sm: 0 0 0 3px rgba(46, 204, 155, 0.1);
+  --shadow-ring-primary-md: 0 0 0 3px rgba(46, 204, 155, 0.16);
+  --shadow-ring-primary-lg: 0 0 0 4px rgba(46, 204, 155, 0.18);
+  --shadow-nav-active: 0 8px 20px rgba(46, 204, 155, 0.28);
 
   /* Layout */
   --sidebar-width: 272px;
@@ -94,32 +96,34 @@
  * LIGHT THEME
  *
  * Ativado por .light ou [data-theme="light"] em <html>.
+ * Variação em branco puro do mesmo sistema (:root usa um
+ * fundo levemente tonalizado); cores de marca são idênticas.
  */
 
 .light,
 [data-theme="light"] {
   --background: #ffffff;
-  --foreground: #07143f;
+  --foreground: #101b3d;
 
   --card: #ffffff;
-  --card-foreground: #07143f;
+  --card-foreground: #101b3d;
 
   --popover: #ffffff;
-  --popover-foreground: #07143f;
+  --popover-foreground: #101b3d;
 
-  --primary: #1707fa;
-  --primary-foreground: #ffffff;
+  --primary: #2ecc9b;
+  --primary-foreground: #101b3d;
 
-  --secondary: #0c04b9;
+  --secondary: #101b3d;
   --secondary-foreground: #ffffff;
 
-  --muted: #f8fafd;
-  --muted-foreground: #607596;
+  --muted: #f7f8fa;
+  --muted-foreground: #6b7280;
 
-  --accent: #eef2ff;
-  --accent-foreground: #0c04b9;
+  --accent: #122b54;
+  --accent-foreground: #ffffff;
 
-  --success: #16865d;
+  --success: #16a97d;
   --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-foreground: #ffffff;
@@ -128,9 +132,9 @@
   --destructive: #dc3545;
   --destructive-foreground: #ffffff;
 
-  --border: #d7e1f2;
-  --input: #d7e1f2;
-  --ring: #1707fa;
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #2ecc9b;
 }
 
 /*
@@ -187,6 +191,10 @@
   --shadow-ring-primary-lg: var(--shadow-ring-primary-lg);
   --shadow-nav-active: var(--shadow-nav-active);
 
+  /* Famílias tipográficas — Manrope para títulos/destaques, Inter no corpo */
+  --font-heading: var(--font-manrope);
+  --font-sans: var(--font-inter);
+
   /* Escala tipográfica global */
   --text-display: 2.75rem;
   --text-display--line-height: 1.05;
@@ -238,8 +246,8 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
-  font-family: var(--font-dm-sans), sans-serif;
+  color-scheme: light;
+  font-family: var(--font-inter), sans-serif;
 }
 
 html.light,
@@ -258,7 +266,7 @@ body {
   background: var(--background);
   color: var(--foreground);
 
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-inter), sans-serif;
 
   transition:
     background-color 180ms ease,
@@ -335,7 +343,7 @@ textarea::placeholder {
 
 ::selection {
   background: var(--primary);
-  color: #ffffff;
+  color: var(--primary-foreground);
 }
 
 /*
@@ -344,7 +352,7 @@ textarea::placeholder {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(231, 251, 254, 0.2) transparent;
+  scrollbar-color: #c7d8eb transparent;
 }
 
 *::-webkit-scrollbar {
@@ -357,27 +365,11 @@ textarea::placeholder {
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(231, 251, 254, 0.2);
+  background: #c7d8eb;
   border-radius: 9999px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(231, 251, 254, 0.32);
-}
-
-/*
- * LIGHT SCROLLBAR
- */
-
-.light * {
-  scrollbar-color: #c7d8eb transparent;
-}
-
-.light *::-webkit-scrollbar-thumb {
-  background: #c7d8eb;
-}
-
-.light *::-webkit-scrollbar-thumb:hover {
   background: #9eb6d1;
 }
 

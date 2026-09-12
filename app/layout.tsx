@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { DM_Sans, Manrope } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
 import { AppShell } from "@/components/dashboard/app-shell";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const manrope = Manrope({
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="pt-BR"
-      className={`${dmSans.variable} ${manrope.variable} h-full antialiased`}
+      className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <AppShell>{children}</AppShell>
