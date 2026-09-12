@@ -85,6 +85,45 @@
   - `npm run build` concluído com sucesso
 - Status: concluído
 
+### Etapa 7 - Consolidação arquitetural e unificação do design system
+- Data: 2026-09-12
+- Objetivo: eliminar drift de arquitetura acumulado entre etapas anteriores e estabelecer uma fundação visual única, antes de continuar a evolução do produto
+- Diagnóstico:
+  - `app/dashboard/page.tsx` era uma implementação monolítica (~1500 linhas) duplicando toda a lógica já existente em `components/dashboard/*`, nunca consumindo esses componentes
+  - texto em português corrompido (mojibake) em todo o `app/dashboard/page.tsx`, resultado de um salvamento com encoding incorreto em etapa anterior
+  - três paletas de cor divergentes coexistindo: tokens de `globals.css`, uma paleta azul hardcoded no monólito e uma paleta antiga dourado/verde-petróleo em `dashboard-header.tsx`/`executive-page.tsx`
+  - `--muted` declarado duas vezes em `:root` e em `.light` (bug de CSS: a segunda declaração sobrescrevia a primeira silenciosamente)
+  - `globals.css` nunca mapeava os tokens (`--background`, `--primary` etc.) para classes utilitárias do Tailwind via `@theme inline` — o único componente shadcn do projeto (`components/ui/button.tsx`) dependia dessas classes e estava, portanto, sem estilo funcional
+  - `executive-page.tsx` renderizava um shell próprio sem sidebar/navegação, isolando as 18 páginas de módulo (`clientes`, `patrimonio`, `consorcios` etc.) do resto do app
+  - 8 componentes de dashboard duplicavam o mesmo hook de leitura de tema via `MutationObserver`
+  - campos mortos (`accent`, `tone`, `color`, `active`) em `lib/mock/dashboard.ts`, nunca consumidos pelos componentes
+- Decisões:
+  - paleta canônica única: família azul-elétrico (`#000079` → `#1707FA`), já dominante nos componentes modulares
+  - `globals.css` passa a ser a única fonte de verdade de cor e tipografia, com bloco `@theme inline` expondo os tokens como classes Tailwind (`bg-card`, `text-foreground`, `bg-primary` etc.)
+  - criado `components/dashboard/app-shell.tsx`, montado uma única vez em `app/layout.tsx`, fornecendo sidebar + header + navegação para todas as rotas (inclusive as 18 páginas de módulo)
+  - criado `lib/hooks/use-theme.ts` (fonte única do tema, substitui os 8 `MutationObserver` duplicados)
+  - criado `lib/design/chart-colors.ts` (sequência cromática única de gráficos)
+  - `components/dashboard/dashboard-shell.tsx` removido; conteúdo do dashboard migrado para `components/dashboard/dashboard-overview.tsx` (shell e conteúdo agora são responsabilidades separadas)
+  - `executive-page.tsx` simplificado para renderizar apenas conteúdo (o shell vem do layout raiz)
+  - tipos e mocks limpos de campos não utilizados
+- Arquivos criados:
+  - `components/dashboard/app-shell.tsx`
+  - `components/dashboard/dashboard-overview.tsx`
+  - `lib/hooks/use-theme.ts`
+  - `lib/design/chart-colors.ts`
+- Arquivos removidos:
+  - `components/dashboard/dashboard-shell.tsx`
+- Arquivos alterados:
+  - `app/globals.css`, `app/layout.tsx`, `app/dashboard/page.tsx`
+  - `components/dashboard/dashboard-header.tsx`, `executive-page.tsx`, `kpi-card.tsx`, `wealth-chart.tsx`, `allocation-chart.tsx`, `attention-panel.tsx`, `goals-summary.tsx`, `pipeline-summary.tsx`, `recent-activity.tsx`, `relationship-summary.tsx`
+  - `lib/mock/dashboard.ts`
+  - as 20 páginas de módulo que usam `ExecutivePage` (classes de cor dos stat tiles padronizadas para os tokens)
+- Validação:
+  - `npm run lint` concluído com sucesso
+  - `npm run build` concluído com sucesso (25 rotas geradas estaticamente)
+  - revisão visual em `npm run dev` (dashboard + uma página de módulo, temas claro e escuro)
+- Status: concluído
+
 ## Registro de alterações por arquivo
 
 ### `app/page.tsx`
