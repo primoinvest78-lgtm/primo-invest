@@ -3,6 +3,8 @@ import { DM_Sans, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+import { AppShell } from "@/components/dashboard/app-shell";
+
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
@@ -26,7 +28,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="pt-BR"
       className={`${dmSans.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#F5F7FA] text-[#142235]">{children}</body>
+      <body className="min-h-full">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

@@ -23,7 +23,6 @@ export type SidebarItem = {
   label: string;
   icon: LucideIcon;
   href: string;
-  active?: boolean;
   badge?: string;
 };
 
@@ -38,7 +37,6 @@ export type KpiCardData = {
   change: string;
   delta: number;
   icon: LucideIcon;
-  accent: string;
 };
 
 export type WealthPoint = {
@@ -49,7 +47,6 @@ export type WealthPoint = {
 export type AllocationItem = {
   name: string;
   value: number;
-  color: string;
 };
 
 export type AttentionItem = {
@@ -57,7 +54,6 @@ export type AttentionItem = {
   priority: "Alta" | "Média" | "Baixa";
   quantity: number;
   icon: LucideIcon;
-  tone: string;
 };
 
 export type RelationshipSummaryData = {
@@ -68,7 +64,6 @@ export type RelationshipSummaryData = {
 export type PipelineStage = {
   name: string;
   value: string;
-  tone: string;
 };
 
 export type GoalItem = {
@@ -76,19 +71,17 @@ export type GoalItem = {
   value: string;
   target: string;
   progress: number;
-  tone: string;
 };
 
 export type RecentActivityItem = {
   title: string;
   time: string;
-  tone: string;
 };
 
 export const navigationGroups: SidebarGroup[] = [
   {
     items: [
-      { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard", active: true },
+      { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
     ],
   },
   {
@@ -138,7 +131,6 @@ export const kpis: KpiCardData[] = [
     change: "+8,42%",
     delta: 8.42,
     icon: Landmark,
-    accent: "bg-[#123E68]/10 text-[#123E68]",
   },
   {
     title: "Investimentos sob gestão",
@@ -146,7 +138,6 @@ export const kpis: KpiCardData[] = [
     change: "+6,18%",
     delta: 6.18,
     icon: BriefcaseBusiness,
-    accent: "bg-[#1F5F96]/10 text-[#1F5F96]",
   },
   {
     title: "Clientes",
@@ -154,7 +145,6 @@ export const kpis: KpiCardData[] = [
     change: "+12 novos",
     delta: 12,
     icon: Users,
-    accent: "bg-[#C9A45C]/12 text-[#C9A45C]",
   },
   {
     title: "Oportunidades",
@@ -162,7 +152,6 @@ export const kpis: KpiCardData[] = [
     change: "+14,7%",
     delta: 14.7,
     icon: TrendingUp,
-    accent: "bg-[#18794E]/10 text-[#18794E]",
   },
 ];
 
@@ -182,12 +171,12 @@ export const wealthTrend: WealthPoint[] = [
 ];
 
 export const allocationData: AllocationItem[] = [
-  { name: "Renda fixa", value: 42, color: "#123E68" },
-  { name: "Fundos", value: 23, color: "#1F5F96" },
-  { name: "Ações", value: 15, color: "#C9A45C" },
-  { name: "Previdência", value: 8, color: "#E3C982" },
-  { name: "Alternativos", value: 7, color: "#64748B" },
-  { name: "Caixa", value: 5, color: "#18794E" },
+  { name: "Renda fixa", value: 42 },
+  { name: "Fundos", value: 23 },
+  { name: "Ações", value: 15 },
+  { name: "Previdência", value: 8 },
+  { name: "Alternativos", value: 7 },
+  { name: "Caixa", value: 5 },
 ];
 
 export const attentionItems: AttentionItem[] = [
@@ -196,35 +185,30 @@ export const attentionItems: AttentionItem[] = [
     priority: "Alta",
     quantity: 4,
     icon: Users,
-    tone: "bg-[#123E68]/10 text-[#123E68]",
   },
   {
     description: "2 propostas próximas do vencimento",
     priority: "Alta",
     quantity: 2,
     icon: FileText,
-    tone: "bg-[#C9A45C]/15 text-[#C9A45C]",
   },
   {
     description: "3 documentos aguardando assinatura",
     priority: "Média",
     quantity: 3,
     icon: ShieldCheck,
-    tone: "bg-[#1F5F96]/10 text-[#1F5F96]",
   },
   {
     description: "1 oportunidade sem movimentação",
     priority: "Média",
     quantity: 1,
     icon: TrendingUp,
-    tone: "bg-[#64748B]/10 text-[#64748B]",
   },
   {
     description: "2 tarefas em atraso",
     priority: "Baixa",
     quantity: 2,
     icon: FolderKanban,
-    tone: "bg-[#18794E]/10 text-[#18794E]",
   },
 ];
 
@@ -236,13 +220,13 @@ export const relationshipSummary: RelationshipSummaryData[] = [
 ];
 
 export const pipelineStages: PipelineStage[] = [
-  { name: "Novo lead", value: "R$ 1,2 mi", tone: "bg-[#123E68]" },
-  { name: "Qualificação", value: "R$ 1,8 mi", tone: "bg-[#1F5F96]" },
-  { name: "Contato", value: "R$ 2,4 mi", tone: "bg-[#C9A45C]" },
-  { name: "Reunião", value: "R$ 3,1 mi", tone: "bg-[#E3C982]" },
-  { name: "Proposta", value: "R$ 4,6 mi", tone: "bg-[#64748B]" },
-  { name: "Negociação", value: "R$ 5,3 mi", tone: "bg-[#18794E]" },
-  { name: "Fechamento", value: "R$ 6,7 mi", tone: "bg-[#071A2D]" },
+  { name: "Novo lead", value: "R$ 1,2 mi" },
+  { name: "Qualificação", value: "R$ 1,8 mi" },
+  { name: "Contato", value: "R$ 2,4 mi" },
+  { name: "Reunião", value: "R$ 3,1 mi" },
+  { name: "Proposta", value: "R$ 4,6 mi" },
+  { name: "Negociação", value: "R$ 5,3 mi" },
+  { name: "Fechamento", value: "R$ 6,7 mi" },
 ];
 
 export const goals: GoalItem[] = [
@@ -251,28 +235,25 @@ export const goals: GoalItem[] = [
     value: "R$ 2,4 mi",
     target: "R$ 3 mi",
     progress: 80,
-    tone: "#123E68",
   },
   {
     label: "Aposentadoria",
     value: "R$ 4,8 mi",
     target: "R$ 6 mi",
     progress: 80,
-    tone: "#1F5F96",
   },
   {
     label: "Expansão patrimonial",
     value: "R$ 7,2 mi",
     target: "R$ 10 mi",
     progress: 72,
-    tone: "#C9A45C",
   },
 ];
 
 export const recentActivities: RecentActivityItem[] = [
-  { title: "Nova oportunidade criada", time: "há 14 min", tone: "bg-[#123E68]" },
-  { title: "Documento enviado para assinatura", time: "há 42 min", tone: "bg-[#1F5F96]" },
-  { title: "Cliente atualizado", time: "há 1h", tone: "bg-[#C9A45C]" },
-  { title: "Nova reunião agendada", time: "há 2h", tone: "bg-[#18794E]" },
-  { title: "Movimentação registrada", time: "há 5h", tone: "bg-[#64748B]" },
+  { title: "Nova oportunidade criada", time: "há 14 min" },
+  { title: "Documento enviado para assinatura", time: "há 42 min" },
+  { title: "Cliente atualizado", time: "há 1h" },
+  { title: "Nova reunião agendada", time: "há 2h" },
+  { title: "Movimentação registrada", time: "há 5h" },
 ];
