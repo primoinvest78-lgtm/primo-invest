@@ -21,7 +21,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
       {navigationGroups.map((group, groupIndex) => (
         <div key={`${group.title ?? "principal"}-${groupIndex}`} className="mb-6 last:mb-0">
           {group.title ? (
-            <p className="mb-2 px-3 text-label font-bold uppercase text-muted-foreground">
+            <p className="mb-2 px-3 text-label font-bold uppercase text-secondary-foreground/60">
               {group.title}
             </p>
           ) : null}
@@ -41,7 +41,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       "text-sm font-semibold transition-colors duration-150",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-nav-active"
-                        : "text-foreground/80 hover:bg-foreground/[0.06] hover:text-foreground",
+                        : "text-secondary-foreground/80 hover:bg-secondary-foreground/[0.06] hover:text-secondary-foreground",
                     ].join(" ")}
                   >
                     <span
@@ -50,7 +50,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                         "transition-colors duration-150",
                         isActive
                           ? "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground"
-                          : "border-border bg-foreground/[0.04] text-muted-foreground group-hover:border-primary/50 group-hover:text-foreground",
+                          : "border-secondary-foreground/15 bg-secondary-foreground/[0.04] text-secondary-foreground/60 group-hover:border-primary/50 group-hover:text-secondary-foreground",
                       ].join(" ")}
                     >
                       <Icon className="h-[17px] w-[17px]" strokeWidth={1.8} />
@@ -64,7 +64,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                           "shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold",
                           isActive
                             ? "border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground"
-                            : "border-border bg-foreground/[0.04] text-muted-foreground",
+                            : "border-secondary-foreground/15 bg-secondary-foreground/[0.04] text-secondary-foreground/60",
                         ].join(" ")}
                       >
                         {item.badge}
@@ -102,8 +102,8 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
       </div>
 
       <div className="min-w-0">
-        <p className="text-label font-bold uppercase text-accent">Primo</p>
-        <p className="mt-0.5 text-[18px] font-bold tracking-[0.12em] text-foreground">
+        <p className="text-label font-bold uppercase text-primary">Primo</p>
+        <p className="mt-0.5 text-[18px] font-bold tracking-[0.12em] text-secondary-foreground">
           INVEST
         </p>
       </div>
@@ -119,8 +119,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen w-full bg-background text-foreground">
       <div className="flex min-h-screen w-full">
         {/* SIDEBAR */}
-        <aside className="hidden w-[272px] shrink-0 flex-col border-r border-border bg-background lg:flex">
-          <div className="flex h-[76px] shrink-0 items-center border-b border-border px-6">
+        <aside className="hidden w-[272px] shrink-0 flex-col border-r border-secondary-foreground/10 bg-secondary lg:flex">
+          <div className="flex h-[76px] shrink-0 items-center border-b border-secondary-foreground/10 px-6">
             <BrandMark />
           </div>
 
@@ -143,16 +143,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="relative flex h-full w-[290px] flex-col border-r border-border bg-background"
+              className="relative flex h-full w-[290px] flex-col border-r border-secondary-foreground/10 bg-secondary"
             >
-              <div className="flex h-[76px] shrink-0 items-center justify-between border-b border-border px-5">
+              <div className="flex h-[76px] shrink-0 items-center justify-between border-b border-secondary-foreground/10 px-5">
                 <BrandMark compact />
 
                 <button
                   type="button"
                   onClick={() => setMobileMenu(false)}
                   aria-label="Fechar menu"
-                  className="rounded-lg p-2 text-foreground"
+                  className="rounded-lg p-2 text-secondary-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>

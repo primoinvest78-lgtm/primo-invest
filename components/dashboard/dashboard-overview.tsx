@@ -66,10 +66,10 @@ export function DashboardOverview() {
       </section>
 
       {/* OPERATIONAL SUMMARY */}
-      <section className="min-w-0 rounded-2xl border border-border bg-secondary p-5 md:p-6">
+      <section className="min-w-0 rounded-2xl border border-secondary-foreground/10 bg-secondary p-5 md:p-6">
         <div className="flex min-w-0 flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
-            <p className="text-label font-bold uppercase text-accent">Resumo operacional</p>
+            <p className="text-label font-bold uppercase text-primary">Resumo operacional</p>
 
             <h2 className="mt-2 text-h2 font-bold text-secondary-foreground md:text-[27px]">
               Bom dia, Anderson
@@ -80,10 +80,10 @@ export function DashboardOverview() {
             </p>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-secondary-foreground/15 bg-background px-4 py-2.5 text-xs font-semibold text-secondary-foreground md:self-center">
+          <div className="flex shrink-0 items-center gap-2 self-start rounded-full border border-border bg-background px-4 py-2.5 text-xs font-semibold text-foreground md:self-center">
             <span className="h-2 w-2 shrink-0 rounded-full bg-success" />
             <span>Ambiente: Produção</span>
-            <ChevronDown className="h-4 w-4 text-secondary-foreground/60" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
       </section>

@@ -19,7 +19,7 @@ export function DashboardHeader({
   const isLight = theme === "light";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-secondary-foreground/10 bg-secondary/95 backdrop-blur-md">
       <div className="flex min-h-[76px] items-center gap-3 px-4 md:px-6 xl:px-8">
         <button
           type="button"
@@ -31,11 +31,11 @@ export function DashboardHeader({
         </button>
 
         <div className="hidden min-w-0 shrink-0 lg:block">
-          <p className="text-label font-bold uppercase text-accent">
+          <p className="text-label font-bold uppercase text-primary">
             Primo Invest
           </p>
 
-          <h2 className="mt-1 text-[15px] font-semibold text-foreground">
+          <h2 className="mt-1 text-[15px] font-semibold text-secondary-foreground">
             Dashboard executivo
           </h2>
         </div>

@@ -40,7 +40,7 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
             <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Total
             </div>
-            <div className="mt-1 text-xl font-bold tracking-[-0.04em] text-foreground">
+            <div className="mt-1 font-heading text-xl font-bold tracking-[-0.04em] text-foreground">
               {total}%
             </div>
           </div>

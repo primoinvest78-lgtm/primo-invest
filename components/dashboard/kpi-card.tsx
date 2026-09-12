@@ -34,10 +34,10 @@ export function KpiCard({ title, value, change, delta, icon: Icon }: KpiCardProp
             {title}
           </p>
 
-          <p className="mt-3 truncate text-kpi font-bold text-foreground">{value}</p>
+          <p className="mt-3 truncate text-kpi font-heading font-bold text-foreground">{value}</p>
         </div>
 
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-accent transition-all duration-200 group-hover:border-primary/45 group-hover:bg-secondary group-hover:text-primary-foreground">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-accent transition-all duration-200 group-hover:border-primary/45 group-hover:bg-secondary group-hover:text-secondary-foreground">
           <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
         </div>
       </div>
