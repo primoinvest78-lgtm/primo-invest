@@ -8,17 +8,17 @@ export default function DocumentosPage() {
       subtitle="Controle documental institucional"
       context="Acompanhamento de documentos, cofre digital e fluxo de assinaturas e validações."
     >
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Total</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">428</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Total</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">428</h2>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Pendentes</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">3</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Pendentes</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">3</h2>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Assinaturas</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">14</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Assinaturas</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">14</h2>
       </div>
     </ExecutivePage>
   );

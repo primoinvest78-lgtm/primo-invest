@@ -8,17 +8,17 @@ export default function InteligenciaPage() {
       subtitle="Insights e sinais de mercado"
       context="Painel executivo de indicadores, inteligência estratégica e leitura de oportunidades em tempo real."
     >
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Sinais ativos</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">14</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Sinais ativos</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">14</h2>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Indicadores</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">92%</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Indicadores</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">92%</h2>
       </div>
-      <div className="rounded-2xl border border-white/10 bg-[#122b43] p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Foco</p>
-        <h2 className="mt-3 text-3xl font-bold text-white">Patrimônio</h2>
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <p className="text-label font-bold uppercase text-muted-foreground">Foco</p>
+        <h2 className="mt-3 text-3xl font-bold text-foreground">Patrimônio</h2>
       </div>
     </ExecutivePage>
   );
