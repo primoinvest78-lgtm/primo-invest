@@ -1,11 +1,16 @@
-import { TasksBoard } from "@/components/tasks/tasks-board";
-import { getMyTasks } from "@/lib/data/tasks";
+import { TaskCreateDialog } from "@/components/tasks/task-create-dialog";
+import { TasksView } from "@/components/tasks/tasks-view";
+import { getTaskFormOptions, listTasks } from "@/lib/data/tasks";
 import { requireActiveMembership } from "@/lib/supabase/session";
+import { isTaskOpen } from "@/lib/utils/task-helpers";
 
 export default async function TarefasPage() {
-  const { organizationId, userId } = await requireActiveMembership();
-  const tasks = await getMyTasks(organizationId, userId);
-  const total = tasks.overdue.length + tasks.today.length + tasks.upcoming.length;
+  const { organizationId } = await requireActiveMembership();
+  const [tasks, options] = await Promise.all([
+    listTasks(organizationId),
+    getTaskFormOptions(organizationId),
+  ]);
+  const totalOpen = tasks.filter((t) => isTaskOpen(t.status)).length;
 
   return (
     <div className="space-y-6">
@@ -13,16 +18,18 @@ export default async function TarefasPage() {
         <div className="min-w-0">
           <p className="text-label font-bold uppercase text-primary">Operação</p>
           <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
-            Minhas Tarefas
+            Tarefas
           </h1>
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
-            {total} {total === 1 ? "tarefa pendente" : "tarefas pendentes"} — atrasadas primeiro,
+            {totalOpen} {totalOpen === 1 ? "tarefa aberta" : "tarefas abertas"} — atrasadas primeiro,
             depois hoje e os próximos dias.
           </p>
         </div>
+
+        <TaskCreateDialog options={options} />
       </section>
 
-      <TasksBoard tasks={tasks} />
+      <TasksView tasks={tasks} options={options} />
     </div>
   );
 }
