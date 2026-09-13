@@ -47,7 +47,7 @@ export function DashboardHeader({
             Primo Invest
           </p>
 
-          <h2 className="mt-1 text-[15px] font-semibold text-secondary-foreground">
+          <h2 className="mt-1 text-[15px] font-semibold text-white/80">
             Dashboard executivo
           </h2>
         </div>
