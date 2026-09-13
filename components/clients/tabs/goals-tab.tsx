@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import type { ClientProfile } from "@/lib/data/clients";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -21,9 +23,10 @@ export function GoalsTab({ client }: { client: ClientProfile }) {
           : 0;
 
         return (
-          <div
+          <Link
             key={goal.id}
-            className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5"
+            href={`/patrimonio/metas/${goal.id}`}
+            className="card-premium block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -70,7 +73,7 @@ export function GoalsTab({ client }: { client: ClientProfile }) {
                 ))}
               </div>
             ) : null}
-          </div>
+          </Link>
         );
       })}
     </div>

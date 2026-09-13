@@ -49,7 +49,7 @@ export type DashboardData = {
   attentionItems: DashboardAttentionItem[];
   relationshipSummary: { label: string; value: string }[];
   pipelineStages: { name: string; value: string }[];
-  goals: { label: string; value: string; target: string; progress: number }[];
+  goals: { id: string; label: string; value: string; target: string; progress: number }[];
   recentActivities: { title: string; time: string }[];
 };
 
@@ -189,6 +189,7 @@ export async function getDashboardData(
   }));
 
   const goals = overview.goals.slice(0, 4).map((goal) => ({
+    id: goal.id,
     label: goal.name,
     value: formatCurrencyBRL(goal.currentAmount),
     target: formatCurrencyBRL(goal.targetAmount),

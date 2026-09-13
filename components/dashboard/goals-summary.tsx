@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import type { GoalItem } from "@/lib/mock/dashboard";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
-export function GoalsSummary({ items }: { items: GoalItem[] }) {
+export function GoalsSummary({ items }: { items: (GoalItem & { id?: string })[] }) {
   return (
     <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-5">
@@ -20,12 +21,11 @@ export function GoalsSummary({ items }: { items: GoalItem[] }) {
         {items.map((item, index) => {
           const progress = Math.min(Math.max(item.progress, 0), 100);
           const progressColor = CHART_SEQUENCE[index % CHART_SEQUENCE.length];
+          const cardClassName =
+            "block rounded-xl border border-border bg-muted/60 p-3.5 transition-colors duration-150 hover:border-primary/40 hover:bg-muted";
 
-          return (
-            <div
-              key={item.label}
-              className="rounded-xl border border-border bg-muted/60 p-3.5 transition-colors duration-150 hover:border-primary/40 hover:bg-muted"
-            >
+          const content = (
+            <>
               <div className="flex min-w-0 items-center justify-between gap-4">
                 <span className="min-w-0 truncate text-sm font-semibold text-foreground">
                   {item.label}
@@ -51,6 +51,16 @@ export function GoalsSummary({ items }: { items: GoalItem[] }) {
                   {progress}% concluído
                 </span>
               </div>
+            </>
+          );
+
+          return item.id ? (
+            <Link key={item.label} href={`/patrimonio/metas/${item.id}`} className={cardClassName}>
+              {content}
+            </Link>
+          ) : (
+            <div key={item.label} className={cardClassName}>
+              {content}
             </div>
           );
         })}

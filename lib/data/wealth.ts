@@ -574,6 +574,15 @@ export async function getInvestmentsDetail(organizationId: string): Promise<Hold
   }));
 }
 
+export type GoalAccountLink = {
+  accountId: string;
+  accountName: string | null;
+  accountType: string | null;
+  institutionName: string | null;
+  allocationPercentage: number | null;
+  balance: number;
+};
+
 export type GoalDetail = {
   id: string;
   name: string;
@@ -583,8 +592,14 @@ export type GoalDetail = {
   targetDate: string | null;
   priority: string;
   status: string;
+  createdAt: string;
+  clientId: string | null;
   clientName: string | null;
-  accounts: { accountName: string | null; allocationPercentage: number | null }[];
+  accounts: GoalAccountLink[];
+  /** Soma das transações do tipo "buy" (aporte de capital real) nas
+   * contas vinculadas à meta — nunca inclui dividendo/juros (retorno,
+   * não aporte novo) nem saída (venda/taxa/resgate). */
+  contributedTotal: number;
 };
 
 export async function getGoalsDetail(organizationId: string): Promise<GoalDetail[]> {
@@ -593,9 +608,12 @@ export async function getGoalsDetail(organizationId: string): Promise<GoalDetail
   const { data, error } = await supabase
     .from("wealth_goals")
     .select(
-      `id, name, goal_type, target_amount, current_amount, target_date, priority, status,
-       client:clients(full_name),
-       wealth_goal_accounts(allocation_percentage, financial_accounts(account_name))`,
+      `id, name, goal_type, target_amount, current_amount, target_date, priority, status, created_at,
+       client:clients(id, full_name),
+       wealth_goal_accounts(
+         allocation_percentage,
+         financial_accounts(id, account_name, account_type, institution_name, holdings(valuation))
+       )`,
     )
     .eq("organization_id", organizationId)
     .order("target_date");
@@ -611,29 +629,135 @@ export async function getGoalsDetail(organizationId: string): Promise<GoalDetail
     target_date: string | null;
     priority: string;
     status: string;
-    client: { full_name: string } | null;
+    created_at: string;
+    client: { id: string; full_name: string } | null;
     wealth_goal_accounts: {
       allocation_percentage: number | null;
-      financial_accounts: { account_name: string | null } | null;
+      financial_accounts: {
+        id: string;
+        account_name: string | null;
+        account_type: string | null;
+        institution_name: string | null;
+        holdings: { valuation: number | null }[];
+      } | null;
     }[];
   };
   const rows = (data ?? []) as unknown as Raw[];
 
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    goalType: row.goal_type,
-    targetAmount: row.target_amount,
-    currentAmount: row.current_amount,
-    targetDate: row.target_date,
-    priority: row.priority,
-    status: row.status,
-    clientName: row.client?.full_name ?? null,
-    accounts: (row.wealth_goal_accounts ?? []).map((wga) => ({
-      accountName: wga.financial_accounts?.account_name ?? null,
-      allocationPercentage: wga.allocation_percentage,
-    })),
-  }));
+  const allAccountIds = Array.from(
+    new Set(
+      rows.flatMap((row) =>
+        (row.wealth_goal_accounts ?? [])
+          .map((wga) => wga.financial_accounts?.id)
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ),
+  );
+
+  const contributionByAccount = new Map<string, number>();
+  if (allAccountIds.length > 0) {
+    const { data: buyTransactions, error: txError } = await supabase
+      .from("transactions")
+      .select("financial_account_id, amount")
+      .eq("organization_id", organizationId)
+      .eq("transaction_type", "buy")
+      .in("financial_account_id", allAccountIds);
+
+    if (txError) throw txError;
+
+    for (const t of buyTransactions ?? []) {
+      const key = t.financial_account_id as string;
+      contributionByAccount.set(key, (contributionByAccount.get(key) ?? 0) + Number(t.amount ?? 0));
+    }
+  }
+
+  return rows.map((row) => {
+    const accounts: GoalAccountLink[] = (row.wealth_goal_accounts ?? [])
+      .filter((wga) => wga.financial_accounts)
+      .map((wga) => {
+        const account = wga.financial_accounts!;
+        return {
+          accountId: account.id,
+          accountName: account.account_name,
+          accountType: account.account_type,
+          institutionName: account.institution_name,
+          allocationPercentage: wga.allocation_percentage,
+          balance: (account.holdings ?? []).reduce((sum, h) => sum + Number(h.valuation ?? 0), 0),
+        };
+      });
+
+    const contributedTotal = accounts.reduce(
+      (sum, a) => sum + (contributionByAccount.get(a.accountId) ?? 0),
+      0,
+    );
+
+    return {
+      id: row.id,
+      name: row.name,
+      goalType: row.goal_type,
+      targetAmount: row.target_amount,
+      currentAmount: row.current_amount,
+      targetDate: row.target_date,
+      priority: row.priority,
+      status: row.status,
+      createdAt: row.created_at,
+      clientId: row.client?.id ?? null,
+      clientName: row.client?.full_name ?? null,
+      accounts,
+      contributedTotal,
+    };
+  });
+}
+
+export type GoalDetailSingle = GoalDetail;
+
+export async function getGoalDetail(
+  organizationId: string,
+  goalId: string,
+): Promise<GoalDetail | null> {
+  const goals = await getGoalsDetail(organizationId);
+  return goals.find((g) => g.id === goalId) ?? null;
+}
+
+/**
+ * Evolução dos aportes (transações "buy") nas contas vinculadas à
+ * meta, acumulado por mês. É uma aproximação honesta de "quanto foi
+ * aportado ao longo do tempo" — não é a valorização de mercado da
+ * posição (essa exigiria snapshots históricos de valuation, que o
+ * schema atual não guarda). Sem transações suficientes, retorna vazio.
+ */
+export async function getGoalContributionHistory(
+  organizationId: string,
+  goal: Pick<GoalDetail, "accounts">,
+): Promise<WealthHistoryPoint[]> {
+  const accountIds = goal.accounts.map((a) => a.accountId);
+  if (accountIds.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("amount, transaction_date")
+    .eq("organization_id", organizationId)
+    .eq("transaction_type", "buy")
+    .in("financial_account_id", accountIds)
+    .order("transaction_date", { ascending: true });
+
+  if (error) throw error;
+  if (!data || data.length === 0) return [];
+
+  const monthly = new Map<string, number>();
+  for (const t of data) {
+    const month = String(t.transaction_date).slice(0, 7);
+    monthly.set(month, (monthly.get(month) ?? 0) + Number(t.amount ?? 0));
+  }
+
+  let cumulative = 0;
+  return Array.from(monthly.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, value]) => {
+      cumulative += value;
+      return { month, value: cumulative };
+    });
 }
 
 export type LiabilityDetail = {
