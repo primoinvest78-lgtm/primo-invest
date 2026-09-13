@@ -1,6 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-import { AlarmClock, BriefcaseBusiness, FolderKanban, Landmark, TrendingUp, UserX, Users } from "lucide-react";
-
 import { listLeads } from "@/lib/data/leads";
 import { listOpportunitiesByStage } from "@/lib/data/opportunities";
 import { listTasks } from "@/lib/data/tasks";
@@ -12,19 +9,36 @@ import { computeOpportunityPriorities, isOpenOpportunity } from "@/lib/utils/opp
 import { classifyTaskBucket, isTaskOpen } from "@/lib/utils/task-helpers";
 import type { WealthHistoryPoint } from "@/lib/data/wealth";
 
+/**
+ * Componentes de ícone (Lucide) não são serializáveis pela fronteira
+ * Server -> Client Component do React — passá-los direto num objeto
+ * de dado buscado no servidor derruba a página em produção (React
+ * error #441). Por isso o dado do servidor carrega só a chave; quem
+ * resolve a chave pro componente real é o Client Component que
+ * consome esse dado (ver DASHBOARD_ICONS em dashboard-overview.tsx).
+ */
+export type DashboardIconKey =
+  | "landmark"
+  | "briefcase"
+  | "users"
+  | "trending-up"
+  | "folder-kanban"
+  | "user-x"
+  | "alarm-clock";
+
 export type DashboardKpi = {
   title: string;
   value: string;
   change: string | null;
   delta: number | null;
-  icon: LucideIcon;
+  icon: DashboardIconKey;
 };
 
 export type DashboardAttentionItem = {
   description: string;
   priority: "Alta" | "Média" | "Baixa";
   quantity: number;
-  icon: LucideIcon;
+  icon: DashboardIconKey;
 };
 
 export type DashboardData = {
@@ -87,28 +101,28 @@ export async function getDashboardData(
       value: formatCurrencyBRL(overview.netWorth),
       change: wealthDelta?.change ?? null,
       delta: wealthDelta?.delta ?? null,
-      icon: Landmark,
+      icon: "landmark",
     },
     {
       title: "Investimentos sob gestão",
       value: formatCurrencyBRL(overview.investmentsTotal),
       change: null,
       delta: null,
-      icon: BriefcaseBusiness,
+      icon: "briefcase",
     },
     {
       title: "Clientes",
       value: String(clientsCount),
       change: null,
       delta: null,
-      icon: Users,
+      icon: "users",
     },
     {
       title: "Pipeline de oportunidades",
       value: formatCurrencyBRL(pipelineValue),
       change: null,
       delta: null,
-      icon: TrendingUp,
+      icon: "trending-up",
     },
   ];
 
@@ -133,7 +147,7 @@ export async function getDashboardData(
           description: `${overdueTasks} ${overdueTasks === 1 ? "tarefa atrasada" : "tarefas atrasadas"}`,
           priority: "Alta" as const,
           quantity: overdueTasks,
-          icon: FolderKanban,
+          icon: "folder-kanban",
         }
       : null,
     leadPriorities.noContact.length > 0
@@ -141,7 +155,7 @@ export async function getDashboardData(
           description: `${leadPriorities.noContact.length} ${leadPriorities.noContact.length === 1 ? "lead sem contato" : "leads sem contato"}`,
           priority: "Alta" as const,
           quantity: leadPriorities.noContact.length,
-          icon: UserX,
+          icon: "user-x",
         }
       : null,
     opportunityPriorities.stalled.length > 0
@@ -149,7 +163,7 @@ export async function getDashboardData(
           description: `${opportunityPriorities.stalled.length} ${opportunityPriorities.stalled.length === 1 ? "oportunidade parada" : "oportunidades paradas"}`,
           priority: "Média" as const,
           quantity: opportunityPriorities.stalled.length,
-          icon: TrendingUp,
+          icon: "trending-up",
         }
       : null,
     leadPriorities.stalled.length > 0
@@ -157,7 +171,7 @@ export async function getDashboardData(
           description: `${leadPriorities.stalled.length} ${leadPriorities.stalled.length === 1 ? "lead parado" : "leads parados"}`,
           priority: "Baixa" as const,
           quantity: leadPriorities.stalled.length,
-          icon: AlarmClock,
+          icon: "alarm-clock",
         }
       : null,
   ].filter((item): item is DashboardAttentionItem => item !== null);

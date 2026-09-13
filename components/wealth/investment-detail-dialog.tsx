@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { HoldingDetail } from "@/lib/data/wealth";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -13,11 +14,23 @@ const MOVEMENT_LABEL: Record<string, string> = {
   fee: "Taxa",
 };
 
-function Field({ label, value }: { label: string; value: string | null | undefined }) {
+function Field({
+  label,
+  value,
+  animate = false,
+  valueClassName,
+}: {
+  label: string;
+  value: string | null | undefined;
+  animate?: boolean;
+  valueClassName?: string;
+}) {
   return (
     <div>
       <p className="text-label font-bold uppercase text-card-beige-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-medium text-foreground">{value ?? "—"}</p>
+      <p className={["mt-1 text-sm font-medium", valueClassName ?? "text-foreground"].join(" ")}>
+        {animate && value ? <AnimatedNumber value={value} /> : value ?? "—"}
+      </p>
     </div>
   );
 }
@@ -46,13 +59,19 @@ export function InvestmentDetailDialog({
                 <Field label="Categoria" value={holding.productType} />
                 <Field label="Instituição" value={holding.institutionName} />
                 <Field label="Conta" value={holding.accountName} />
-                <Field label="Quantidade" value={String(holding.quantity)} />
-                <Field label="Valor atual" value={formatCurrencyBRL(holding.valuation)} />
-                <Field label="Custo" value={cost !== null ? formatCurrencyBRL(cost) : null} />
-                <Field label="Resultado" value={gainLoss !== null ? formatCurrencyBRL(gainLoss) : null} />
+                <Field label="Quantidade" value={String(holding.quantity)} animate />
+                <Field label="Valor atual" value={formatCurrencyBRL(holding.valuation)} animate />
+                <Field label="Custo" value={cost !== null ? formatCurrencyBRL(cost) : null} animate />
+                <Field
+                  label="Resultado"
+                  value={gainLoss !== null ? formatCurrencyBRL(gainLoss) : null}
+                  valueClassName={gainLoss !== null && gainLoss < 0 ? "text-destructive" : "text-foreground"}
+                  animate
+                />
                 <Field
                   label="Rentabilidade"
                   value={gainLossPct !== null ? `${gainLossPct >= 0 ? "+" : ""}${gainLossPct.toFixed(1)}%` : null}
+                  valueClassName={gainLossPct !== null && gainLossPct < 0 ? "text-destructive" : "text-primary"}
                 />
                 <Field label="Posição em" value={formatDate(holding.asOfDate)} />
               </div>

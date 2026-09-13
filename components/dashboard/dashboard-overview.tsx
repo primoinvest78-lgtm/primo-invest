@@ -1,10 +1,36 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import {
+  AlarmClock,
+  BriefcaseBusiness,
+  ChevronDown,
+  FolderKanban,
+  Landmark,
+  TrendingUp,
+  UserX,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { useState } from "react";
 
-import type { DashboardData } from "@/lib/data/dashboard";
+import type { DashboardData, DashboardIconKey } from "@/lib/data/dashboard";
 import { formatMonthLabel } from "@/lib/utils/format";
+
+/**
+ * Componentes de ícone não atravessam a fronteira Server -> Client
+ * Component (React error #441) — por isso o dado do servidor carrega
+ * só a chave (DashboardIconKey) e esse mapa resolve pro componente
+ * real aqui, já do lado client.
+ */
+const DASHBOARD_ICONS: Record<DashboardIconKey, LucideIcon> = {
+  landmark: Landmark,
+  briefcase: BriefcaseBusiness,
+  users: Users,
+  "trending-up": TrendingUp,
+  "folder-kanban": FolderKanban,
+  "user-x": UserX,
+  "alarm-clock": AlarmClock,
+};
 
 import { AllocationChart } from "./allocation-chart";
 import { AttentionPanel } from "./attention-panel";
@@ -94,7 +120,7 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
               value={kpi.value}
               change={kpi.change}
               delta={kpi.delta}
-              icon={kpi.icon}
+              icon={DASHBOARD_ICONS[kpi.icon]}
               animateValueWithGsap
             />
           </div>
@@ -107,7 +133,9 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
           <WealthChart data={wealthTrend} />
 
           <div className="grid min-w-0 grid-cols-1 gap-6 2xl:grid-cols-2">
-            <AttentionPanel items={data.attentionItems} />
+            <AttentionPanel
+              items={data.attentionItems.map((item) => ({ ...item, icon: DASHBOARD_ICONS[item.icon] }))}
+            />
             <RelationshipSummary items={data.relationshipSummary} />
           </div>
         </div>
