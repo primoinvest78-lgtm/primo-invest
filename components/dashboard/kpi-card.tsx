@@ -1,7 +1,9 @@
 "use client";
 
+import { gsap } from "gsap";
 import { ArrowUpRight, type LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 
 export type KpiCardProps = {
   title: string;
@@ -9,12 +11,53 @@ export type KpiCardProps = {
   change: string;
   delta: number;
   icon: LucideIcon;
+  /**
+   * DEMO — mostra o GSAP em ação animando o valor em contagem crescente.
+   * Só o card "Patrimônio total" usa isso por enquanto (ver
+   * dashboard-overview.tsx), pra validação visual antes de aplicarmos
+   * GSAP em outros lugares.
+   */
+  animateValueWithGsap?: boolean;
 };
 
-export function KpiCard({ title, value, change, delta, icon: Icon }: KpiCardProps) {
+export function KpiCard({
+  title,
+  value,
+  change,
+  delta,
+  icon: Icon,
+  animateValueWithGsap = false,
+}: KpiCardProps) {
   const formattedDelta = `${delta >= 0 ? "+" : ""}${delta
     .toFixed(delta % 1 === 0 ? 0 : 2)
     .replace(".", ",")}%`;
+
+  const valueRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (!animateValueWithGsap || !valueRef.current) return;
+
+    const prefixMatch = value.match(/^[^\d]*/);
+    const prefix = prefixMatch ? prefixMatch[0] : "";
+    const numericTarget = Number(value.replace(/[^\d]/g, ""));
+
+    const counter = { current: 0 };
+    const tween = gsap.to(counter, {
+      current: numericTarget,
+      duration: 1.4,
+      ease: "power2.out",
+      onUpdate: () => {
+        if (!valueRef.current) return;
+        valueRef.current.textContent = `${prefix}${new Intl.NumberFormat("pt-BR").format(
+          Math.round(counter.current),
+        )}`;
+      },
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [animateValueWithGsap, value]);
 
   return (
     <motion.article
@@ -34,7 +77,12 @@ export function KpiCard({ title, value, change, delta, icon: Icon }: KpiCardProp
             {title}
           </p>
 
-          <p className="mt-3 truncate text-kpi font-heading font-bold text-foreground">{value}</p>
+          <p
+            ref={valueRef}
+            className="mt-3 truncate text-kpi font-heading font-bold text-foreground"
+          >
+            {animateValueWithGsap ? `${value.match(/^[^\d]*/)?.[0] ?? ""}0` : value}
+          </p>
         </div>
 
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-background text-accent transition-all duration-200 group-hover:border-primary/45 group-hover:bg-secondary group-hover:text-secondary-foreground">
