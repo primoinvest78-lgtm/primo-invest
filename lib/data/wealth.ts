@@ -21,6 +21,7 @@ export type WealthOverview = {
     maturityDate: string | null;
     clientName: string | null;
   }[];
+  topClients: { name: string; total: number }[];
   goals: {
     id: string;
     name: string;
@@ -131,6 +132,16 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
     clientName: row.client?.full_name ?? null,
   }));
 
+  const topClientsMap = new Map<string, number>();
+  for (const account of accounts) {
+    const name = account.clientName ?? "Sem cliente vinculado";
+    topClientsMap.set(name, (topClientsMap.get(name) ?? 0) + account.balance);
+  }
+  const topClients = Array.from(topClientsMap.entries())
+    .map(([name, total]) => ({ name, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
+
   return {
     totalAssets,
     totalLiabilities,
@@ -139,6 +150,7 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
       productType,
       value,
     })),
+    topClients,
     accounts,
     liabilities,
     goals,

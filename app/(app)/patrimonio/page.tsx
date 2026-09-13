@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { AllocationBar } from "@/components/wealth/allocation-bar";
+import { AllocationPieChart } from "@/components/wealth/allocation-pie-chart";
+import { TopClientsBarChart } from "@/components/wealth/top-clients-bar-chart";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { getWealthOverview } from "@/lib/data/wealth";
@@ -67,7 +69,9 @@ export default async function PatrimonioPage() {
           {wealth.allocation.length === 0 ? (
             <p className="text-body-sm text-card-beige-muted-foreground">Sem posições registradas.</p>
           ) : (
-            <div className="space-y-3">
+            <>
+              <AllocationPieChart data={wealth.allocation} />
+              <div className="mt-2 space-y-3">
               {wealth.allocation.map((item, index) => {
                 const pct = allocationTotal > 0 ? (item.value / allocationTotal) * 100 : 0;
                 const color = CHART_SEQUENCE[index % CHART_SEQUENCE.length];
@@ -82,7 +86,8 @@ export default async function PatrimonioPage() {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </>
           )}
         </ScrollReveal>
 
@@ -120,6 +125,15 @@ export default async function PatrimonioPage() {
           )}
         </ScrollReveal>
       </div>
+
+      <ScrollReveal className="card-premium rounded-2xl p-5 md:p-6">
+        <h3 className="mb-4 text-h2 font-bold text-foreground">Ranking de clientes por patrimônio</h3>
+        {wealth.topClients.length === 0 ? (
+          <p className="text-body-sm text-card-beige-muted-foreground">Sem dados suficientes.</p>
+        ) : (
+          <TopClientsBarChart data={wealth.topClients} />
+        )}
+      </ScrollReveal>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <ScrollReveal className="card-premium rounded-2xl p-5 md:p-6">
