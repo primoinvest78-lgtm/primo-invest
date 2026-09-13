@@ -90,7 +90,7 @@ export function DashboardOverview() {
 
       {/* KPI GRID */}
       <section className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi, index) => (
+        {kpis.map((kpi) => (
           <div key={kpi.title} className="min-w-0">
             <KpiCard
               title={kpi.title}
@@ -98,7 +98,7 @@ export function DashboardOverview() {
               change={kpi.change}
               delta={kpi.delta}
               icon={kpi.icon}
-              animateValueWithGsap={index === 0}
+              animateValueWithGsap
             />
           </div>
         ))}

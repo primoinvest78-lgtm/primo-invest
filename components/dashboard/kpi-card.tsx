@@ -11,12 +11,7 @@ export type KpiCardProps = {
   change: string;
   delta: number;
   icon: LucideIcon;
-  /**
-   * DEMO — mostra o GSAP em ação animando o valor em contagem crescente.
-   * Só o card "Patrimônio total" usa isso por enquanto (ver
-   * dashboard-overview.tsx), pra validação visual antes de aplicarmos
-   * GSAP em outros lugares.
-   */
+  /** Anima o valor em contagem crescente (0 até o valor real) via GSAP. */
   animateValueWithGsap?: boolean;
 };
 
