@@ -1,0 +1,43 @@
+"use client";
+
+import { AlertTriangle, Info, TriangleAlert } from "lucide-react";
+import { motion } from "motion/react";
+
+import type { WealthAlert } from "@/lib/utils/wealth-helpers";
+
+const ALERT_ICON = { danger: AlertTriangle, warning: TriangleAlert, info: Info };
+const ALERT_STYLE = {
+  danger: "border-destructive/40 bg-destructive/10 text-destructive",
+  warning: "border-warning/40 bg-warning/10 text-warning",
+  info: "border-accent/30 bg-accent/10 text-accent",
+};
+
+export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
+  if (alerts.length === 0) return null;
+
+  return (
+    <div className="card-premium rounded-2xl p-5 md:p-6">
+      <h3 className="mb-3 text-h2 font-bold text-foreground">Alertas patrimoniais</h3>
+      <div className="space-y-2">
+        {alerts.map((alert, index) => {
+          const Icon = ALERT_ICON[alert.severity];
+          return (
+            <motion.div
+              key={alert.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, delay: index * 0.04, ease: "easeOut" }}
+              className={[
+                "flex items-start gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium",
+                ALERT_STYLE[alert.severity],
+              ].join(" ")}
+            >
+              <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{alert.message}</span>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
