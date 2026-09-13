@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 
 import { WealthEvolutionChart } from "@/components/wealth/wealth-evolution-chart";
@@ -7,7 +8,15 @@ import type { WealthHistoryPoint } from "@/lib/data/wealth";
 import { formatMonthLabel } from "@/lib/utils/format";
 import { availableWealthPeriods, filterWealthHistoryByPeriod, type WealthPeriodValue } from "@/lib/utils/wealth-period";
 
-export function WealthEvolutionSection({ history }: { history: WealthHistoryPoint[] }) {
+export function WealthEvolutionSection({
+  history,
+  title = "Evolução patrimonial",
+  emptyMessage = "Sem transações suficientes registradas pra montar a evolução patrimonial ao longo do tempo.",
+}: {
+  history: WealthHistoryPoint[];
+  title?: string;
+  emptyMessage?: string;
+}) {
   const periods = useMemo(() => availableWealthPeriods(history), [history]);
   const [period, setPeriod] = useState<WealthPeriodValue>("all");
 
@@ -21,9 +30,14 @@ export function WealthEvolutionSection({ history }: { history: WealthHistoryPoin
   );
 
   return (
-    <div className="card-premium rounded-2xl p-5 md:p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="card-premium rounded-2xl p-5 md:p-6"
+    >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-h2 font-bold text-foreground">Evolução patrimonial</h3>
+        <h3 className="text-h2 font-bold text-foreground">{title}</h3>
         {periods.length > 1 ? (
           <div className="flex gap-1 rounded-xl border border-border bg-card p-1">
             {periods.map((p) => (
@@ -46,12 +60,10 @@ export function WealthEvolutionSection({ history }: { history: WealthHistoryPoin
       </div>
 
       {history.length === 0 ? (
-        <p className="text-body-sm text-card-beige-muted-foreground">
-          Sem transações suficientes registradas pra montar a evolução patrimonial ao longo do tempo.
-        </p>
+        <p className="text-body-sm text-card-beige-muted-foreground">{emptyMessage}</p>
       ) : (
         <WealthEvolutionChart data={filtered} />
       )}
-    </div>
+    </motion.div>
   );
 }

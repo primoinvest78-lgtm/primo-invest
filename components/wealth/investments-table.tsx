@@ -9,81 +9,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { InvestmentDetailDialog } from "@/components/wealth/investment-detail-dialog";
 import type { HoldingDetail } from "@/lib/data/wealth";
 import { formatCurrencyBRL } from "@/lib/utils/format";
+import { computeGainLoss } from "@/lib/utils/investment-helpers";
 
-type SortKey = "value" | "gainLoss";
-
-function computeGainLoss(holding: HoldingDetail) {
-  const avg = Number(holding.averagePrice ?? 0);
-  const current = Number(holding.currentPrice ?? 0);
-  const qty = Number(holding.quantity ?? 0);
-  const gainLoss = avg > 0 ? (current - avg) * qty : null;
-  const gainLossPct = avg > 0 ? ((current - avg) / avg) * 100 : null;
-  return { gainLoss, gainLossPct };
-}
+type SortKey = "value" | "gainLoss" | "name";
 
 export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
-  const [productType, setProductType] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("value");
-
-  const productTypes = useMemo(() => {
-    const set = new Set(holdings.map((h) => h.productType).filter(Boolean) as string[]);
-    return Array.from(set).sort();
-  }, [holdings]);
+  const [selected, setSelected] = useState<HoldingDetail | null>(null);
 
   const rows = useMemo(() => {
-    const filtered = holdings.filter(
-      (h) => productType === "all" || h.productType === productType,
-    );
-    return [...filtered].sort((a, b) => {
-      if (sortKey === "value") {
-        return Number(b.valuation ?? 0) - Number(a.valuation ?? 0);
-      }
+    return [...holdings].sort((a, b) => {
+      if (sortKey === "value") return Number(b.valuation ?? 0) - Number(a.valuation ?? 0);
+      if (sortKey === "name") return (a.productName ?? "").localeCompare(b.productName ?? "");
       return (computeGainLoss(b).gainLoss ?? 0) - (computeGainLoss(a).gainLoss ?? 0);
     });
-  }, [holdings, productType, sortKey]);
+  }, [holdings, sortKey]);
+
+  const total = holdings.reduce((sum, h) => sum + Number(h.valuation ?? 0), 0);
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Select value={productType} onValueChange={(v) => setProductType(v ?? "all")}>
-          <SelectTrigger className="w-full sm:w-[220px]">
-            <SelectValue placeholder="Tipo de produto" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tipos</SelectItem>
-            {productTypes.map((type) => (
-              <SelectItem key={type} value={type}>
-                {type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="text-h2 font-bold text-foreground">Posições</h3>
         <Select value={sortKey} onValueChange={(v) => setSortKey((v as SortKey) ?? "value")}>
-          <SelectTrigger className="w-full sm:w-[220px]">
+          <SelectTrigger className="w-full sm:w-[200px]" size="sm">
             <SelectValue placeholder="Ordenar por" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="value">Maior valor</SelectItem>
             <SelectItem value="gainLoss">Maior ganho/perda</SelectItem>
+            <SelectItem value="name">Nome (A-Z)</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="card-premium overflow-hidden rounded-2xl">
+      <div className="card-premium overflow-x-auto rounded-2xl">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-black/10 bg-black/5 text-left">
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
-                Produto
+                Ativo
               </th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
-                Tipo
+                Categoria
               </th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
-                Conta / Cliente
+                Instituição / Conta
+              </th>
+              <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
+                Cliente
               </th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
                 Quantidade
@@ -94,12 +71,15 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
                 Ganho/Perda
               </th>
+              <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
+                % carteira
+              </th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-body-sm text-card-beige-muted-foreground">
+                <td colSpan={8} className="px-4 py-10 text-center text-body-sm text-card-beige-muted-foreground">
                   Nenhuma posição encontrada.
                 </td>
               </tr>
@@ -107,11 +87,13 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
               rows.map((h) => {
                 const { gainLoss, gainLossPct } = computeGainLoss(h);
                 const positive = (gainLoss ?? 0) >= 0;
+                const pctOfPortfolio = total > 0 ? (Number(h.valuation ?? 0) / total) * 100 : 0;
 
                 return (
                   <tr
                     key={h.id}
-                    className="border-b border-black/10 border-l-2 border-l-transparent last:border-b-0 transition-all duration-200 hover:border-l-primary hover:bg-black/5"
+                    onClick={() => setSelected(h)}
+                    className="cursor-pointer border-b border-black/10 border-l-2 border-l-transparent last:border-b-0 transition-all duration-200 hover:border-l-primary hover:bg-black/5"
                   >
                     <td className="px-4 py-3 font-semibold text-foreground">
                       {h.productName ?? "—"}
@@ -120,7 +102,10 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
                       {h.productType ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-card-beige-muted-foreground">
-                      {h.accountName ?? "—"} {h.clientName ? `· ${h.clientName}` : ""}
+                      {h.institutionName ?? "—"} {h.accountName ? `· ${h.accountName}` : ""}
+                    </td>
+                    <td className="px-4 py-3 text-card-beige-muted-foreground">
+                      {h.clientName ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-foreground">{h.quantity}</td>
                     <td className="px-4 py-3 font-semibold text-foreground">
@@ -135,6 +120,9 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
                         </span>
                       )}
                     </td>
+                    <td className="px-4 py-3 text-card-beige-muted-foreground">
+                      {pctOfPortfolio.toFixed(1)}%
+                    </td>
                   </tr>
                 );
               })
@@ -142,6 +130,8 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
           </tbody>
         </table>
       </div>
+
+      <InvestmentDetailDialog holding={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
