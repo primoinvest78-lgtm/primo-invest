@@ -1,9 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
+import { isLiquidAccountType } from "@/lib/utils/wealth-helpers";
 
 export type WealthOverview = {
+  investmentsTotal: number;
+  consortiumTotal: number;
+  liquidTotal: number;
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
+  lastUpdatedAt: string | null;
   allocation: { productType: string; value: number }[];
   accounts: {
     id: string;
@@ -11,6 +16,7 @@ export type WealthOverview = {
     institutionName: string | null;
     accountType: string;
     balance: number;
+    clientId: string | null;
     clientName: string | null;
   }[];
   liabilities: {
@@ -19,15 +25,18 @@ export type WealthOverview = {
     liabilityType: string | null;
     outstandingAmount: number | null;
     maturityDate: string | null;
+    clientId: string | null;
     clientName: string | null;
   }[];
-  topClients: { name: string; total: number }[];
+  topClients: { id: string | null; name: string; total: number }[];
+  topHoldings: { id: string; name: string; total: number }[];
   goals: {
     id: string;
     name: string;
     targetAmount: number | null;
     currentAmount: number;
     targetDate: string | null;
+    clientId: string | null;
     clientName: string | null;
   }[];
 };
@@ -35,24 +44,29 @@ export type WealthOverview = {
 export async function getWealthOverview(organizationId: string): Promise<WealthOverview> {
   const supabase = await createClient();
 
-  const [accountsRes, liabilitiesRes, goalsRes] = await Promise.all([
+  const [accountsRes, liabilitiesRes, goalsRes, consortiumRes] = await Promise.all([
     supabase
       .from("financial_accounts")
       .select(
         `id, account_name, institution_name, account_type,
-         client:clients(full_name),
-         holdings(valuation, investment_products(product_type))`,
+         client:clients(id, full_name),
+         holdings(id, valuation, as_of_date, investment_products(name, product_type))`,
       )
       .eq("organization_id", organizationId)
       .eq("status", "active"),
     supabase
       .from("liabilities")
-      .select(`id, name, liability_type, outstanding_amount, maturity_date, client:clients(full_name)`)
+      .select(`id, name, liability_type, outstanding_amount, maturity_date, client:clients(id, full_name)`)
       .eq("organization_id", organizationId)
       .eq("status", "active"),
     supabase
       .from("wealth_goals")
-      .select(`id, name, target_amount, current_amount, target_date, client:clients(full_name)`)
+      .select(`id, name, target_amount, current_amount, target_date, client:clients(id, full_name)`)
+      .eq("organization_id", organizationId)
+      .eq("status", "active"),
+    supabase
+      .from("consortium_contracts")
+      .select(`id, credit_amount, client:clients(id, full_name)`)
       .eq("organization_id", organizationId)
       .eq("status", "active"),
   ]);
@@ -60,23 +74,52 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
   if (accountsRes.error) throw accountsRes.error;
   if (liabilitiesRes.error) throw liabilitiesRes.error;
   if (goalsRes.error) throw goalsRes.error;
+  if (consortiumRes.error) throw consortiumRes.error;
 
   type RawAccount = {
     id: string;
     account_name: string | null;
     institution_name: string | null;
     account_type: string;
-    client: { full_name: string } | null;
-    holdings: { valuation: number | null; investment_products: { product_type: string } | null }[];
+    client: { id: string; full_name: string } | null;
+    holdings: {
+      id: string;
+      valuation: number | null;
+      as_of_date: string;
+      investment_products: { name: string; product_type: string } | null;
+    }[];
   };
   const accountRows = (accountsRes.data ?? []) as unknown as RawAccount[];
 
   const allocationMap = new Map<string, number>();
+  const holdingsFlat: { id: string; name: string; total: number }[] = [];
+  let lastUpdatedAt: string | null = null;
+  let liquidTotal = 0;
+
   const accounts = accountRows.map((row) => {
+    const isLiquid = isLiquidAccountType(row.account_type);
+
     const balance = (row.holdings ?? []).reduce((sum, h) => {
       const value = Number(h.valuation ?? 0);
-      const type = h.investment_products?.product_type ?? "Outros";
-      allocationMap.set(type, (allocationMap.get(type) ?? 0) + value);
+
+      if (isLiquid) {
+        liquidTotal += value;
+        allocationMap.set("Liquidez", (allocationMap.get("Liquidez") ?? 0) + value);
+      } else {
+        const type = h.investment_products?.product_type ?? "Outros";
+        allocationMap.set(type, (allocationMap.get(type) ?? 0) + value);
+      }
+
+      if (value > 0) {
+        holdingsFlat.push({
+          id: h.id,
+          name: h.investment_products?.name ?? row.account_name ?? "Ativo",
+          total: value,
+        });
+      }
+
+      if (!lastUpdatedAt || h.as_of_date > lastUpdatedAt) lastUpdatedAt = h.as_of_date;
+
       return sum + value;
     }, 0);
 
@@ -86,11 +129,23 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
       institutionName: row.institution_name,
       accountType: row.account_type,
       balance,
+      clientId: row.client?.id ?? null,
       clientName: row.client?.full_name ?? null,
     };
   });
 
-  const totalAssets = accounts.reduce((sum, a) => sum + a.balance, 0);
+  const investmentsTotal = accounts.reduce((sum, a) => sum + a.balance, 0);
+
+  type RawConsortium = {
+    id: string;
+    credit_amount: number | null;
+    client: { id: string; full_name: string } | null;
+  };
+  const consortiumRows = (consortiumRes.data ?? []) as unknown as RawConsortium[];
+  const consortiumTotal = consortiumRows.reduce((sum, c) => sum + Number(c.credit_amount ?? 0), 0);
+  if (consortiumTotal > 0) allocationMap.set("Consórcio", consortiumTotal);
+
+  const totalAssets = investmentsTotal + consortiumTotal;
 
   type RawLiability = {
     id: string;
@@ -98,7 +153,7 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
     liability_type: string | null;
     outstanding_amount: number | null;
     maturity_date: string | null;
-    client: { full_name: string } | null;
+    client: { id: string; full_name: string } | null;
   };
   const liabilityRows = (liabilitiesRes.data ?? []) as unknown as RawLiability[];
   const liabilities = liabilityRows.map((row) => ({
@@ -107,6 +162,7 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
     liabilityType: row.liability_type,
     outstandingAmount: row.outstanding_amount,
     maturityDate: row.maturity_date,
+    clientId: row.client?.id ?? null,
     clientName: row.client?.full_name ?? null,
   }));
   const totalLiabilities = liabilities.reduce(
@@ -120,7 +176,7 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
     target_amount: number | null;
     current_amount: number;
     target_date: string | null;
-    client: { full_name: string } | null;
+    client: { id: string; full_name: string } | null;
   };
   const goalRows = (goalsRes.data ?? []) as unknown as RawGoal[];
   const goals = goalRows.map((row) => ({
@@ -129,32 +185,91 @@ export async function getWealthOverview(organizationId: string): Promise<WealthO
     targetAmount: row.target_amount,
     currentAmount: row.current_amount,
     targetDate: row.target_date,
+    clientId: row.client?.id ?? null,
     clientName: row.client?.full_name ?? null,
   }));
 
-  const topClientsMap = new Map<string, number>();
+  const topClientsMap = new Map<string, { id: string | null; total: number }>();
   for (const account of accounts) {
     const name = account.clientName ?? "Sem cliente vinculado";
-    topClientsMap.set(name, (topClientsMap.get(name) ?? 0) + account.balance);
+    const existing = topClientsMap.get(name);
+    topClientsMap.set(name, {
+      id: account.clientId,
+      total: (existing?.total ?? 0) + account.balance,
+    });
   }
   const topClients = Array.from(topClientsMap.entries())
-    .map(([name, total]) => ({ name, total }))
+    .map(([name, { id, total }]) => ({ id, name, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 8);
+
+  const topHoldings = [...holdingsFlat]
     .sort((a, b) => b.total - a.total)
     .slice(0, 8);
 
   return {
+    investmentsTotal,
+    consortiumTotal,
+    liquidTotal,
     totalAssets,
     totalLiabilities,
     netWorth: totalAssets - totalLiabilities,
+    lastUpdatedAt,
     allocation: Array.from(allocationMap.entries()).map(([productType, value]) => ({
       productType,
       value,
     })),
     topClients,
+    topHoldings,
     accounts,
     liabilities,
     goals,
   };
+}
+
+export type WealthHistoryPoint = { month: string; value: number };
+
+/**
+ * Evolução patrimonial da organização inteira, derivada de
+ * transactions reais (soma acumulada por mês, todas as contas). Sem
+ * transactions suficientes, retorna array vazio — a UI mostra estado
+ * vazio, nunca preenche com número inventado.
+ */
+export async function getWealthHistory(organizationId: string): Promise<WealthHistoryPoint[]> {
+  const supabase = await createClient();
+
+  const { data: accounts, error: accountsError } = await supabase
+    .from("financial_accounts")
+    .select("id")
+    .eq("organization_id", organizationId);
+
+  if (accountsError) throw accountsError;
+  const accountIds = (accounts ?? []).map((a) => a.id);
+  if (accountIds.length === 0) return [];
+
+  const { data: transactions, error } = await supabase
+    .from("transactions")
+    .select("amount, transaction_date")
+    .eq("organization_id", organizationId)
+    .in("financial_account_id", accountIds)
+    .order("transaction_date", { ascending: true });
+
+  if (error) throw error;
+  if (!transactions || transactions.length === 0) return [];
+
+  const monthly = new Map<string, number>();
+  for (const t of transactions) {
+    const month = String(t.transaction_date).slice(0, 7);
+    monthly.set(month, (monthly.get(month) ?? 0) + Number(t.amount ?? 0));
+  }
+
+  let cumulative = 0;
+  return Array.from(monthly.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, value]) => {
+      cumulative += value;
+      return { month, value: cumulative };
+    });
 }
 
 export type AccountDetail = {
