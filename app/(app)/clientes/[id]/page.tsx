@@ -36,7 +36,7 @@ export default async function ClientProfilePage({
         <NewTaskDialog clientId={client.id} />
       </section>
 
-      <ClientProfileTabs client={client} />
+      <ClientProfileTabs client={client} organizationId={organizationId} />
     </div>
   );
 }

@@ -1,0 +1,109 @@
+"use client";
+
+import { FileText, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { recordClientDocument } from "@/lib/actions/documents";
+import { createClient } from "@/lib/supabase/client";
+import type { ClientProfile } from "@/lib/data/clients";
+import { formatDate } from "@/lib/utils/format";
+
+function formatBytes(bytes: number | null): string {
+  if (!bytes) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export function DocumentsTab({
+  client,
+  organizationId,
+}: {
+  client: ClientProfile;
+  organizationId: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const storagePath = `${organizationId}/${client.id}/${Date.now()}-${file.name}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("documents")
+        .upload(storagePath, file);
+
+      if (uploadError) throw uploadError;
+
+      await recordClientDocument({
+        clientId: client.id,
+        name: file.name,
+        documentType: file.type || "outro",
+        storagePath,
+        fileSize: file.size,
+        mimeType: file.type,
+      });
+    } catch {
+      setError("Não foi possível enviar o documento. Tente novamente.");
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  return (
+    <div className="card-premium rounded-2xl p-5 md:p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-h2 font-bold text-foreground">Documentos</h3>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          <Upload className="h-3.5 w-3.5" />
+          {uploading ? "Enviando..." : "Enviar documento"}
+        </Button>
+        <input ref={inputRef} type="file" className="hidden" onChange={handleFileChange} />
+      </div>
+
+      {error ? <p className="mb-3 text-xs font-medium text-destructive">{error}</p> : null}
+
+      {client.documents.length === 0 ? (
+        <p className="text-body-sm text-card-beige-muted-foreground">
+          Nenhum documento enviado ainda.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {client.documents.map((doc) => (
+            <div
+              key={doc.id}
+              className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
+            >
+              <FileText className="h-4 w-4 shrink-0 text-accent" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">{doc.name}</p>
+                <p className="text-xs text-card-beige-muted-foreground">
+                  {formatDate(doc.created_at)} ·{" "}
+                  {doc.document_versions[0] ? formatBytes(doc.document_versions[0].file_size) : "—"}
+                  {doc.document_versions.length > 1
+                    ? ` · ${doc.document_versions.length} versões`
+                    : ""}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

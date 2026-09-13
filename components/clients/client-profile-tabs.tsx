@@ -1,20 +1,22 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ClientOpportunitiesTab } from "@/components/clients/tabs/client-opportunities-tab";
+import { DocumentsTab } from "@/components/clients/tabs/documents-tab";
+import { GoalsTab } from "@/components/clients/tabs/goals-tab";
 import { HouseholdTab } from "@/components/clients/tabs/household-tab";
 import { OverviewTab } from "@/components/clients/tabs/overview-tab";
+import { RelationshipTab } from "@/components/clients/tabs/relationship-tab";
 import { RiskProfileTab } from "@/components/clients/tabs/risk-profile-tab";
 import type { ClientProfile } from "@/lib/data/clients";
 
-function ComingSoon({ label }: { label: string }) {
-  return (
-    <div className="card-premium rounded-2xl p-8 text-center">
-      <p className="text-body-sm text-card-beige-muted-foreground">{label} — em construção.</p>
-    </div>
-  );
-}
-
-export function ClientProfileTabs({ client }: { client: ClientProfile }) {
+export function ClientProfileTabs({
+  client,
+  organizationId,
+}: {
+  client: ClientProfile;
+  organizationId: string;
+}) {
   return (
     <Tabs defaultValue="overview">
       <TabsList variant="line" className="w-full justify-start overflow-x-auto">
@@ -37,16 +39,16 @@ export function ClientProfileTabs({ client }: { client: ClientProfile }) {
         <RiskProfileTab client={client} />
       </TabsContent>
       <TabsContent value="goals" className="mt-5">
-        <ComingSoon label="Metas Financeiras" />
+        <GoalsTab client={client} />
       </TabsContent>
       <TabsContent value="relationship" className="mt-5">
-        <ComingSoon label="Relacionamento" />
+        <RelationshipTab client={client} />
       </TabsContent>
       <TabsContent value="documents" className="mt-5">
-        <ComingSoon label="Documentos" />
+        <DocumentsTab client={client} organizationId={organizationId} />
       </TabsContent>
       <TabsContent value="opportunities" className="mt-5">
-        <ComingSoon label="Oportunidades" />
+        <ClientOpportunitiesTab client={client} />
       </TabsContent>
     </Tabs>
   );
