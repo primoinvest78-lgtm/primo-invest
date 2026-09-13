@@ -1,10 +1,10 @@
 "use client";
 
-import { FileText, Upload } from "lucide-react";
+import { FileText, Trash2, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { recordClientDocument } from "@/lib/actions/documents";
+import { deleteClientDocument, recordClientDocument } from "@/lib/actions/documents";
 import { createClient } from "@/lib/supabase/client";
 import type { ClientProfile } from "@/lib/data/clients";
 import { formatDate } from "@/lib/utils/format";
@@ -25,7 +25,19 @@ export function DocumentsTab({
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleDelete(doc: ClientProfile["documents"][number]) {
+    if (!window.confirm(`Excluir "${doc.name}"? Essa ação não pode ser desfeita.`)) return;
+
+    setDeletedIds((prev) => new Set(prev).add(doc.id));
+    await deleteClientDocument(
+      doc.id,
+      client.id,
+      doc.document_versions.map((v) => v.storage_path),
+    );
+  }
 
   async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -78,32 +90,45 @@ export function DocumentsTab({
 
       {error ? <p className="mb-3 text-xs font-medium text-destructive">{error}</p> : null}
 
-      {client.documents.length === 0 ? (
-        <p className="text-body-sm text-card-beige-muted-foreground">
-          Nenhum documento enviado ainda.
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {client.documents.map((doc) => (
-            <div
-              key={doc.id}
-              className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
-            >
-              <FileText className="h-4 w-4 shrink-0 text-accent" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{doc.name}</p>
-                <p className="text-xs text-card-beige-muted-foreground">
-                  {formatDate(doc.created_at)} ·{" "}
-                  {doc.document_versions[0] ? formatBytes(doc.document_versions[0].file_size) : "—"}
-                  {doc.document_versions.length > 1
-                    ? ` · ${doc.document_versions.length} versões`
-                    : ""}
-                </p>
+      {(() => {
+        const visibleDocs = client.documents.filter((d) => !deletedIds.has(d.id));
+        return visibleDocs.length === 0 ? (
+          <p className="text-body-sm text-card-beige-muted-foreground">
+            Nenhum documento enviado ainda.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {visibleDocs.map((doc) => (
+              <div
+                key={doc.id}
+                className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
+              >
+                <FileText className="h-4 w-4 shrink-0 text-accent" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{doc.name}</p>
+                  <p className="text-xs text-card-beige-muted-foreground">
+                    {formatDate(doc.created_at)} ·{" "}
+                    {doc.document_versions[0]
+                      ? formatBytes(doc.document_versions[0].file_size)
+                      : "—"}
+                    {doc.document_versions.length > 1
+                      ? ` · ${doc.document_versions.length} versões`
+                      : ""}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Excluir documento"
+                  onClick={() => handleDelete(doc)}
+                  className="shrink-0 text-card-beige-muted-foreground transition-colors hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }

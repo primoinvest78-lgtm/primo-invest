@@ -64,3 +64,22 @@ export async function addHouseholdMember(
 
   revalidatePath(`/clientes/${clientId}`);
 }
+
+/**
+ * Remove o vínculo do membro com o núcleo familiar (household_members).
+ * Não apaga o registro de cliente do membro — só desfaz o vínculo
+ * familiar, já que o membro pode existir como cliente independente.
+ */
+export async function removeHouseholdMember(householdMemberId: string, viewingClientId: string) {
+  await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("household_members")
+    .delete()
+    .eq("id", householdMemberId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${viewingClientId}`);
+}

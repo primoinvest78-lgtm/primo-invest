@@ -1,5 +1,10 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
+
+import { removeHouseholdMember } from "@/lib/actions/household";
 import type { ClientProfile } from "@/lib/data/clients";
 import { formatCurrencyBRL } from "@/lib/utils/format";
 
@@ -12,6 +17,8 @@ function memberWealth(member: NonNullable<ClientProfile["household"]>["household
 }
 
 export function HouseholdTab({ client }: { client: ClientProfile }) {
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
   if (!client.household) {
     return (
       <div className="card-premium rounded-2xl p-8 text-center">
@@ -24,14 +31,18 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
   }
 
   const { household } = client;
-  const consolidatedWealth = household.household_members.reduce(
-    (sum, m) => sum + memberWealth(m),
-    0,
-  );
-  const consolidatedGoals = household.household_members.reduce(
+  const members = household.household_members.filter((m) => !deletedIds.has(m.id));
+  const consolidatedWealth = members.reduce((sum, m) => sum + memberWealth(m), 0);
+  const consolidatedGoals = members.reduce(
     (sum, m) => sum + (m.client?.wealth_goals.length ?? 0),
     0,
   );
+
+  async function handleRemove(memberId: string) {
+    if (!window.confirm("Remover este membro do núcleo familiar?")) return;
+    setDeletedIds((prev) => new Set(prev).add(memberId));
+    await removeHouseholdMember(memberId, client.id);
+  }
 
   return (
     <div className="space-y-5">
@@ -54,9 +65,7 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
             <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
               Membros
             </p>
-            <p className="mt-1 text-lg font-bold text-foreground">
-              {household.household_members.length}
-            </p>
+            <p className="mt-1 text-lg font-bold text-foreground">{members.length}</p>
           </div>
           <div>
             <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
@@ -69,11 +78,11 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
 
       <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Membros</h3>
-        {household.household_members.length === 0 ? (
+        {members.length === 0 ? (
           <p className="text-body-sm text-card-beige-muted-foreground">Nenhum membro cadastrado.</p>
         ) : (
           <div className="space-y-2">
-            {household.household_members.map((member) => (
+            {members.map((member) => (
               <div
                 key={member.id}
                 className="flex items-center justify-between rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
@@ -99,6 +108,14 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
                       Ver perfil
                     </Link>
                   ) : null}
+                  <button
+                    type="button"
+                    aria-label="Remover membro"
+                    onClick={() => handleRemove(member.id)}
+                    className="text-card-beige-muted-foreground transition-colors hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             ))}

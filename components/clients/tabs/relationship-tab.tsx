@@ -1,5 +1,6 @@
 "use client";
 
+import { Pencil, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
-import { createClientInteraction, createClientNote } from "@/lib/actions/client-relationship";
+import {
+  createClientInteraction,
+  createClientNote,
+  deleteClientInteraction,
+  deleteClientNote,
+  updateClientNote,
+} from "@/lib/actions/client-relationship";
+import { deleteTask, updateTask } from "@/lib/actions/tasks";
 import type { ClientProfile } from "@/lib/data/clients";
 import { formatDateTime } from "@/lib/utils/format";
 
@@ -123,16 +131,150 @@ function NewNoteDialog({ clientId }: { clientId: string }) {
   );
 }
 
+function EditNoteDialog({
+  clientId,
+  noteId,
+  title,
+  content,
+}: {
+  clientId: string;
+  noteId: string;
+  title: string;
+  content: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    const form = new FormData(event.currentTarget);
+
+    await updateClientNote(noteId, clientId, {
+      title: String(form.get("title") ?? ""),
+      content: String(form.get("content") ?? ""),
+    });
+
+    setLoading(false);
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={<button type="button" aria-label="Editar nota" />}
+        className="text-card-beige-muted-foreground transition-colors hover:text-accent"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Editar nota</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input name="title" placeholder="Título (opcional)" defaultValue={title} />
+          <Textarea name="content" placeholder="Conteúdo" rows={4} required defaultValue={content} />
+          <DialogFooter>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditTaskDialog({
+  clientId,
+  taskId,
+  title,
+  dueAt,
+  priority,
+}: {
+  clientId: string;
+  taskId: string;
+  title: string;
+  dueAt: string | null;
+  priority: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [priorityValue, setPriorityValue] = useState(priority);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    const form = new FormData(event.currentTarget);
+    const dueAtValue = String(form.get("dueAt") ?? "");
+
+    await updateTask(
+      taskId,
+      {
+        title: String(form.get("title") ?? ""),
+        dueAt: dueAtValue ? new Date(dueAtValue).toISOString() : null,
+        priority: priorityValue,
+      },
+      { clientId },
+    );
+
+    setLoading(false);
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger
+        render={<button type="button" aria-label="Editar tarefa" />}
+        className="text-card-beige-muted-foreground transition-colors hover:text-accent"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Editar tarefa</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input name="title" placeholder="Título" required defaultValue={title} />
+          <Input
+            name="dueAt"
+            type="datetime-local"
+            defaultValue={dueAt ? dueAt.slice(0, 16) : ""}
+          />
+          <Select value={priorityValue} onValueChange={(v) => setPriorityValue(v ?? "normal")}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Prioridade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Baixa</SelectItem>
+              <SelectItem value="normal">Normal</SelectItem>
+              <SelectItem value="high">Alta</SelectItem>
+              <SelectItem value="urgent">Urgente</SelectItem>
+            </SelectContent>
+          </Select>
+          <DialogFooter>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Salvando..." : "Salvar"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 type TimelineEntry = {
   id: string;
   kind: "interaction" | "note" | "task";
   date: string;
   title: string;
   description: string | null;
-  meta?: string;
+  raw: { title: string; content: string } | { title: string; dueAt: string | null; priority: string };
 };
 
 export function RelationshipTab({ client }: { client: ClientProfile }) {
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
   const entries: TimelineEntry[] = [
     ...client.interactions.map((i) => ({
       id: i.id,
@@ -140,6 +282,7 @@ export function RelationshipTab({ client }: { client: ClientProfile }) {
       date: i.occurred_at,
       title: `${INTERACTION_LABEL[i.interaction_type] ?? i.interaction_type}${i.subject ? ` — ${i.subject}` : ""}`,
       description: i.description,
+      raw: { title: "", content: "" },
     })),
     ...client.client_notes.map((n) => ({
       id: n.id,
@@ -147,6 +290,7 @@ export function RelationshipTab({ client }: { client: ClientProfile }) {
       date: n.created_at,
       title: n.title ?? "Nota",
       description: n.content,
+      raw: { title: n.title ?? "", content: n.content },
     })),
     ...client.tasks.map((t) => ({
       id: t.id,
@@ -154,9 +298,20 @@ export function RelationshipTab({ client }: { client: ClientProfile }) {
       date: t.due_at ?? "",
       title: t.title,
       description: t.description,
-      meta: t.status,
+      raw: { title: t.title, dueAt: t.due_at, priority: t.priority },
     })),
-  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+  ]
+    .filter((e) => !deletedIds.has(`${e.kind}-${e.id}`))
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+
+  async function handleDelete(entry: TimelineEntry) {
+    const key = `${entry.kind}-${entry.id}`;
+    setDeletedIds((prev) => new Set(prev).add(key));
+
+    if (entry.kind === "interaction") await deleteClientInteraction(entry.id, client.id);
+    else if (entry.kind === "note") await deleteClientNote(entry.id, client.id);
+    else await deleteTask(entry.id, { clientId: client.id });
+  }
 
   return (
     <div className="card-premium rounded-2xl p-5 md:p-6">
@@ -185,11 +340,38 @@ export function RelationshipTab({ client }: { client: ClientProfile }) {
                   {entry.kind === "task" ? "Tarefa: " : ""}
                   {entry.title}
                 </p>
-                {entry.date ? (
-                  <p className="shrink-0 text-xs font-medium text-card-beige-muted-foreground">
-                    {formatDateTime(entry.date)}
-                  </p>
-                ) : null}
+                <div className="flex shrink-0 items-center gap-2">
+                  {entry.date ? (
+                    <p className="text-xs font-medium text-card-beige-muted-foreground">
+                      {formatDateTime(entry.date)}
+                    </p>
+                  ) : null}
+                  {entry.kind === "note" ? (
+                    <EditNoteDialog
+                      clientId={client.id}
+                      noteId={entry.id}
+                      title={(entry.raw as { title: string; content: string }).title}
+                      content={(entry.raw as { title: string; content: string }).content}
+                    />
+                  ) : null}
+                  {entry.kind === "task" ? (
+                    <EditTaskDialog
+                      clientId={client.id}
+                      taskId={entry.id}
+                      title={(entry.raw as { title: string; dueAt: string | null; priority: string }).title}
+                      dueAt={(entry.raw as { title: string; dueAt: string | null; priority: string }).dueAt}
+                      priority={(entry.raw as { title: string; dueAt: string | null; priority: string }).priority}
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    aria-label="Excluir"
+                    onClick={() => handleDelete(entry)}
+                    className="text-card-beige-muted-foreground transition-colors hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
               {entry.description ? (
                 <p className="mt-1 text-xs text-card-beige-muted-foreground">

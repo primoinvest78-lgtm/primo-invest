@@ -226,6 +226,7 @@ export type ClientProfile = {
     document_versions: {
       id: string;
       version_number: number;
+      storage_path: string;
       file_size: number | null;
       mime_type: string | null;
       created_at: string;

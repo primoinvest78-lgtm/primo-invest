@@ -27,6 +27,55 @@ export async function createClientInteraction(
   revalidatePath(`/clientes/${clientId}`);
 }
 
+export async function deleteClientInteraction(interactionId: string, clientId: string) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("interactions")
+    .delete()
+    .eq("id", interactionId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${clientId}`);
+}
+
+export async function updateClientNote(
+  noteId: string,
+  clientId: string,
+  input: { title: string; content: string },
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("notes")
+    .update({ title: input.title || null, content: input.content })
+    .eq("id", noteId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${clientId}`);
+}
+
+export async function deleteClientNote(noteId: string, clientId: string) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("id", noteId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${clientId}`);
+}
+
 export async function createClientNote(
   clientId: string,
   input: { title: string; content: string },

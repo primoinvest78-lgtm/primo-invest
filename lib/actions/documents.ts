@@ -45,3 +45,27 @@ export async function recordClientDocument(input: {
 
   revalidatePath(`/clientes/${input.clientId}`);
 }
+
+export async function deleteClientDocument(
+  documentId: string,
+  clientId: string,
+  storagePaths: string[],
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  if (storagePaths.length > 0) {
+    const { error: storageError } = await supabase.storage.from("documents").remove(storagePaths);
+    if (storageError) throw storageError;
+  }
+
+  const { error } = await supabase
+    .from("documents")
+    .delete()
+    .eq("id", documentId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${clientId}`);
+}

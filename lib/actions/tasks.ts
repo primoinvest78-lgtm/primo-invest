@@ -51,3 +51,46 @@ export async function createTask(input: {
   if (input.opportunityId) revalidatePath(`/oportunidades/${input.opportunityId}`);
   if (input.leadId) revalidatePath(`/leads/${input.leadId}`);
 }
+
+export async function updateTask(
+  taskId: string,
+  input: { title: string; dueAt: string | null; priority: string },
+  paths: { clientId?: string; opportunityId?: string; leadId?: string } = {},
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("tasks")
+    .update({ title: input.title, due_at: input.dueAt, priority: input.priority })
+    .eq("id", taskId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath("/tarefas");
+  if (paths.clientId) revalidatePath(`/clientes/${paths.clientId}`);
+  if (paths.opportunityId) revalidatePath(`/oportunidades/${paths.opportunityId}`);
+  if (paths.leadId) revalidatePath(`/leads/${paths.leadId}`);
+}
+
+export async function deleteTask(
+  taskId: string,
+  paths: { clientId?: string; opportunityId?: string; leadId?: string } = {},
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("tasks")
+    .delete()
+    .eq("id", taskId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath("/tarefas");
+  if (paths.clientId) revalidatePath(`/clientes/${paths.clientId}`);
+  if (paths.opportunityId) revalidatePath(`/oportunidades/${paths.opportunityId}`);
+  if (paths.leadId) revalidatePath(`/leads/${paths.leadId}`);
+}
