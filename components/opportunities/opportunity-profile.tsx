@@ -260,7 +260,12 @@ export function OpportunityProfileView({
         )}
       </motion.div>
 
-      <div className="card-premium rounded-2xl p-5 md:p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, delay: 0.1, ease: "easeOut" }}
+        className="card-premium rounded-2xl p-5 md:p-6"
+      >
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-h2 font-bold text-foreground">Linha do tempo</h3>
           <NewActivityDialog opportunityId={opportunity.id} />
@@ -274,7 +279,7 @@ export function OpportunityProfileView({
             {sortedActivities.map((activity) => (
               <div
                 key={activity.id}
-                className="rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-colors duration-150 hover:bg-black/10"
+                className="rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
               >
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-foreground">
@@ -293,7 +298,7 @@ export function OpportunityProfileView({
             ))}
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

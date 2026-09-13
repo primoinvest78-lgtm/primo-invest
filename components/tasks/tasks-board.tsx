@@ -46,7 +46,7 @@ function TaskRow({ task, onComplete }: { task: TaskItem; onComplete: (id: string
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: completing ? 0 : 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:bg-black/10"
+      className="flex items-center gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-black/10"
     >
       <button
         type="button"
@@ -87,14 +87,21 @@ function TaskGroup({
   tasks,
   onComplete,
   accent,
+  delay = 0,
 }: {
   title: string;
   tasks: TaskItem[];
   onComplete: (id: string) => void;
   accent?: string;
+  delay?: number;
 }) {
   return (
-    <div className="card-premium rounded-2xl p-5 md:p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay, ease: "easeOut" }}
+      className="card-premium rounded-2xl p-5 md:p-6"
+    >
       <div className="mb-4 flex items-center justify-between">
         <h3 className={["text-h2 font-bold", accent ?? "text-foreground"].join(" ")}>{title}</h3>
         <span className="rounded-full border border-primary/40 bg-primary/15 px-2.5 py-1 text-[11px] font-bold text-foreground">
@@ -110,7 +117,7 @@ function TaskGroup({
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -132,9 +139,15 @@ export function TasksBoard({ tasks }: { tasks: MyTasks }) {
         tasks={state.overdue}
         onComplete={handleComplete}
         accent="text-destructive"
+        delay={0}
       />
-      <TaskGroup title="Hoje" tasks={state.today} onComplete={handleComplete} />
-      <TaskGroup title="Próximos dias" tasks={state.upcoming} onComplete={handleComplete} />
+      <TaskGroup title="Hoje" tasks={state.today} onComplete={handleComplete} delay={0.08} />
+      <TaskGroup
+        title="Próximos dias"
+        tasks={state.upcoming}
+        onComplete={handleComplete}
+        delay={0.16}
+      />
     </div>
   );
 }
