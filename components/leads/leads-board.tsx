@@ -4,18 +4,17 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
 import { updateLeadStatus } from "@/lib/actions/leads";
 import { LEAD_STATUSES } from "@/lib/data/lead-statuses";
 import type { LeadListItem } from "@/lib/data/leads";
 import { formatDate } from "@/lib/utils/format";
 
 const COLUMN_ACCENT: Record<string, string> = {
-  Novo: "border-t-border",
-  Contatado: "border-t-border",
-  Qualificado: "border-t-border",
+  Novo: "border-t-white/25",
+  Contatado: "border-t-white/25",
+  Qualificado: "border-t-white/25",
   Convertido: "border-t-primary",
-  Perdido: "border-t-destructive/50",
+  Perdido: "border-t-destructive/60",
 };
 
 export function LeadsBoard({ leads }: { leads: LeadListItem[] }) {
@@ -47,13 +46,15 @@ export function LeadsBoard({ leads }: { leads: LeadListItem[] }) {
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => handleDrop(status)}
             className={[
-              "flex w-[280px] shrink-0 flex-col rounded-2xl border border-t-2 bg-muted/40 p-3",
-              COLUMN_ACCENT[status] ?? "border-t-border",
+              "flex w-[280px] shrink-0 flex-col rounded-2xl border border-white/10 border-t-2 bg-gradient-to-b from-secondary to-accent p-3 shadow-card-lg",
+              COLUMN_ACCENT[status] ?? "border-t-white/25",
             ].join(" ")}
           >
             <div className="mb-3 flex items-center justify-between px-1">
-              <h3 className="text-label font-bold uppercase text-muted-foreground">{status}</h3>
-              <Badge variant="outline">{columnLeads.length}</Badge>
+              <h3 className="text-label font-bold uppercase text-white/90">{status}</h3>
+              <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[11px] font-bold text-white">
+                {columnLeads.length}
+              </span>
             </div>
 
             <div className="flex min-h-[80px] flex-col gap-2">
@@ -69,31 +70,31 @@ export function LeadsBoard({ leads }: { leads: LeadListItem[] }) {
                   }}
                   draggable
                   onDragStart={() => setDraggingId(lead.id)}
-                  className="cursor-grab rounded-xl border border-border bg-card p-3 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card-hover active:cursor-grabbing"
+                  className="cursor-grab rounded-xl border border-white/15 bg-white/[0.07] p-3 shadow-panel-3d transition-all duration-200 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[0.1] hover:shadow-panel-3d-hover active:cursor-grabbing"
                 >
                   <Link href={`/leads/${lead.id}`} className="block">
-                    <p className="text-sm font-semibold text-foreground hover:text-primary">
+                    <p className="text-sm font-semibold text-white hover:text-primary">
                       {lead.name}
                     </p>
                   </Link>
 
-                  <p className="mt-1 text-xs font-medium uppercase text-muted-foreground">
+                  <p className="mt-1 text-xs font-medium uppercase text-white/55">
                     {lead.source ?? "Origem não informada"}
                   </p>
 
                   {lead.assignedAdvisorName ? (
-                    <p className="mt-2 text-xs font-medium text-foreground">
+                    <p className="mt-2 text-xs font-medium text-white/80">
                       {lead.assignedAdvisorName}
                     </p>
                   ) : null}
 
                   {lead.nextTask ? (
-                    <div className="mt-2 rounded-lg border border-border bg-muted/60 px-2 py-1.5">
-                      <p className="truncate text-xs font-semibold text-foreground">
+                    <div className="mt-2 rounded-lg border border-white/15 bg-black/15 px-2 py-1.5">
+                      <p className="truncate text-xs font-semibold text-white">
                         {lead.nextTask.title}
                       </p>
                       {lead.nextTask.dueAt ? (
-                        <p className="text-[11px] font-medium text-muted-foreground">
+                        <p className="text-[11px] font-medium text-white/60">
                           {formatDate(lead.nextTask.dueAt)}
                         </p>
                       ) : null}

@@ -96,6 +96,15 @@
     0 1px 2px rgba(16, 27, 61, 0.3),
     0 24px 48px -12px rgba(16, 27, 61, 0.55);
 
+  /* Variante do painel 3D pro hover — bisel de luz mais evidente no topo
+     e elevação mais profunda, pra reforçar a sensação de "subir" ao
+     passar o mouse (usado nos cards do kanban de Leads). */
+  --shadow-panel-3d-hover:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(16, 27, 61, 0.35),
+    0 32px 56px -14px rgba(16, 27, 61, 0.65);
+
   /* Layout */
   --sidebar-width: 272px;
   --header-height: 76px;
@@ -196,6 +205,7 @@
   --shadow-card-hover: var(--shadow-card-hover);
   --shadow-card-lg: var(--shadow-card-lg);
   --shadow-panel-3d: var(--shadow-panel-3d);
+  --shadow-panel-3d-hover: var(--shadow-panel-3d-hover);
   --shadow-ring-primary-sm: var(--shadow-ring-primary-sm);
   --shadow-ring-primary-md: var(--shadow-ring-primary-md);
   --shadow-ring-primary-lg: var(--shadow-ring-primary-lg);
