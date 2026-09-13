@@ -272,61 +272,60 @@ export async function getWealthHistory(organizationId: string): Promise<WealthHi
     });
 }
 
+export type AccountHolding = {
+  id: string;
+  productName: string | null;
+  productType: string | null;
+  quantity: number;
+  currentPrice: number | null;
+  valuation: number | null;
+};
+
 export type AccountDetail = {
   id: string;
   accountName: string | null;
   institutionName: string | null;
   accountType: string;
   currency: string;
+  status: string;
+  updatedAt: string | null;
+  clientId: string | null;
   clientName: string | null;
+  holdings: AccountHolding[];
+};
+
+const ACCOUNT_DETAIL_SELECT = `id, account_name, institution_name, account_type, currency, status, updated_at,
+       client:clients(id, full_name),
+       holdings(id, quantity, current_price, valuation, investment_products(name, product_type))`;
+
+type RawAccountDetail = {
+  id: string;
+  account_name: string | null;
+  institution_name: string | null;
+  account_type: string;
+  currency: string;
+  status: string;
+  updated_at: string | null;
+  client: { id: string; full_name: string } | null;
   holdings: {
     id: string;
-    productName: string | null;
-    productType: string | null;
     quantity: number;
-    currentPrice: number | null;
+    current_price: number | null;
     valuation: number | null;
+    investment_products: { name: string; product_type: string } | null;
   }[];
 };
 
-export async function getAccountsDetail(organizationId: string): Promise<AccountDetail[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("financial_accounts")
-    .select(
-      `id, account_name, institution_name, account_type, currency,
-       client:clients(full_name),
-       holdings(id, quantity, current_price, valuation, investment_products(name, product_type))`,
-    )
-    .eq("organization_id", organizationId)
-    .order("account_name");
-
-  if (error) throw error;
-
-  type Raw = {
-    id: string;
-    account_name: string | null;
-    institution_name: string | null;
-    account_type: string;
-    currency: string;
-    client: { full_name: string } | null;
-    holdings: {
-      id: string;
-      quantity: number;
-      current_price: number | null;
-      valuation: number | null;
-      investment_products: { name: string; product_type: string } | null;
-    }[];
-  };
-  const rows = (data ?? []) as unknown as Raw[];
-
-  return rows.map((row) => ({
+function mapAccountDetail(row: RawAccountDetail): AccountDetail {
+  return {
     id: row.id,
     accountName: row.account_name,
     institutionName: row.institution_name,
     accountType: row.account_type,
     currency: row.currency,
+    status: row.status,
+    updatedAt: row.updated_at,
+    clientId: row.client?.id ?? null,
     clientName: row.client?.full_name ?? null,
     holdings: (row.holdings ?? []).map((h) => ({
       id: h.id,
@@ -336,7 +335,130 @@ export async function getAccountsDetail(organizationId: string): Promise<Account
       currentPrice: h.current_price,
       valuation: h.valuation,
     })),
+  };
+}
+
+export async function getAccountsDetail(organizationId: string): Promise<AccountDetail[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("financial_accounts")
+    .select(ACCOUNT_DETAIL_SELECT)
+    .eq("organization_id", organizationId)
+    .order("account_name");
+
+  if (error) throw error;
+
+  const rows = (data ?? []) as unknown as RawAccountDetail[];
+  return rows.map(mapAccountDetail);
+}
+
+export async function getAccountDetail(
+  organizationId: string,
+  accountId: string,
+): Promise<AccountDetail | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("financial_accounts")
+    .select(ACCOUNT_DETAIL_SELECT)
+    .eq("organization_id", organizationId)
+    .eq("id", accountId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  return mapAccountDetail(data as unknown as RawAccountDetail);
+}
+
+export type AccountMovement = {
+  id: string;
+  transactionType: string;
+  quantity: number | null;
+  unitPrice: number | null;
+  amount: number | null;
+  transactionDate: string;
+  description: string | null;
+  productName: string | null;
+};
+
+export async function getAccountMovements(
+  organizationId: string,
+  accountId: string,
+): Promise<AccountMovement[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select(
+      `id, transaction_type, quantity, unit_price, amount, transaction_date, description,
+       investment_products(name)`,
+    )
+    .eq("organization_id", organizationId)
+    .eq("financial_account_id", accountId)
+    .order("transaction_date", { ascending: false });
+
+  if (error) throw error;
+
+  type Raw = {
+    id: string;
+    transaction_type: string;
+    quantity: number | null;
+    unit_price: number | null;
+    amount: number | null;
+    transaction_date: string;
+    description: string | null;
+    investment_products: { name: string } | null;
+  };
+  const rows = (data ?? []) as unknown as Raw[];
+
+  return rows.map((row) => ({
+    id: row.id,
+    transactionType: row.transaction_type,
+    quantity: row.quantity,
+    unitPrice: row.unit_price,
+    amount: row.amount,
+    transactionDate: row.transaction_date,
+    description: row.description,
+    productName: row.investment_products?.name ?? null,
   }));
+}
+
+/**
+ * Evolução do saldo de uma conta específica, derivada das transactions
+ * reais daquela conta. Sem transactions suficientes, retorna array
+ * vazio — nunca preenche histórico artificial.
+ */
+export async function getAccountHistory(
+  organizationId: string,
+  accountId: string,
+): Promise<WealthHistoryPoint[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("amount, transaction_date")
+    .eq("organization_id", organizationId)
+    .eq("financial_account_id", accountId)
+    .order("transaction_date", { ascending: true });
+
+  if (error) throw error;
+  if (!data || data.length === 0) return [];
+
+  const monthly = new Map<string, number>();
+  for (const t of data) {
+    const month = String(t.transaction_date).slice(0, 7);
+    monthly.set(month, (monthly.get(month) ?? 0) + Number(t.amount ?? 0));
+  }
+
+  let cumulative = 0;
+  return Array.from(monthly.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, value]) => {
+      cumulative += value;
+      return { month, value: cumulative };
+    });
 }
 
 export type HoldingDetail = {

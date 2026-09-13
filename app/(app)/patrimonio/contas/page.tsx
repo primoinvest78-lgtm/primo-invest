@@ -1,12 +1,15 @@
-import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { BackLink } from "@/components/ui/back-link";
+import { AccountsView } from "@/components/wealth/accounts-view";
+import { listClients } from "@/lib/data/clients";
 import { getAccountsDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
-import { formatCurrencyBRL } from "@/lib/utils/format";
 
 export default async function ContasPage() {
   const { organizationId } = await requireActiveMembership();
-  const accounts = await getAccountsDetail(organizationId);
+  const [accounts, clients] = await Promise.all([
+    getAccountsDetail(organizationId),
+    listClients(organizationId),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -17,7 +20,8 @@ export default async function ContasPage() {
             Contas
           </h1>
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
-            {accounts.length} {accounts.length === 1 ? "conta" : "contas"} financeiras.
+            Consolidação de contas — {accounts.length} {accounts.length === 1 ? "conta" : "contas"} de
+            clientes.
           </p>
         </div>
 
@@ -31,51 +35,10 @@ export default async function ContasPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {accounts.map((account, index) => {
-            const balance = account.holdings.reduce((s, h) => s + Number(h.valuation ?? 0), 0);
-
-            return (
-              <ScrollReveal
-                key={account.id}
-                delay={Math.min(index * 0.04, 0.2)}
-                className="card-premium overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70 md:p-6"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-bold text-foreground">
-                      {account.accountName ?? account.institutionName ?? "Conta"}
-                    </p>
-                    <p className="text-xs font-medium uppercase text-card-beige-muted-foreground">
-                      {account.accountType} · {account.clientName ?? "—"}
-                    </p>
-                  </div>
-                  <p className="text-h2 font-bold text-foreground">
-                    {formatCurrencyBRL(balance)}
-                  </p>
-                </div>
-
-                {account.holdings.length > 0 ? (
-                  <div className="mt-4 space-y-1.5 border-t border-black/10 pt-4">
-                    {account.holdings.map((h) => (
-                      <div key={h.id} className="flex items-center justify-between gap-2 text-sm">
-                        <span className="truncate text-foreground">
-                          {h.productName ?? "—"}{" "}
-                          <span className="text-card-beige-muted-foreground">
-                            ({h.productType ?? "—"})
-                          </span>
-                        </span>
-                        <span className="shrink-0 font-semibold text-foreground">
-                          {formatCurrencyBRL(h.valuation)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </ScrollReveal>
-            );
-          })}
-        </div>
+        <AccountsView
+          accounts={accounts}
+          clients={clients.map((c) => ({ id: c.id, fullName: c.fullName }))}
+        />
       )}
     </div>
   );
