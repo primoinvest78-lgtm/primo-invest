@@ -24,6 +24,7 @@ import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
 import { createClientInteraction } from "@/lib/actions/client-relationship";
 import { addHouseholdMember } from "@/lib/actions/household";
 import { createOpportunityForClient } from "@/lib/actions/opportunities";
+import { OPPORTUNITY_TYPES } from "@/lib/utils/opportunity-helpers";
 
 function QuickContactDialog({ clientId }: { clientId: string }) {
   const [open, setOpen] = useState(false);
@@ -109,11 +110,11 @@ function QuickOpportunityDialog({ clientId }: { clientId: string }) {
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="investimento">Investimento</SelectItem>
-              <SelectItem value="aporte">Aporte</SelectItem>
-              <SelectItem value="consorcio">Consórcio</SelectItem>
-              <SelectItem value="planejamento">Planejamento</SelectItem>
-              <SelectItem value="outro">Outro produto</SelectItem>
+              {OPPORTUNITY_TYPES.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <Input name="estimatedValue" type="number" step="0.01" placeholder="Valor estimado" />

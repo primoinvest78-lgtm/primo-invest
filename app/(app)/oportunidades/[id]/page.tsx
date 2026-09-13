@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { OpportunityProfileView } from "@/components/opportunities/opportunity-profile";
-import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
 import { BackLink } from "@/components/ui/back-link";
-import { getOpportunityProfile } from "@/lib/data/opportunities";
+import { getClientSummaryForOpportunity, getOpportunityProfile } from "@/lib/data/opportunities";
 import { createClient } from "@/lib/supabase/server";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -29,6 +28,10 @@ export default async function OpportunityProfilePage({
   const wonStageId = stages?.find((s) => s.stage_key === "ganha")?.id ?? opportunity.stage_id;
   const lostStageId = stages?.find((s) => s.stage_key === "perdida")?.id ?? opportunity.stage_id;
 
+  const clientSummary = opportunity.client
+    ? await getClientSummaryForOpportunity(organizationId, opportunity.client.id, opportunity.id)
+    : null;
+
   return (
     <div className="space-y-6">
       <section className="flex flex-col gap-4 block-navy-3d rounded-2xl p-5 md:flex-row md:items-end md:justify-between md:p-6">
@@ -44,16 +47,14 @@ export default async function OpportunityProfilePage({
           </p>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-3">
-          <BackLink href="/oportunidades" label="Voltar a Oportunidades" />
-          <NewTaskDialog opportunityId={opportunity.id} />
-        </div>
+        <BackLink href="/oportunidades" label="Voltar a Oportunidades" />
       </section>
 
       <OpportunityProfileView
         opportunity={opportunity}
         wonStageId={wonStageId}
         lostStageId={lostStageId}
+        clientSummary={clientSummary}
       />
     </div>
   );

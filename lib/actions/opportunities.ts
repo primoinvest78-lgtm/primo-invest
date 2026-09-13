@@ -22,7 +22,14 @@ export async function updateOpportunityStage(opportunityId: string, stageId: str
 
 export async function createOpportunityForClient(
   clientId: string,
-  input: { title: string; opportunityType: string; estimatedValue: number | null },
+  input: {
+    title: string;
+    opportunityType: string;
+    estimatedValue: number | null;
+    product?: string;
+    source?: string;
+    priority?: string;
+  },
 ) {
   const { organizationId } = await requireActiveMembership();
   const supabase = await createClient();
@@ -45,12 +52,48 @@ export async function createOpportunityForClient(
     title: input.title,
     opportunity_type: input.opportunityType,
     estimated_value: input.estimatedValue,
+    product: input.product || null,
+    source: input.source || null,
+    priority: input.priority || "normal",
     status: "open",
   });
 
   if (error) throw error;
 
   revalidatePath(`/clientes/${clientId}`);
+  revalidatePath("/oportunidades");
+}
+
+export async function updateOpportunityProfile(
+  opportunityId: string,
+  input: {
+    product: string | null;
+    source: string | null;
+    priority: string;
+    probability: number | null;
+    estimatedValue: number | null;
+    expectedCloseDate: string | null;
+  },
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("opportunities")
+    .update({
+      product: input.product || null,
+      source: input.source || null,
+      priority: input.priority,
+      probability: input.probability,
+      estimated_value: input.estimatedValue,
+      expected_close_date: input.expectedCloseDate,
+    })
+    .eq("id", opportunityId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath(`/oportunidades/${opportunityId}`);
   revalidatePath("/oportunidades");
 }
 
