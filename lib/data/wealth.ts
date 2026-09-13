@@ -343,12 +343,30 @@ export type HoldingDetail = {
   id: string;
   productName: string | null;
   productType: string | null;
+  accountId: string | null;
   accountName: string | null;
+  accountType: string | null;
+  institutionName: string | null;
+  accountStatus: string | null;
+  clientId: string | null;
   clientName: string | null;
   quantity: number;
   averagePrice: number | null;
   currentPrice: number | null;
   valuation: number | null;
+  asOfDate: string;
+  investmentProductId: string | null;
+  movements: HoldingMovement[];
+};
+
+export type HoldingMovement = {
+  id: string;
+  transactionType: string;
+  quantity: number | null;
+  unitPrice: number | null;
+  amount: number | null;
+  transactionDate: string;
+  description: string | null;
 };
 
 export async function getInvestmentsDetail(organizationId: string): Promise<HoldingDetail[]> {
@@ -357,9 +375,9 @@ export async function getInvestmentsDetail(organizationId: string): Promise<Hold
   const { data, error } = await supabase
     .from("holdings")
     .select(
-      `id, quantity, average_price, current_price, valuation,
+      `id, quantity, average_price, current_price, valuation, as_of_date, investment_product_id,
        investment_products(name, product_type),
-       financial_accounts(account_name, client:clients(full_name))`,
+       financial_accounts(id, account_name, account_type, institution_name, status, client:clients(id, full_name))`,
     )
     .eq("organization_id", organizationId)
     .order("valuation", { ascending: false });
@@ -372,21 +390,65 @@ export async function getInvestmentsDetail(organizationId: string): Promise<Hold
     average_price: number | null;
     current_price: number | null;
     valuation: number | null;
+    as_of_date: string;
+    investment_product_id: string | null;
     investment_products: { name: string; product_type: string } | null;
-    financial_accounts: { account_name: string | null; client: { full_name: string } | null } | null;
+    financial_accounts: {
+      id: string;
+      account_name: string | null;
+      account_type: string;
+      institution_name: string | null;
+      status: string;
+      client: { id: string; full_name: string } | null;
+    } | null;
   };
   const rows = (data ?? []) as unknown as Raw[];
+
+  // Não há vínculo direto transaction -> holding no schema; busca todas
+  // as transações da organização de uma vez e agrupa por conta + produto
+  // (a chave real de correlação), em vez de uma query por posição.
+  const { data: transactionRows, error: transactionsError } = await supabase
+    .from("transactions")
+    .select("id, financial_account_id, investment_product_id, transaction_type, quantity, unit_price, amount, transaction_date, description")
+    .eq("organization_id", organizationId)
+    .order("transaction_date", { ascending: false });
+
+  if (transactionsError) throw transactionsError;
+
+  const movementsByKey = new Map<string, HoldingMovement[]>();
+  for (const t of transactionRows ?? []) {
+    const key = `${t.financial_account_id}::${t.investment_product_id ?? "none"}`;
+    const list = movementsByKey.get(key) ?? [];
+    list.push({
+      id: t.id,
+      transactionType: t.transaction_type,
+      quantity: t.quantity,
+      unitPrice: t.unit_price,
+      amount: t.amount,
+      transactionDate: t.transaction_date,
+      description: t.description,
+    });
+    movementsByKey.set(key, list);
+  }
 
   return rows.map((row) => ({
     id: row.id,
     productName: row.investment_products?.name ?? null,
     productType: row.investment_products?.product_type ?? null,
+    accountId: row.financial_accounts?.id ?? null,
     accountName: row.financial_accounts?.account_name ?? null,
+    accountType: row.financial_accounts?.account_type ?? null,
+    institutionName: row.financial_accounts?.institution_name ?? null,
+    accountStatus: row.financial_accounts?.status ?? null,
+    clientId: row.financial_accounts?.client?.id ?? null,
     clientName: row.financial_accounts?.client?.full_name ?? null,
     quantity: row.quantity,
     averagePrice: row.average_price,
     currentPrice: row.current_price,
     valuation: row.valuation,
+    asOfDate: row.as_of_date,
+    investmentProductId: row.investment_product_id,
+    movements: movementsByKey.get(`${row.financial_accounts?.id}::${row.investment_product_id ?? "none"}`) ?? [],
   }));
 }
 
