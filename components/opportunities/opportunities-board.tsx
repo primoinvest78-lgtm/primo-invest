@@ -39,6 +39,17 @@ export function OpportunitiesBoard({ stages }: { stages: StageColumn[] }) {
     updateOpportunityStage(id, toStageId).catch(() => setColumns(stages));
   }
 
+  if (columns.length === 0) {
+    return (
+      <div className="card-premium rounded-2xl p-8 text-center">
+        <p className="text-body-sm text-card-beige-muted-foreground">
+          Nenhum estágio de oportunidade configurado ainda. Rode a migration
+          20260913090000_opportunity_stages_seed.sql no Supabase pra criar os estágios padrão.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex gap-4 overflow-x-auto pb-2">
       {columns.map((stage, columnIndex) => {
