@@ -85,23 +85,23 @@ export function ClientsTable({ clients }: { clients: ClientListItem[] }) {
         </Select>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card-lg">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/50 text-left">
-              <th className="px-4 py-3 text-label font-bold uppercase text-muted-foreground">
+            <tr className="border-b border-border bg-secondary text-left">
+              <th className="px-4 py-3 text-label font-bold uppercase text-primary">
                 Cliente
               </th>
-              <th className="px-4 py-3 text-label font-bold uppercase text-muted-foreground">
+              <th className="px-4 py-3 text-label font-bold uppercase text-primary">
                 Patrimônio consolidado
               </th>
-              <th className="px-4 py-3 text-label font-bold uppercase text-muted-foreground">
-                Suitability
+              <th className="px-4 py-3 text-label font-bold uppercase text-primary">
+                Perfil de Investidor
               </th>
-              <th className="px-4 py-3 text-label font-bold uppercase text-muted-foreground">
+              <th className="px-4 py-3 text-label font-bold uppercase text-primary">
                 Tags
               </th>
-              <th className="px-4 py-3 text-label font-bold uppercase text-muted-foreground">
+              <th className="px-4 py-3 text-label font-bold uppercase text-primary">
                 Assessor
               </th>
             </tr>
@@ -117,7 +117,7 @@ export function ClientsTable({ clients }: { clients: ClientListItem[] }) {
               filtered.map((client) => (
                 <tr
                   key={client.id}
-                  className="border-b border-border last:border-0 transition-colors duration-150 hover:bg-muted/60"
+                  className="group border-b border-border border-l-2 border-l-transparent last:border-b-0 transition-all duration-200 hover:border-l-primary hover:bg-muted/60 hover:shadow-[inset_0_0_0_1px_var(--border)]"
                 >
                   <td className="px-4 py-3">
                     <Link
