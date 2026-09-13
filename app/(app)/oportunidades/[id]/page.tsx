@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { OpportunityProfileView } from "@/components/opportunities/opportunity-profile";
+import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
 import { getOpportunityProfile } from "@/lib/data/opportunities";
 import { createClient } from "@/lib/supabase/server";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -41,6 +42,8 @@ export default async function OpportunityProfilePage({
               : "Sem assessor vinculado"}
           </p>
         </div>
+
+        <NewTaskDialog opportunityId={opportunity.id} />
       </section>
 
       <OpportunityProfileView

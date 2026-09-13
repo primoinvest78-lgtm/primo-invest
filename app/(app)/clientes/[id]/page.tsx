@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ClientProfileTabs } from "@/components/clients/client-profile-tabs";
+import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
 import { getClientProfile } from "@/lib/data/clients";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -31,6 +32,8 @@ export default async function ClientProfilePage({
               : "Sem assessor vinculado"}
           </p>
         </div>
+
+        <NewTaskDialog clientId={client.id} />
       </section>
 
       <ClientProfileTabs client={client} />
