@@ -1,25 +1,26 @@
-import { ExecutivePage } from "@/components/dashboard/executive-page";
+import { LeadsView } from "@/components/leads/leads-view";
+import { listLeads } from "@/lib/data/leads";
+import { requireActiveMembership } from "@/lib/supabase/session";
 
-export default function LeadsPage() {
+export default async function LeadsPage() {
+  const { organizationId } = await requireActiveMembership();
+  const leads = await listLeads(organizationId);
+
   return (
-    <ExecutivePage
-      badge="Relacionamento"
-      title="Leads"
-      subtitle="Pipeline de prospecção e qualificação"
-      context="Monitoramento dos leads em estágio inicial até chegada à proposta e avaliação comercial."
-    >
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Em qualificação</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">32</h2>
-      </div>
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Conversão</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">22,8%</h2>
-      </div>
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Tempo médio</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">12 dias</h2>
-      </div>
-    </ExecutivePage>
+    <div className="space-y-6">
+      <section className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-secondary p-5 shadow-panel-3d md:flex-row md:items-end md:justify-between md:p-6">
+        <div className="min-w-0">
+          <p className="text-label font-bold uppercase text-primary">Aquisição</p>
+          <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
+            Leads
+          </h1>
+          <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
+            Esteira de captação — {leads.length} {leads.length === 1 ? "lead" : "leads"}.
+          </p>
+        </div>
+      </section>
+
+      <LeadsView leads={leads} />
+    </div>
   );
 }
