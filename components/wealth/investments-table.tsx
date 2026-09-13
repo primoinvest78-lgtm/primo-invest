@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import {
@@ -102,7 +103,23 @@ export function InvestmentsTable({ holdings }: { holdings: HoldingDetail[] }) {
                       {h.productType ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-card-beige-muted-foreground">
-                      {h.institutionName ?? "—"} {h.accountName ? `· ${h.accountName}` : ""}
+                      {h.institutionName ?? "—"}
+                      {h.accountName ? (
+                        <>
+                          {" · "}
+                          {h.accountId ? (
+                            <Link
+                              href={`/patrimonio/contas/${h.accountId}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-foreground hover:text-primary hover:underline"
+                            >
+                              {h.accountName}
+                            </Link>
+                          ) : (
+                            h.accountName
+                          )}
+                        </>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 text-card-beige-muted-foreground">
                       {h.clientName ?? "—"}

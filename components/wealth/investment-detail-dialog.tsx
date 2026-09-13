@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { HoldingDetail } from "@/lib/data/wealth";
@@ -58,7 +60,18 @@ export function InvestmentDetailDialog({
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 <Field label="Categoria" value={holding.productType} />
                 <Field label="Instituição" value={holding.institutionName} />
-                <Field label="Conta" value={holding.accountName} />
+                <div>
+                  <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Conta</p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {holding.accountId ? (
+                      <Link href={`/patrimonio/contas/${holding.accountId}`} className="text-primary hover:underline">
+                        {holding.accountName ?? "Ver conta"}
+                      </Link>
+                    ) : (
+                      holding.accountName ?? "—"
+                    )}
+                  </p>
+                </div>
                 <Field label="Quantidade" value={String(holding.quantity)} animate />
                 <Field label="Valor atual" value={formatCurrencyBRL(holding.valuation)} animate />
                 <Field label="Custo" value={cost !== null ? formatCurrencyBRL(cost) : null} animate />

@@ -1,4 +1,5 @@
 import { AlertTriangle, Info, TriangleAlert } from "lucide-react";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
@@ -161,6 +162,68 @@ export function OverviewTab({
           </div>
         </div>
       ) : null}
+
+      {/* Contas e passivos — acesso direto aos registros nos módulos de Contas/Passivos */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="card-premium rounded-2xl p-5 md:p-6">
+          <h3 className="mb-4 text-h2 font-bold text-foreground">Contas</h3>
+          {client.financial_accounts.length === 0 ? (
+            <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma conta cadastrada.</p>
+          ) : (
+            <div className="space-y-2">
+              {client.financial_accounts.map((account) => {
+                const balance = account.holdings.reduce((sum, h) => sum + Number(h.valuation ?? 0), 0);
+                return (
+                  <Link
+                    key={account.id}
+                    href={`/patrimonio/contas/${account.id}`}
+                    className="flex items-center justify-between gap-2 rounded-xl border border-black/10 bg-black/5 px-3.5 py-2.5 text-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">
+                        {account.account_name ?? "Conta"}
+                      </p>
+                      <p className="text-xs text-card-beige-muted-foreground">
+                        {account.institution_name ?? "—"} · {account.account_type}
+                      </p>
+                    </div>
+                    <span className="shrink-0 font-semibold text-foreground">
+                      {formatCurrencyBRL(balance)}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="card-premium rounded-2xl p-5 md:p-6">
+          <h3 className="mb-4 text-h2 font-bold text-foreground">Passivos</h3>
+          {client.liabilities.length === 0 ? (
+            <p className="text-body-sm text-card-beige-muted-foreground">Nenhum passivo cadastrado.</p>
+          ) : (
+            <div className="space-y-2">
+              {client.liabilities.map((liability) => (
+                <Link
+                  key={liability.id}
+                  href={`/patrimonio/passivos/${liability.id}`}
+                  className="flex items-center justify-between gap-2 rounded-xl border border-black/10 bg-black/5 px-3.5 py-2.5 text-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-destructive/40"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-foreground">{liability.name}</p>
+                    <p className="text-xs text-card-beige-muted-foreground">
+                      {liability.liability_type ?? "—"}
+                    </p>
+                  </div>
+                  <span className="shrink-0 font-semibold text-destructive">
+                    {formatCurrencyBRL(liability.outstanding_amount)}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Evolução patrimonial + Composição */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

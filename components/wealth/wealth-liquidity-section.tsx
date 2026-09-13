@@ -35,7 +35,9 @@ export function WealthLiquiditySection({ overview }: { overview: WealthOverview 
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-foreground">
-                  {account.accountName ?? account.institutionName ?? "Conta"}
+                  <Link href={`/patrimonio/contas/${account.id}`} className="hover:text-primary hover:underline">
+                    {account.accountName ?? account.institutionName ?? "Conta"}
+                  </Link>
                 </p>
                 {account.clientId ? (
                   <Link

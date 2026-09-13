@@ -71,7 +71,9 @@ export function WealthOverviewView({
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">
-                      {account.accountName ?? account.institutionName ?? "Conta"}
+                      <Link href={`/patrimonio/contas/${account.id}`} className="hover:text-primary hover:underline">
+                        {account.accountName ?? account.institutionName ?? "Conta"}
+                      </Link>
                     </p>
                     {account.clientId ? (
                       <Link
@@ -112,7 +114,14 @@ export function WealthOverviewView({
                   className="flex items-center justify-between gap-2 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-colors duration-150 hover:bg-black/10"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-foreground">{liability.name}</p>
+                    <p className="truncate text-sm font-semibold text-foreground">
+                      <Link
+                        href={`/patrimonio/passivos/${liability.id}`}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {liability.name}
+                      </Link>
+                    </p>
                     <div className="flex flex-wrap items-center gap-1 text-xs font-medium text-card-beige-muted-foreground">
                       {liability.clientId ? (
                         <Link href={`/clientes/${liability.clientId}`} className="text-accent hover:underline">
@@ -136,7 +145,12 @@ export function WealthOverviewView({
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <ScrollReveal className="card-premium rounded-2xl p-5 md:p-6">
-          <h3 className="mb-4 text-h2 font-bold text-foreground">Metas vinculadas</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-h2 font-bold text-foreground">Metas vinculadas</h3>
+            <Link href="/patrimonio/metas" className="text-xs font-semibold text-accent hover:underline">
+              Ver todas
+            </Link>
+          </div>
           {overview.goals.length === 0 ? (
             <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma meta ativa.</p>
           ) : (
@@ -147,7 +161,11 @@ export function WealthOverviewView({
                   : 0;
 
                 return (
-                  <div key={goal.id} className="rounded-xl border border-black/10 bg-black/5 p-3">
+                  <Link
+                    key={goal.id}
+                    href={`/patrimonio/metas/${goal.id}`}
+                    className="block rounded-xl border border-black/10 bg-black/5 p-3 transition-colors duration-150 hover:bg-black/10"
+                  >
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate text-sm font-semibold text-foreground">{goal.name}</span>
                       <span className="shrink-0 text-xs font-medium text-card-beige-muted-foreground">
@@ -157,7 +175,7 @@ export function WealthOverviewView({
                     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10">
                       <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
