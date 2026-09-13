@@ -288,7 +288,7 @@ export function OpportunityProfileView({
   const isOpen = opportunity.status !== "won" && opportunity.status !== "lost";
 
   const pendingTasks = opportunity.tasks
-    .filter((t) => t.status !== "done" && t.status !== "cancelled")
+    .filter((t) => t.status !== "completed" && t.status !== "cancelled")
     .sort((a, b) => (a.due_at ?? "9999").localeCompare(b.due_at ?? "9999"));
 
   const typeLabel =

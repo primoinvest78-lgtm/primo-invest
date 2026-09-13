@@ -231,7 +231,7 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
   const [converting, setConverting] = useState(false);
 
   const pendingTasks = lead.tasks
-    .filter((t) => t.status !== "done" && t.status !== "cancelled")
+    .filter((t) => t.status !== "completed" && t.status !== "cancelled")
     .sort((a, b) => (a.due_at ?? "9999").localeCompare(b.due_at ?? "9999"));
   const nextTask = pendingTasks[0] ?? null;
 

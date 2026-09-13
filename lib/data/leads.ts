@@ -54,7 +54,7 @@ const LEAD_LIST_SELECT = `
 
 function mapLeadListRow(row: RawLeadListRow): LeadListItem {
   const pendingTasks = (row.tasks ?? [])
-    .filter((t) => t.status !== "done" && t.status !== "cancelled")
+    .filter((t) => t.status !== "completed" && t.status !== "cancelled")
     .sort((a, b) => (a.due_at ?? "9999").localeCompare(b.due_at ?? "9999"));
 
   const interactions = row.interactions ?? [];

@@ -78,7 +78,7 @@ export function OverviewTab({
   const openOpportunities = client.opportunities.filter(
     (o) => o.status !== "won" && o.status !== "lost",
   ).length;
-  const pendingTasks = client.tasks.filter((t) => t.status !== "done");
+  const pendingTasks = client.tasks.filter((t) => t.status !== "completed" && t.status !== "cancelled");
   const overdueTasks = pendingTasks.filter((t) => isTaskOverdue(t.due_at)).length;
 
   const lastInteraction = [...client.interactions].sort((a, b) =>

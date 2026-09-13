@@ -68,7 +68,7 @@ const OPPORTUNITY_SELECT = `
 
 function mapOpportunity(o: RawOpportunity): OpportunityCard {
   const pendingTasks = (o.tasks ?? [])
-    .filter((t) => t.status !== "done" && t.status !== "cancelled")
+    .filter((t) => t.status !== "completed" && t.status !== "cancelled")
     .sort((a, b) => (a.due_at ?? "9999").localeCompare(b.due_at ?? "9999"));
 
   const activities = o.opportunity_activities ?? [];

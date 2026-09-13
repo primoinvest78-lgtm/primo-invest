@@ -30,7 +30,7 @@ export function computeClientAlerts(client: ClientProfile): ClientAlert[] {
   }
 
   const overdueTasks = client.tasks.filter(
-    (t) => t.status !== "done" && t.due_at && new Date(t.due_at).getTime() < now,
+    (t) => t.status !== "completed" && t.status !== "cancelled" && t.due_at && new Date(t.due_at).getTime() < now,
   );
   if (overdueTasks.length > 0) {
     alerts.push({
