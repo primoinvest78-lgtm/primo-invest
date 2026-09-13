@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { isAuthBypassEnabled } from "@/lib/dev/auth-bypass";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,8 +16,15 @@ export type ActiveMembership = {
  * "active"). Lança se não houver sessão ou membership — as rotas do grupo
  * (app) já são protegidas pelo middleware, então isso só dispara em uso
  * indevido (ex.: chamado fora de uma rota autenticada).
+ *
+ * Memoizado com React cache(): o layout do grupo (app) já chama isso pra
+ * proteger a rota, e cada página volta a chamar pra pegar organizationId.
+ * Sem cache(), isso disparava 2x as 3 chamadas ao Supabase (auth.getUser +
+ * organization_members + profiles) na mesma requisição — 6 round-trips
+ * sequenciais em vez de 3. cache() garante que a segunda chamada, dentro
+ * do mesmo request, reaproveita a promise da primeira.
  */
-export async function requireActiveMembership(): Promise<ActiveMembership> {
+export const requireActiveMembership = cache(async function requireActiveMembership(): Promise<ActiveMembership> {
   // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
   // explícita. Retorna uma membership falsa sem chamar o Supabase.
   if (isAuthBypassEnabled()) {
@@ -63,4 +72,4 @@ export async function requireActiveMembership(): Promise<ActiveMembership> {
     fullName: profile?.full_name ?? null,
     email: profile?.email ?? user.email ?? null,
   };
-}
+});
