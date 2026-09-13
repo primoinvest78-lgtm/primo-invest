@@ -21,8 +21,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addInstallment, deleteInstallment, markInstallmentPaid } from "@/lib/actions/consortiums";
+import { InstallmentAdjustDialog } from "@/components/consortiums/parcelas/installment-adjust-dialog";
+import { InstallmentMarkPaidDialog } from "@/components/consortiums/parcelas/installment-mark-paid-dialog";
+import { InstallmentNegotiateDialog } from "@/components/consortiums/parcelas/installment-negotiate-dialog";
+import { addInstallment, deleteInstallment } from "@/lib/actions/consortiums";
 import type { ConsortiumContract, ConsortiumInstallment } from "@/lib/data/consortiums";
+import {
+  INSTALLMENT_STATUS_OPTIONS,
+  INSTALLMENT_STATUS_VARIANT,
+  installmentStatusLabel,
+  isEffectivelyOverdue,
+} from "@/lib/utils/installment-helpers";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
 
 function AddInstallmentDialog({ contract }: { contract: ConsortiumContract }) {
@@ -71,9 +80,11 @@ function AddInstallmentDialog({ contract }: { contract: ConsortiumContract }) {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending">Pendente</SelectItem>
-              <SelectItem value="paid">Paga</SelectItem>
-              <SelectItem value="overdue">Atrasada</SelectItem>
+              {INSTALLMENT_STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {installmentStatusLabel(option)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {status === "paid" ? (
@@ -92,58 +103,6 @@ function AddInstallmentDialog({ contract }: { contract: ConsortiumContract }) {
     </Dialog>
   );
 }
-
-function MarkPaidDialog({
-  installment,
-  contract,
-}: {
-  installment: ConsortiumInstallment;
-  contract: ConsortiumContract;
-}) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
-    const form = new FormData(event.currentTarget);
-
-    await markInstallmentPaid(installment.id, contract.id, contract.clientId, {
-      paidAmount: Number(form.get("paidAmount") ?? installment.amount ?? 0),
-      paidAt: String(form.get("paidAt") ?? new Date().toISOString().slice(0, 10)),
-    });
-
-    setLoading(false);
-    setOpen(false);
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button size="xs" variant="outline" />}>Marcar como paga</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Pagamento da parcela {installment.installmentNumber}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <Input name="paidAmount" type="number" step="0.01" placeholder="Valor pago" defaultValue={installment.amount ?? ""} required />
-          <Input name="paidAt" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required />
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Salvando..." : "Confirmar pagamento"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-const STATUS_VARIANT: Record<string, "default" | "destructive" | "outline"> = {
-  paid: "default",
-  pending: "outline",
-  overdue: "destructive",
-};
-const STATUS_LABEL: Record<string, string> = { paid: "Paga", pending: "Pendente", overdue: "Atrasada" };
 
 export function ContractInstallmentsTab({
   contract,
@@ -186,36 +145,41 @@ export function ContractInstallmentsTab({
               </tr>
             </thead>
             <tbody>
-              {installments.map((installment) => (
-                <tr key={installment.id} className="group border-b border-black/10 last:border-b-0 hover:bg-black/5">
-                  <td className="px-4 py-3 font-semibold text-foreground">{installment.installmentNumber}</td>
-                  <td className="px-4 py-3 text-card-beige-muted-foreground">{formatDate(installment.dueDate)}</td>
-                  <td className="px-4 py-3 text-foreground">{formatCurrencyBRL(installment.amount)}</td>
-                  <td className="px-4 py-3 text-card-beige-muted-foreground">
-                    {installment.paidAt ? formatDate(installment.paidAt) : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={STATUS_VARIANT[installment.status] ?? "outline"}>
-                      {STATUS_LABEL[installment.status] ?? installment.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                      {installment.status !== "paid" ? (
-                        <MarkPaidDialog installment={installment} contract={contract} />
-                      ) : null}
-                      <button
-                        type="button"
-                        aria-label="Excluir parcela"
-                        onClick={() => deleteInstallment(installment.id, contract.id, contract.clientId)}
-                        className="text-card-beige-muted-foreground transition-colors hover:text-destructive"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {installments.map((installment) => {
+                const late = isEffectivelyOverdue(installment);
+                return (
+                  <tr key={installment.id} className="group border-b border-black/10 last:border-b-0 hover:bg-black/5">
+                    <td className="px-4 py-3 font-semibold text-foreground">{installment.installmentNumber}</td>
+                    <td className="px-4 py-3 text-card-beige-muted-foreground">{formatDate(installment.dueDate)}</td>
+                    <td className="px-4 py-3 text-foreground">{formatCurrencyBRL(installment.amount)}</td>
+                    <td className="px-4 py-3 text-card-beige-muted-foreground">
+                      {installment.paidAt ? formatDate(installment.paidAt) : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={INSTALLMENT_STATUS_VARIANT[late ? "overdue" : installment.status] ?? "outline"}>
+                        {installmentStatusLabel(late ? "overdue" : installment.status)}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+                        {installment.status !== "paid" ? (
+                          <InstallmentMarkPaidDialog installment={installment} />
+                        ) : null}
+                        <InstallmentNegotiateDialog installment={installment} />
+                        <InstallmentAdjustDialog installment={installment} />
+                        <button
+                          type="button"
+                          aria-label="Excluir parcela"
+                          onClick={() => deleteInstallment(installment.id, contract.id, contract.clientId)}
+                          className="text-card-beige-muted-foreground transition-colors hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

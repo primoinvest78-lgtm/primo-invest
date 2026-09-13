@@ -105,11 +105,6 @@ export async function updateContract(
   revalidateContract(contractId, input.clientId);
 }
 
-/**
- * Exclusão é bloqueada pelo próprio banco (FK RESTRICT) se houver
- * tarefas vinculadas ao contrato — o erro do Postgres é repassado pra
- * a UI tratar, em vez de checar isso aqui e duplicar a regra.
- */
 export async function updateContractNotes(contractId: string, clientId: string | null, notes: string) {
   const { organizationId } = await requireActiveMembership();
   const supabase = await createClient();
@@ -125,6 +120,11 @@ export async function updateContractNotes(contractId: string, clientId: string |
   revalidateContract(contractId, clientId);
 }
 
+/**
+ * Exclusão é bloqueada pelo próprio banco (FK RESTRICT) se houver
+ * tarefas vinculadas ao contrato — o erro do Postgres é repassado pra
+ * a UI tratar, em vez de checar isso aqui e duplicar a regra.
+ */
 export async function deleteContract(contractId: string, clientId: string | null) {
   const { organizationId } = await requireActiveMembership();
   const supabase = await createClient();
@@ -218,7 +218,6 @@ export async function deleteInstallment(installmentId: string, contractId: strin
   if (error) throw error;
 
   revalidateContract(contractId, clientId);
-  revalidatePath("/consorcios/parcelas");
 }
 
 /**
@@ -263,7 +262,6 @@ export async function recordInstallmentAdjustment(
   });
 
   revalidateContract(contractId, clientId);
-  revalidatePath("/consorcios/parcelas");
 }
 
 /**
@@ -309,7 +307,6 @@ export async function negotiateInstallment(
   });
 
   revalidateContract(contractId, clientId);
-  revalidatePath("/consorcios/parcelas");
 }
 
 export async function updateInstallmentStatus(
@@ -325,7 +322,6 @@ export async function updateInstallmentStatus(
   if (error) throw error;
 
   revalidateContract(contractId, clientId);
-  revalidatePath("/consorcios/parcelas");
 }
 
 const BID_RESULT_EVENT: Record<string, { type: string; label: string }> = {

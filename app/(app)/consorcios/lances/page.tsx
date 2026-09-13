@@ -5,25 +5,21 @@ import { Badge } from "@/components/ui/badge";
 import { BackLink } from "@/components/ui/back-link";
 import { getConsortiumBids } from "@/lib/data/consortiums";
 import { requireActiveMembership } from "@/lib/supabase/session";
+import { BID_RESULT_LABEL } from "@/lib/utils/consortium-helpers";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
-
-const RESULT_LABEL: Record<string, string> = {
-  pending: "Pendente",
-  approved: "Aprovado",
-  rejected: "Rejeitado",
-};
 
 const RESULT_VARIANT: Record<string, "default" | "destructive" | "outline"> = {
   pending: "outline",
-  approved: "default",
-  rejected: "destructive",
+  won: "default",
+  lost: "destructive",
+  cancelled: "destructive",
 };
 
 export default async function LancesPage() {
   const { organizationId } = await requireActiveMembership();
   const bids = await getConsortiumBids(organizationId);
 
-  const approvedCount = bids.filter((b) => b.result === "approved").length;
+  const wonCount = bids.filter((b) => b.result === "won").length;
   const highestBid = bids.reduce<number | null>((max, b) => {
     const value = Number(b.bidAmount ?? 0);
     return max === null || value > max ? value : max;
@@ -62,9 +58,9 @@ export default async function LancesPage() {
           </h2>
         </div>
         <div className="card-premium rounded-2xl p-4">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Aprovados</p>
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Vencedores</p>
           <h2 className="mt-3 text-3xl font-bold text-foreground">
-            <AnimatedNumber value={String(approvedCount)} />
+            <AnimatedNumber value={String(wonCount)} />
           </h2>
         </div>
       </div>
@@ -104,7 +100,11 @@ export default async function LancesPage() {
                   key={bid.id}
                   className="border-b border-black/10 border-l-2 border-l-transparent last:border-b-0 transition-all duration-200 hover:border-l-primary hover:bg-black/5"
                 >
-                  <td className="px-4 py-3 font-semibold text-foreground">{bid.contractLabel}</td>
+                  <td className="px-4 py-3 font-semibold text-foreground">
+                    <Link href={`/consorcios/contratos/${bid.contractId}`} className="hover:text-primary hover:underline">
+                      {bid.contractLabel}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {bid.clientId ? (
                       <Link href={`/clientes/${bid.clientId}`} className="text-accent hover:underline">
@@ -122,7 +122,7 @@ export default async function LancesPage() {
                   <td className="px-4 py-3 text-card-beige-muted-foreground">{formatDate(bid.bidDate)}</td>
                   <td className="px-4 py-3">
                     <Badge variant={RESULT_VARIANT[bid.result] ?? "outline"}>
-                      {RESULT_LABEL[bid.result] ?? bid.result}
+                      {BID_RESULT_LABEL[bid.result] ?? bid.result}
                     </Badge>
                   </td>
                 </tr>

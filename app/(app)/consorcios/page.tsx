@@ -4,21 +4,8 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Badge } from "@/components/ui/badge";
 import { getConsortiumsOverview } from "@/lib/data/consortiums";
 import { requireActiveMembership } from "@/lib/supabase/session";
+import { CONTRACT_STATUS_VARIANT, contractStatusLabel } from "@/lib/utils/consortium-helpers";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
-
-const STATUS_LABEL: Record<string, string> = {
-  active: "Ativo",
-  contemplated: "Contemplado",
-  cancelled: "Cancelado",
-  completed: "Concluído",
-};
-
-const STATUS_VARIANT: Record<string, "default" | "destructive" | "outline"> = {
-  active: "default",
-  contemplated: "default",
-  cancelled: "destructive",
-  completed: "outline",
-};
 
 export default async function ConsorciosPage() {
   const { organizationId } = await requireActiveMembership();
@@ -36,6 +23,27 @@ export default async function ConsorciosPage() {
             Gestão de contratos, parcelas e lances — {overview.contracts.length}{" "}
             {overview.contracts.length === 1 ? "contrato" : "contratos"}.
           </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/consorcios/contratos"
+            className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
+          >
+            Contratos
+          </Link>
+          <Link
+            href="/consorcios/parcelas"
+            className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
+          >
+            Parcelas
+          </Link>
+          <Link
+            href="/consorcios/lances"
+            className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
+          >
+            Lances
+          </Link>
         </div>
       </section>
 
@@ -56,14 +64,17 @@ export default async function ConsorciosPage() {
             <AnimatedNumber value={formatCurrencyBRL(overview.totalCreditAmount)} />
           </p>
         </div>
-        <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+        <Link
+          href="/consorcios/parcelas"
+          className="card-premium block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
+        >
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
             Parcelas em aberto
           </p>
           <p className="mt-2 text-h2 font-bold text-foreground">
             <AnimatedNumber value={String(overview.openInstallmentsCount)} />
           </p>
-        </div>
+        </Link>
       </div>
 
       <div className="card-premium rounded-2xl p-5 md:p-6">
@@ -100,8 +111,8 @@ export default async function ConsorciosPage() {
                   <span className="text-sm font-semibold text-foreground">
                     {formatCurrencyBRL(contract.creditAmount)}
                   </span>
-                  <Badge variant={STATUS_VARIANT[contract.status] ?? "outline"}>
-                    {STATUS_LABEL[contract.status] ?? contract.status}
+                  <Badge variant={CONTRACT_STATUS_VARIANT[contract.status] ?? "outline"}>
+                    {contractStatusLabel(contract.status)}
                   </Badge>
                 </div>
               </Link>
