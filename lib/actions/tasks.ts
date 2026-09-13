@@ -9,6 +9,7 @@ function revalidateTaskPaths(paths: {
   clientId?: string | null;
   opportunityId?: string | null;
   leadId?: string | null;
+  consortiumContractId?: string | null;
 }) {
   revalidatePath("/tarefas");
   revalidatePath("/clientes", "layout");
@@ -16,6 +17,7 @@ function revalidateTaskPaths(paths: {
   if (paths.clientId) revalidatePath(`/clientes/${paths.clientId}`);
   if (paths.opportunityId) revalidatePath(`/oportunidades/${paths.opportunityId}`);
   if (paths.leadId) revalidatePath(`/leads/${paths.leadId}`);
+  if (paths.consortiumContractId) revalidatePath(`/consorcios/contratos/${paths.consortiumContractId}`);
 }
 
 export async function completeTask(

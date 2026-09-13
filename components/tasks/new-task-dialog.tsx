@@ -25,10 +25,12 @@ export function NewTaskDialog({
   clientId,
   opportunityId,
   leadId,
+  consortiumContractId,
 }: {
   clientId?: string;
   opportunityId?: string;
   leadId?: string;
+  consortiumContractId?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,6 +49,7 @@ export function NewTaskDialog({
       clientId,
       opportunityId,
       leadId,
+      consortiumContractId,
     });
 
     setLoading(false);

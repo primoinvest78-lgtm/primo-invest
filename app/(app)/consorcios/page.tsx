@@ -79,22 +79,17 @@ export default async function ConsorciosPage() {
         ) : (
           <div className="space-y-2">
             {overview.contracts.map((contract) => (
-              <div
+              <Link
                 key={contract.id}
+                href={`/consorcios/contratos/${contract.id}`}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/10 bg-black/5 px-3.5 py-3 transition-colors duration-150 hover:bg-black/10"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-foreground">
+                  <p className="truncate text-sm font-semibold text-foreground hover:text-primary">
                     {contract.administratorName ?? "—"} · {contract.contractNumber ?? "—"}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-card-beige-muted-foreground">
-                    {contract.clientId ? (
-                      <Link href={`/clientes/${contract.clientId}`} className="text-accent hover:underline">
-                        {contract.clientName}
-                      </Link>
-                    ) : (
-                      <span>{contract.clientName ?? "—"}</span>
-                    )}
+                    <span>{contract.clientName ?? "—"}</span>
                     <span>
                       · {contract.consortiumType ?? "—"} · {contract.paidInstallments}/{contract.totalInstallments} parcelas
                     </span>
@@ -109,7 +104,7 @@ export default async function ConsorciosPage() {
                     {STATUS_LABEL[contract.status] ?? contract.status}
                   </Badge>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
