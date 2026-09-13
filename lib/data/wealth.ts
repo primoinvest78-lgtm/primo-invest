@@ -644,38 +644,35 @@ export type LiabilityDetail = {
   interestRate: number | null;
   monthlyPayment: number | null;
   maturityDate: string | null;
+  currency: string;
   status: string;
+  createdAt: string;
+  updatedAt: string | null;
+  clientId: string | null;
   clientName: string | null;
 };
 
-export async function getLiabilitiesDetail(organizationId: string): Promise<LiabilityDetail[]> {
-  const supabase = await createClient();
+const LIABILITY_DETAIL_SELECT = `id, name, liability_type, outstanding_amount, interest_rate, monthly_payment,
+       maturity_date, currency, status, created_at, updated_at,
+       client:clients(id, full_name)`;
 
-  const { data, error } = await supabase
-    .from("liabilities")
-    .select(
-      `id, name, liability_type, outstanding_amount, interest_rate, monthly_payment,
-       maturity_date, status, client:clients(full_name)`,
-    )
-    .eq("organization_id", organizationId)
-    .order("maturity_date");
+type RawLiabilityDetail = {
+  id: string;
+  name: string;
+  liability_type: string | null;
+  outstanding_amount: number | null;
+  interest_rate: number | null;
+  monthly_payment: number | null;
+  maturity_date: string | null;
+  currency: string;
+  status: string;
+  created_at: string;
+  updated_at: string | null;
+  client: { id: string; full_name: string } | null;
+};
 
-  if (error) throw error;
-
-  type Raw = {
-    id: string;
-    name: string;
-    liability_type: string | null;
-    outstanding_amount: number | null;
-    interest_rate: number | null;
-    monthly_payment: number | null;
-    maturity_date: string | null;
-    status: string;
-    client: { full_name: string } | null;
-  };
-  const rows = (data ?? []) as unknown as Raw[];
-
-  return rows.map((row) => ({
+function mapLiabilityDetail(row: RawLiabilityDetail): LiabilityDetail {
+  return {
     id: row.id,
     name: row.name,
     liabilityType: row.liability_type,
@@ -683,7 +680,85 @@ export async function getLiabilitiesDetail(organizationId: string): Promise<Liab
     interestRate: row.interest_rate,
     monthlyPayment: row.monthly_payment,
     maturityDate: row.maturity_date,
+    currency: row.currency,
     status: row.status,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    clientId: row.client?.id ?? null,
     clientName: row.client?.full_name ?? null,
+  };
+}
+
+export async function getLiabilitiesDetail(organizationId: string): Promise<LiabilityDetail[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("liabilities")
+    .select(LIABILITY_DETAIL_SELECT)
+    .eq("organization_id", organizationId)
+    .order("maturity_date");
+
+  if (error) throw error;
+
+  const rows = (data ?? []) as unknown as RawLiabilityDetail[];
+  return rows.map(mapLiabilityDetail);
+}
+
+export async function getLiabilityDetail(
+  organizationId: string,
+  liabilityId: string,
+): Promise<LiabilityDetail | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("liabilities")
+    .select(LIABILITY_DETAIL_SELECT)
+    .eq("organization_id", organizationId)
+    .eq("id", liabilityId)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  return mapLiabilityDetail(data as unknown as RawLiabilityDetail);
+}
+
+export type ClientDocumentSummary = {
+  id: string;
+  name: string;
+  documentType: string | null;
+  status: string;
+  createdAt: string;
+};
+
+/**
+ * Documentos não têm vínculo direto com passivo no schema atual — só
+ * com cliente. Usado na tela de detalhe do passivo pra mostrar os
+ * documentos do titular, sem inventar um vínculo que não existe.
+ */
+export async function getClientDocuments(
+  organizationId: string,
+  clientId: string,
+): Promise<ClientDocumentSummary[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("documents")
+    .select("id, name, document_type, status, created_at")
+    .eq("organization_id", organizationId)
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  type Raw = { id: string; name: string; document_type: string | null; status: string; created_at: string };
+  const rows = (data ?? []) as unknown as Raw[];
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    documentType: row.document_type,
+    status: row.status,
+    createdAt: row.created_at,
   }));
 }

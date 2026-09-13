@@ -18,6 +18,7 @@ type RawClientListRow = {
   client_tags: { tags: { id: string; name: string; color: string | null } | null }[];
   financial_accounts: { holdings: { valuation: number | null }[] }[];
   consortium_contracts: { credit_amount: number | null; status: string }[];
+  liabilities: { outstanding_amount: number | null; status: string }[];
   client_risk_profiles: { valid_from: string; valid_until: string | null }[];
 };
 
@@ -44,6 +45,7 @@ export async function listClients(organizationId: string): Promise<ClientListIte
       client_tags(tags(id, name, color)),
       financial_accounts(holdings(valuation)),
       consortium_contracts(credit_amount, status),
+      liabilities(outstanding_amount, status),
       client_risk_profiles(valid_from, valid_until)
     `,
     )
@@ -63,6 +65,9 @@ export async function listClients(organizationId: string): Promise<ClientListIte
     const consortiumTotal = (row.consortium_contracts ?? [])
       .filter((c) => c.status === "active")
       .reduce((sum, c) => sum + Number(c.credit_amount ?? 0), 0);
+    const liabilitiesTotal = (row.liabilities ?? [])
+      .filter((l) => l.status === "active")
+      .reduce((sum, l) => sum + Number(l.outstanding_amount ?? 0), 0);
 
     return {
       id: row.id,
@@ -70,7 +75,7 @@ export async function listClients(organizationId: string): Promise<ClientListIte
       status: row.status,
       assignedAdvisorName: row.assigned_advisor?.full_name ?? null,
       tags: (row.client_tags ?? []).flatMap((ct) => (ct.tags ? [ct.tags] : [])),
-      netWorth: holdingsTotal + consortiumTotal,
+      netWorth: holdingsTotal + consortiumTotal - liabilitiesTotal,
       riskProfile: resolveRiskStatus(row.client_risk_profiles ?? []),
     };
   });
