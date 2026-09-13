@@ -1,3 +1,4 @@
+import { isAuthBypassEnabled } from "@/lib/dev/auth-bypass";
 import { createClient } from "@/lib/supabase/server";
 
 export type ActiveMembership = {
@@ -15,6 +16,18 @@ export type ActiveMembership = {
  * indevido (ex.: chamado fora de uma rota autenticada).
  */
 export async function requireActiveMembership(): Promise<ActiveMembership> {
+  // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
+  // explícita. Retorna uma membership falsa sem chamar o Supabase.
+  if (isAuthBypassEnabled()) {
+    return {
+      userId: "00000000-0000-0000-0000-000000000000",
+      organizationId: "00000000-0000-0000-0000-000000000000",
+      role: "admin",
+      fullName: "Dev Bypass",
+      email: "dev-bypass@local.test",
+    };
+  }
+
   const supabase = await createClient();
 
   const {

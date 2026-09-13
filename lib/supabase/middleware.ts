@@ -1,9 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { isAuthBypassEnabled } from "@/lib/dev/auth-bypass";
+
 const PUBLIC_PATHS = ["/login"];
 
 export async function updateSession(request: NextRequest) {
+  // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
+  // explícita. Deixa a requisição passar sem checar sessão nenhuma.
+  if (isAuthBypassEnabled()) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
