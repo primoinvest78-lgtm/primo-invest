@@ -13,6 +13,9 @@ export function GoalsSummary({ items }: { items: GoalItem[] }) {
         <h3 className="mt-1 text-h2 font-bold text-foreground">Metas patrimoniais</h3>
       </div>
 
+      {items.length === 0 ? (
+        <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma meta ativa cadastrada.</p>
+      ) : (
       <div className="space-y-4">
         {items.map((item, index) => {
           const progress = Math.min(Math.max(item.progress, 0), 100);
@@ -52,6 +55,7 @@ export function GoalsSummary({ items }: { items: GoalItem[] }) {
           );
         })}
       </div>
+      )}
     </section>
   );
 }

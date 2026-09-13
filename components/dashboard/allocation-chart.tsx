@@ -16,6 +16,12 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
         <h3 className="mt-1 text-h2 font-bold text-foreground">Alocação patrimonial</h3>
       </div>
 
+      {data.length === 0 ? (
+        <p className="text-body-sm text-card-beige-muted-foreground">
+          Sem posições registradas suficientes pra montar a alocação.
+        </p>
+      ) : (
+        <>
       <div className="relative h-[250px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -64,6 +70,8 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
           </div>
         ))}
       </div>
+        </>
+      )}
     </section>
   );
 }

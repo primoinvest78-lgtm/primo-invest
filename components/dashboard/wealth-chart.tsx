@@ -27,10 +27,16 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
         </div>
 
         <p className="shrink-0 text-body-sm text-card-beige-muted-foreground">
-          Evolução nos últimos 12 meses
+          {data.length > 0 ? `Evolução nos últimos ${data.length} meses` : "Sem histórico disponível"}
         </p>
       </div>
 
+      {data.length === 0 ? (
+        <p className="text-body-sm text-card-beige-muted-foreground">
+          Sem transações suficientes registradas pra montar a evolução patrimonial.
+        </p>
+      ) : (
+      <>
       <div className="h-[330px] w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 12, left: -18, bottom: 0 }}>
@@ -121,6 +127,8 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
           Evolução do patrimônio
         </span>
       </div>
+      </>
+      )}
     </section>
   );
 }

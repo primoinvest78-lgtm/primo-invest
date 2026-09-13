@@ -8,8 +8,8 @@ import { useEffect, useRef } from "react";
 export type KpiCardProps = {
   title: string;
   value: string;
-  change: string;
-  delta: number;
+  change?: string | null;
+  delta?: number | null;
   icon: LucideIcon;
   /** Anima o valor em contagem crescente (0 até o valor real) via GSAP. */
   animateValueWithGsap?: boolean;
@@ -23,9 +23,10 @@ export function KpiCard({
   icon: Icon,
   animateValueWithGsap = false,
 }: KpiCardProps) {
-  const formattedDelta = `${delta >= 0 ? "+" : ""}${delta
-    .toFixed(delta % 1 === 0 ? 0 : 2)
-    .replace(".", ",")}%`;
+  const formattedDelta =
+    delta === undefined || delta === null
+      ? null
+      : `${delta >= 0 ? "+" : ""}${delta.toFixed(delta % 1 === 0 ? 0 : 2).replace(".", ",")}%`;
 
   const valueRef = useRef<HTMLParagraphElement>(null);
 
@@ -86,16 +87,20 @@ export function KpiCard({
       </div>
 
       {/* FOOTER */}
-      <div className="mt-5 flex items-center justify-between gap-3">
-        <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-primary/25 bg-primary/15 px-2.5 py-1.5 text-[11px] font-bold text-foreground">
-          <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
-          <span className="truncate">{change}</span>
-        </span>
+      {change ? (
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-primary/25 bg-primary/15 px-2.5 py-1.5 text-[11px] font-bold text-foreground">
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
+            <span className="truncate">{change}</span>
+          </span>
 
-        <span className="shrink-0 text-label font-bold uppercase text-card-beige-muted-foreground">
-          {formattedDelta}
-        </span>
-      </div>
+          {formattedDelta ? (
+            <span className="shrink-0 text-label font-bold uppercase text-card-beige-muted-foreground">
+              {formattedDelta}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
     </motion.article>
   );
 }

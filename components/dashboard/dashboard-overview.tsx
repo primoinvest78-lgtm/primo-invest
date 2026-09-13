@@ -3,16 +3,8 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-import {
-  allocationData,
-  attentionItems,
-  goals,
-  kpis,
-  pipelineStages,
-  recentActivities,
-  relationshipSummary,
-  wealthTrend,
-} from "@/lib/mock/dashboard";
+import type { DashboardData } from "@/lib/data/dashboard";
+import { formatMonthLabel } from "@/lib/utils/format";
 
 import { AllocationChart } from "./allocation-chart";
 import { AttentionPanel } from "./attention-panel";
@@ -25,8 +17,13 @@ import { WealthChart } from "./wealth-chart";
 
 const periods = ["Hoje", "7 dias", "30 dias", "90 dias", "12 meses"];
 
-export function DashboardOverview() {
+export function DashboardOverview({ data }: { data: DashboardData }) {
   const [selectedPeriod, setSelectedPeriod] = useState("12 meses");
+
+  const wealthTrend = data.wealthTrend.map((point) => ({
+    ...point,
+    month: formatMonthLabel(point.month),
+  }));
 
   return (
     <div className="space-y-6">
@@ -72,7 +69,7 @@ export function DashboardOverview() {
             <p className="text-label font-bold uppercase text-primary">Resumo operacional</p>
 
             <h2 className="mt-2 text-h2 font-bold text-secondary-foreground md:text-[27px]">
-              Bom dia, Anderson
+              {data.greetingName ? `Bom dia, ${data.greetingName}` : "Bom dia"}
             </h2>
 
             <p className="mt-2 text-body leading-6 text-secondary-foreground/75">
@@ -90,7 +87,7 @@ export function DashboardOverview() {
 
       {/* KPI GRID */}
       <section className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {kpis.map((kpi) => (
+        {data.kpis.map((kpi) => (
           <div key={kpi.title} className="min-w-0">
             <KpiCard
               title={kpi.title}
@@ -110,16 +107,16 @@ export function DashboardOverview() {
           <WealthChart data={wealthTrend} />
 
           <div className="grid min-w-0 grid-cols-1 gap-6 2xl:grid-cols-2">
-            <AttentionPanel items={attentionItems} />
-            <RelationshipSummary items={relationshipSummary} />
+            <AttentionPanel items={data.attentionItems} />
+            <RelationshipSummary items={data.relationshipSummary} />
           </div>
         </div>
 
         <div className="min-w-0 space-y-6">
-          <AllocationChart data={allocationData} />
-          <PipelineSummary stages={pipelineStages} />
-          <GoalsSummary items={goals} />
-          <RecentActivity items={recentActivities} />
+          <AllocationChart data={data.allocationData} />
+          <PipelineSummary stages={data.pipelineStages} />
+          <GoalsSummary items={data.goals} />
+          <RecentActivity items={data.recentActivities} />
         </div>
       </section>
     </div>

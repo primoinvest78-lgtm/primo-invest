@@ -4,13 +4,21 @@ import { useMemo, useState } from "react";
 
 import { WealthEvolutionChart } from "@/components/wealth/wealth-evolution-chart";
 import type { WealthHistoryPoint } from "@/lib/data/wealth";
+import { formatMonthLabel } from "@/lib/utils/format";
 import { availableWealthPeriods, filterWealthHistoryByPeriod, type WealthPeriodValue } from "@/lib/utils/wealth-period";
 
 export function WealthEvolutionSection({ history }: { history: WealthHistoryPoint[] }) {
   const periods = useMemo(() => availableWealthPeriods(history), [history]);
   const [period, setPeriod] = useState<WealthPeriodValue>("all");
 
-  const filtered = useMemo(() => filterWealthHistoryByPeriod(history, period), [history, period]);
+  const filtered = useMemo(
+    () =>
+      filterWealthHistoryByPeriod(history, period).map((point) => ({
+        ...point,
+        month: formatMonthLabel(point.month),
+      })),
+    [history, period],
+  );
 
   return (
     <div className="card-premium rounded-2xl p-5 md:p-6">

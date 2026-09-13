@@ -8,7 +8,7 @@ import { TopClientsBarChart } from "@/components/wealth/top-clients-bar-chart";
 import { WealthLineChart } from "@/components/wealth/wealth-line-chart";
 import type { ClientProfile, WealthHistoryPoint } from "@/lib/data/clients";
 import { computeClientAlerts, isTaskOverdue } from "@/lib/utils/client-alerts";
-import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
+import { formatCurrencyBRL, formatDate, formatMonthLabel } from "@/lib/utils/format";
 
 const LIQUID_KEYWORDS = ["corrente", "poupança", "poupanca", "checking", "savings", "caixa", "cash"];
 
@@ -171,7 +171,9 @@ export function OverviewTab({
               Sem transações suficientes registradas pra montar a evolução ao longo do tempo.
             </p>
           ) : (
-            <WealthLineChart data={wealthHistory} />
+            <WealthLineChart
+              data={wealthHistory.map((point) => ({ ...point, month: formatMonthLabel(point.month) }))}
+            />
           )}
         </ScrollReveal>
 
