@@ -1,0 +1,570 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * PRIMO INVEST — DESIGN SYSTEM
+ *
+ * Fundação visual única do produto. Todo token de cor,
+ * tipografia e superfície vive aqui — componentes devem
+ * consumir estes tokens (via as classes utilitárias geradas
+ * pelo bloco @theme abaixo, ex.: bg-card, text-foreground,
+ * text-muted-foreground) em vez de hex hardcoded.
+ *
+ * O produto é predominantemente branco/cinza claro. Azul-marinho
+ * é cor de BLOCO (header, sidebar, nav ativo) — nunca de superfície
+ * geral de página ou card. Verde-menta é a cor de destaque/ação.
+ * ":root" e ".light" representam duas variações claras (a primeira
+ * levemente tonalizada, a segunda branco puro); nenhuma delas usa
+ * azul como fundo de página ou de card.
+ *
+ * Paleta de marca:
+ * Azul-marinho    #101B3D → #122B54  (header, sidebar, títulos, nav ativo)
+ * Verde-menta     #2ECC9B → #34D399  (CTAs, sucesso, destaque, gráfico primário)
+ * Fundo principal #FFFFFF
+ * Fundo alt.      #F7F8FA
+ * Texto de apoio  #6B7280
+ */
+
+:root {
+  /* Core */
+  --background: #f7f8fa;
+  --foreground: #101b3d;
+
+  /* Surfaces — cards são sempre brancos, nunca azuis */
+  --card: #ffffff;
+  --card-foreground: #101b3d;
+  --popover: #ffffff;
+  --popover-foreground: #101b3d;
+
+  /* Brand — verde-menta é a cor de ação/destaque */
+  --primary: #2ecc9b;
+  --primary-foreground: #101b3d;
+
+  /* Secondary — bloco azul-marinho fixo (header, sidebar, nav ativo) */
+  --secondary: #101b3d;
+  --secondary-foreground: #ffffff;
+
+  /* Muted (superfícies sutis / texto de apoio) */
+  --muted: #edf0f4;
+  --muted-foreground: #6b7280;
+
+  /* Accent — ênfase tipográfica (eyebrows, títulos secundários) */
+  --accent: #122b54;
+  --accent-foreground: #ffffff;
+
+  /* Semantic status */
+  --success: #16a97d;
+  --success-foreground: #ffffff;
+  --warning: #f5a623;
+  --warning-foreground: #2b1900;
+  --info: #38bdf8;
+  --info-foreground: #04202c;
+  --destructive: #ff5a6b;
+  --destructive-foreground: #2b0007;
+
+  /* System */
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #2ecc9b;
+
+  /* Card premium — bege com borda verde-menta, pra cards/painéis em
+     destaque (não é a superfície padrão, é uma variação de ênfase).
+     --card-beige-muted-foreground é mais escuro que --muted-foreground
+     porque #6b7280 dá só 4.38:1 sobre o bege (abaixo de AA pra texto
+     normal, ok só pra texto grande) — testado com fórmula WCAG antes
+     de escolher. #101b3d (--foreground) já dá 15.26:1, ok como está. */
+  --card-beige: #f6f7c4;
+  --card-beige-muted-foreground: #374151;
+
+  /* Radius */
+  --radius: 0.875rem;
+
+  /* Chart sequence — verde-menta como cor principal, variações compatíveis */
+  --chart-1: #2ecc9b;
+  --chart-2: #101b3d;
+  --chart-3: #34d399;
+  --chart-4: #6b7280;
+  --chart-5: #122b54;
+
+  /* Shadows — mesma escala em ambos os temas, cor fixa (não segue superfície) */
+  --shadow-card: 0 8px 20px rgba(16, 27, 61, 0.08);
+  --shadow-card-hover: 0 12px 28px rgba(16, 27, 61, 0.12);
+  --shadow-card-lg: 0 16px 32px rgba(16, 27, 61, 0.14);
+  --shadow-ring-primary-sm: 0 0 0 3px rgba(46, 204, 155, 0.1);
+  --shadow-ring-primary-md: 0 0 0 3px rgba(46, 204, 155, 0.16);
+  --shadow-ring-primary-lg: 0 0 0 4px rgba(46, 204, 155, 0.18);
+  --shadow-nav-active: 0 8px 20px rgba(46, 204, 155, 0.28);
+
+  /* Painel premium "3D" — brilho sutil no topo (bisel) + sombra funda.
+     Uso: blocos de destaque (headers azul-marinho de módulo, cards em
+     evidência). Não é pra todo card comum — é pra bloco em destaque. */
+  --shadow-panel-3d:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.25),
+    0 1px 2px rgba(16, 27, 61, 0.3),
+    0 24px 48px -12px rgba(16, 27, 61, 0.55);
+
+  /* Variante do painel 3D pro hover — bisel de luz mais evidente no topo
+     e elevação mais profunda, pra reforçar a sensação de "subir" ao
+     passar o mouse (usado nos cards do kanban de Leads). */
+  --shadow-panel-3d-hover:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(16, 27, 61, 0.35),
+    0 32px 56px -14px rgba(16, 27, 61, 0.65);
+
+  /* Layout */
+  --sidebar-width: 272px;
+  --header-height: 76px;
+}
+
+/*
+ * LIGHT THEME
+ *
+ * Ativado por .light ou [data-theme="light"] em <html>.
+ * Variação em branco puro do mesmo sistema (:root usa um
+ * fundo levemente tonalizado); cores de marca são idênticas.
+ */
+
+.light,
+[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #101b3d;
+
+  --card: #ffffff;
+  --card-foreground: #101b3d;
+
+  --popover: #ffffff;
+  --popover-foreground: #101b3d;
+
+  --primary: #2ecc9b;
+  --primary-foreground: #101b3d;
+
+  --secondary: #101b3d;
+  --secondary-foreground: #ffffff;
+
+  --muted: #f7f8fa;
+  --muted-foreground: #6b7280;
+
+  --accent: #122b54;
+  --accent-foreground: #ffffff;
+
+  --success: #16a97d;
+  --success-foreground: #ffffff;
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+  --info: #0369a1;
+  --info-foreground: #ffffff;
+  --destructive: #dc3545;
+  --destructive-foreground: #ffffff;
+
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #2ecc9b;
+}
+
+/*
+ * TAILWIND UTILITY MAPPING
+ *
+ * Expõe os tokens acima como classes utilitárias
+ * (bg-card, text-foreground, border-border, bg-primary...).
+ * Reagem automaticamente à troca de tema porque leem var().
+ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-card-beige: var(--card-beige);
+  --color-card-beige-muted-foreground: var(--card-beige-muted-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-card-lg: var(--shadow-card-lg);
+  --shadow-panel-3d: var(--shadow-panel-3d);
+  --shadow-panel-3d-hover: var(--shadow-panel-3d-hover);
+  --shadow-ring-primary-sm: var(--shadow-ring-primary-sm);
+  --shadow-ring-primary-md: var(--shadow-ring-primary-md);
+  --shadow-ring-primary-lg: var(--shadow-ring-primary-lg);
+  --shadow-nav-active: var(--shadow-nav-active);
+
+  /* Famílias tipográficas — Manrope para títulos/destaques, Inter no corpo */
+  --font-heading: var(--font-manrope);
+  --font-sans: var(--font-inter);
+
+  /* Escala tipográfica global */
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.045em;
+
+  --text-h1: 2.125rem;
+  --text-h1--line-height: 1.1;
+  --text-h1--letter-spacing: -0.04em;
+
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.2;
+  --text-h2--letter-spacing: -0.035em;
+
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--letter-spacing: -0.02em;
+
+  --text-h4: 1.0625rem;
+  --text-h4--line-height: 1.35;
+
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.55;
+
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.5;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+
+  --text-label: 0.625rem;
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.2em;
+
+  --text-kpi: 1.75rem;
+  --text-kpi--line-height: 1;
+  --text-kpi--letter-spacing: -0.045em;
+
+  --text-financial: 1rem;
+  --text-financial--line-height: 1.2;
+}
+
+/*
+ * CARD PREMIUM (bege + borda verde-menta + sombra 3D)
+ *
+ * Classe única e reutilizável — não repetir bg/border/shadow card a
+ * card. Uso: className="card-premium rounded-2xl p-5" (arredondamento
+ * e espaçamento continuam livres por instância). Texto principal usa
+ * text-foreground (15.26:1 sobre o bege, testado); texto secundário
+ * usa text-card-beige-muted-foreground em vez de text-muted-foreground
+ * (o tom padrão só dá 4.38:1 sobre o bege — abaixo do mínimo AA pra
+ * texto normal).
+ */
+@layer components {
+  /*
+   * Efeito padrão de TODO modal do site (regra fixa, nunca opcional):
+   * uma barra de luz aparece no topo ao passar o mouse + brilho ambiente
+   * na cor de destaque do modal. Verde-menta nos modais bege
+   * (.card-premium), branco/claro nos modais azul-marinho (.block-navy-3d).
+   * Isso vive na classe compartilhada de propósito — todo modal novo que
+   * usar .card-premium ou .block-navy-3d já ganha o efeito automaticamente,
+   * sem precisar lembrar de adicionar em cada arquivo.
+   */
+  .card-premium {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-beige);
+    border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: var(--shadow-panel-3d);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .card-premium::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .card-premium:hover {
+    border-color: var(--primary);
+    box-shadow:
+      var(--shadow-panel-3d-hover),
+      0 0 28px rgba(46, 204, 155, 0.22);
+  }
+  .card-premium:hover::before {
+    opacity: 1;
+  }
+
+  .block-navy-3d {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-panel-3d);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .block-navy-3d::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .block-navy-3d:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow:
+      var(--shadow-panel-3d-hover),
+      0 0 28px rgba(255, 255, 255, 0.14);
+  }
+  .block-navy-3d:hover::before {
+    opacity: 1;
+  }
+}
+
+/*
+ * BASE
+ *
+ * Tudo abaixo fica dentro de @layer base — SEM isso, essas regras
+ * (aplicadas em seletores de elemento como h1..h6 e a) ficam
+ * "sem camada" (unlayered) e, pela spec de CSS Cascade Layers,
+ * unlayered SEMPRE vence sobre qualquer classe utilitária do Tailwind
+ * (que vive em @layer utilities) — não importa a ordem no arquivo nem
+ * a especificidade. Foi exatamente essa a causa raiz do texto
+ * "invisível até selecionar" no menu lateral (a { color: inherit }
+ * sobrescrevia text-white/90 no <Link>) e nos títulos do kanban de
+ * Leads (h3 { color: var(--foreground) } sobrescrevia text-white/90
+ * no <h3>) — o CSS de cada componente estava certo, mas essa regra
+ * de base, fora de qualquer @layer, sempre ganhava.
+ */
+
+@layer base {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+  font-family: var(--font-inter), sans-serif;
+}
+
+html.light,
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/*
+ * BODY
+ */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: var(--background);
+  color: var(--foreground);
+
+  font-family: var(--font-inter), sans-serif;
+
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+/*
+ * TYPOGRAPHY
+ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+
+  font-family: var(--font-manrope), sans-serif;
+
+  font-weight: 700;
+  letter-spacing: -0.035em;
+
+  color: var(--foreground);
+}
+
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/*
+ * MEDIA
+ */
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/*
+ * LINKS
+ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/*
+ * FORM ELEMENTS
+ */
+
+input,
+textarea,
+select {
+  color: var(--foreground);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+} /* fim @layer base */
+
+/*
+ * SELECTION
+ */
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/*
+ * SCROLLBAR
+ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c7d8eb transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #c7d8eb;
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #9eb6d1;
+}
+
+/*
+ * FOCUS
+ */
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/*
+ * TABLES
+ *
+ * Evita compressão horizontal dos dados.
+ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  white-space: nowrap;
+}
+
+/*
+ * UTILITY
+ *
+ * Usado para containers que precisam permitir
+ * conteúdo interno sem estourar o layout.
+ */
+
+.min-w-0 {
+  min-width: 0;
+}
+
+/*
+ * PRINT
+ */
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #010a42 !important;
+  }
+
+  * {
+    color: #010a42 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+/*
+ * REDUCED MOTION
+ *
+ * Respeita usuários que preferem menos movimento.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
