@@ -10,9 +10,9 @@ import type { LeadListItem } from "@/lib/data/leads";
 import { formatDate } from "@/lib/utils/format";
 
 const COLUMN_ACCENT: Record<string, string> = {
-  Novo: "border-t-white/25",
-  Contatado: "border-t-white/25",
-  Qualificado: "border-t-white/25",
+  Novo: "border-t-border",
+  Contatado: "border-t-border",
+  Qualificado: "border-t-border",
   Convertido: "border-t-primary",
   Perdido: "border-t-destructive/60",
 };
@@ -46,13 +46,13 @@ export function LeadsBoard({ leads }: { leads: LeadListItem[] }) {
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => handleDrop(status)}
             className={[
-              "flex w-[280px] shrink-0 flex-col rounded-2xl border border-white/10 border-t-2 bg-gradient-to-b from-secondary to-accent p-3 shadow-card-lg",
-              COLUMN_ACCENT[status] ?? "border-t-white/25",
+              "card-premium flex w-[280px] shrink-0 flex-col rounded-2xl border-t-2 p-3",
+              COLUMN_ACCENT[status] ?? "border-t-primary/30",
             ].join(" ")}
           >
             <div className="mb-3 flex items-center justify-between px-1">
-              <h3 className="text-label font-bold uppercase text-white/90">{status}</h3>
-              <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[11px] font-bold text-white">
+              <h3 className="text-label font-bold uppercase text-foreground">{status}</h3>
+              <span className="rounded-full border border-primary/40 bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-foreground">
                 {columnLeads.length}
               </span>
             </div>
@@ -70,31 +70,31 @@ export function LeadsBoard({ leads }: { leads: LeadListItem[] }) {
                   }}
                   draggable
                   onDragStart={() => setDraggingId(lead.id)}
-                  className="cursor-grab rounded-xl border border-white/15 bg-white/[0.07] p-3 shadow-panel-3d transition-all duration-200 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[0.1] hover:shadow-panel-3d-hover active:cursor-grabbing"
+                  className="card-premium cursor-grab rounded-xl p-3 transition-all duration-200 hover:-translate-y-1 hover:border-primary/80 active:cursor-grabbing"
                 >
                   <Link href={`/leads/${lead.id}`} className="block">
-                    <p className="text-sm font-semibold text-white hover:text-primary">
+                    <p className="text-sm font-semibold text-foreground hover:text-accent">
                       {lead.name}
                     </p>
                   </Link>
 
-                  <p className="mt-1 text-xs font-medium uppercase text-white/55">
+                  <p className="mt-1 text-xs font-medium uppercase text-card-beige-muted-foreground">
                     {lead.source ?? "Origem não informada"}
                   </p>
 
                   {lead.assignedAdvisorName ? (
-                    <p className="mt-2 text-xs font-medium text-white/80">
+                    <p className="mt-2 text-xs font-medium text-foreground">
                       {lead.assignedAdvisorName}
                     </p>
                   ) : null}
 
                   {lead.nextTask ? (
-                    <div className="mt-2 rounded-lg border border-white/15 bg-black/15 px-2 py-1.5">
-                      <p className="truncate text-xs font-semibold text-white">
+                    <div className="mt-2 rounded-lg border border-black/10 bg-black/5 px-2 py-1.5">
+                      <p className="truncate text-xs font-semibold text-foreground">
                         {lead.nextTask.title}
                       </p>
                       {lead.nextTask.dueAt ? (
-                        <p className="text-[11px] font-medium text-white/60">
+                        <p className="text-[11px] font-medium text-card-beige-muted-foreground">
                           {formatDate(lead.nextTask.dueAt)}
                         </p>
                       ) : null}

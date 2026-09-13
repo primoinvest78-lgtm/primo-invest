@@ -8,8 +8,8 @@ import type { ClientProfile } from "@/lib/data/clients";
 
 function ComingSoon({ label }: { label: string }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-8 text-center">
-      <p className="text-body-sm text-muted-foreground">{label} — em construção.</p>
+    <div className="card-premium rounded-2xl p-8 text-center">
+      <p className="text-body-sm text-card-beige-muted-foreground">{label} — em construção.</p>
     </div>
   );
 }

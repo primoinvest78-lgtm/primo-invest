@@ -1,3 +1,4 @@
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { getAccountsDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL } from "@/lib/utils/format";
@@ -28,12 +29,13 @@ export default async function ContasPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {accounts.map((account) => {
+          {accounts.map((account, index) => {
             const balance = account.holdings.reduce((s, h) => s + Number(h.valuation ?? 0), 0);
 
             return (
-              <div
+              <ScrollReveal
                 key={account.id}
+                delay={Math.min(index * 0.04, 0.2)}
                 className="card-premium overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70 md:p-6"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -67,7 +69,7 @@ export default async function ContasPage() {
                     ))}
                   </div>
                 ) : null}
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>

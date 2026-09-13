@@ -12,7 +12,7 @@ const CONTACT_LABEL: Record<string, string> = {
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div>
-      <p className="text-label font-bold uppercase text-muted-foreground">{label}</p>
+      <p className="text-label font-bold uppercase text-card-beige-muted-foreground">{label}</p>
       <p className="mt-1 text-sm font-medium text-foreground">{value ?? "—"}</p>
     </div>
   );
@@ -36,29 +36,29 @@ export function OverviewTab({ client }: { client: ClientProfile }) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-label font-bold uppercase text-muted-foreground">
+        <div className="card-premium rounded-2xl p-4">
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
             Patrimônio (ativos)
           </p>
           <p className="mt-2 text-h2 font-bold text-foreground">
             {formatCurrencyBRL(holdingsTotal + consortiumTotal)}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-label font-bold uppercase text-muted-foreground">Passivos</p>
+        <div className="card-premium rounded-2xl p-4">
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Passivos</p>
           <p className="mt-2 text-h2 font-bold text-destructive">
             {formatCurrencyBRL(liabilitiesTotal)}
           </p>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-label font-bold uppercase text-muted-foreground">Líquido</p>
+        <div className="card-premium rounded-2xl p-4">
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Líquido</p>
           <p className="mt-2 text-h2 font-bold text-foreground">
             {formatCurrencyBRL(holdingsTotal + consortiumTotal - liabilitiesTotal)}
           </p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Dados cadastrais</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Field label="Nome completo" value={client.full_name} />
@@ -79,10 +79,10 @@ export function OverviewTab({ client }: { client: ClientProfile }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Contatos</h3>
         {client.client_contacts.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">Nenhum contato cadastrado.</p>
+          <p className="text-body-sm text-card-beige-muted-foreground">Nenhum contato cadastrado.</p>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {client.client_contacts.map((contact) => (
@@ -91,7 +91,7 @@ export function OverviewTab({ client }: { client: ClientProfile }) {
                 className="flex items-center justify-between rounded-xl border border-border bg-muted/60 px-3.5 py-3"
               >
                 <div>
-                  <p className="text-label font-bold uppercase text-muted-foreground">
+                  <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
                     {CONTACT_LABEL[contact.contact_type] ?? contact.contact_type}
                   </p>
                   <p className="mt-0.5 text-sm font-medium text-foreground">{contact.value}</p>
@@ -103,11 +103,11 @@ export function OverviewTab({ client }: { client: ClientProfile }) {
         )}
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Tags</h3>
         <div className="flex flex-wrap gap-2">
           {client.client_tags.length === 0 ? (
-            <p className="text-body-sm text-muted-foreground">Nenhuma tag associada.</p>
+            <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma tag associada.</p>
           ) : (
             client.client_tags.map((ct) =>
               ct.tags ? (

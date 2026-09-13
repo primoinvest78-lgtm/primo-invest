@@ -150,21 +150,21 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-5 md:p-6"
+        className="flex flex-wrap items-center justify-between gap-3 card-premium rounded-2xl p-5 md:p-6"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Contato</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Contato</p>
             <p className="mt-1 text-sm font-medium text-foreground">
               {lead.email ?? "—"} {lead.phone ? `· ${lead.phone}` : ""}
             </p>
           </div>
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Origem</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Origem</p>
             <p className="mt-1 text-sm font-medium text-foreground">{lead.source ?? "—"}</p>
           </div>
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Status</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Status</p>
             <Badge className="mt-1">{lead.status}</Badge>
           </div>
         </div>
@@ -177,13 +177,13 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
       </motion.div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="card-premium rounded-2xl p-5 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-h2 font-bold text-foreground">Atividade</h3>
             <NewInteractionDialog leadId={lead.id} />
           </div>
           {sortedInteractions.length === 0 ? (
-            <p className="text-body-sm text-muted-foreground">Nenhuma interação registrada.</p>
+            <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma interação registrada.</p>
           ) : (
             <div className="space-y-2">
               {sortedInteractions.map((item) => (
@@ -196,12 +196,12 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
                       {INTERACTION_LABEL[item.interaction_type] ?? item.interaction_type}
                       {item.subject ? ` — ${item.subject}` : ""}
                     </p>
-                    <p className="shrink-0 text-xs font-medium text-muted-foreground">
+                    <p className="shrink-0 text-xs font-medium text-card-beige-muted-foreground">
                       {formatDateTime(item.occurred_at)}
                     </p>
                   </div>
                   {item.description ? (
-                    <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
+                    <p className="mt-1 text-xs text-card-beige-muted-foreground">{item.description}</p>
                   ) : null}
                 </div>
               ))}
@@ -209,13 +209,13 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
           )}
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+        <div className="card-premium rounded-2xl p-5 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-h2 font-bold text-foreground">Próximas tarefas</h3>
             <NewTaskDialog leadId={lead.id} />
           </div>
           {sortedTasks.length === 0 ? (
-            <p className="text-body-sm text-muted-foreground">Nenhuma tarefa pendente.</p>
+            <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma tarefa pendente.</p>
           ) : (
             <div className="space-y-2">
               {sortedTasks.map((task) => (
@@ -225,7 +225,7 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
                 >
                   <p className="text-sm font-semibold text-foreground">{task.title}</p>
                   {task.due_at ? (
-                    <p className="shrink-0 text-xs font-medium text-muted-foreground">
+                    <p className="shrink-0 text-xs font-medium text-card-beige-muted-foreground">
                       {formatDateTime(task.due_at)}
                     </p>
                   ) : null}

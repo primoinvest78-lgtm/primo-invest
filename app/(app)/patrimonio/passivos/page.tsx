@@ -1,3 +1,4 @@
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { getLiabilitiesDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -20,7 +21,7 @@ export default async function PassivosPage() {
         </div>
       </section>
 
-      <div className="card-premium overflow-hidden rounded-2xl">
+      <ScrollReveal className="card-premium overflow-hidden rounded-2xl">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-black/10 bg-black/5 text-left">
@@ -77,7 +78,7 @@ export default async function PassivosPage() {
             )}
           </tbody>
         </table>
-      </div>
+      </ScrollReveal>
     </div>
   );
 }

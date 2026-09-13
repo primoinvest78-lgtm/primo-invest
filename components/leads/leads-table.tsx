@@ -8,15 +8,15 @@ import { formatDate } from "@/lib/utils/format";
 
 export function LeadsTable({ leads }: { leads: LeadListItem[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card-lg">
+    <div className="overflow-hidden card-premium rounded-2xl">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-border bg-secondary text-left">
-            <th className="px-4 py-3 text-label font-bold uppercase text-primary">Lead</th>
-            <th className="px-4 py-3 text-label font-bold uppercase text-primary">Origem</th>
-            <th className="px-4 py-3 text-label font-bold uppercase text-primary">Status</th>
-            <th className="px-4 py-3 text-label font-bold uppercase text-primary">Assessor</th>
-            <th className="px-4 py-3 text-label font-bold uppercase text-primary">
+          <tr className="border-b border-black/10 bg-black/5 text-left">
+            <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Lead</th>
+            <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Origem</th>
+            <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Status</th>
+            <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Assessor</th>
+            <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">
               Próxima tarefa
             </th>
           </tr>
@@ -24,7 +24,7 @@ export function LeadsTable({ leads }: { leads: LeadListItem[] }) {
         <tbody>
           {leads.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-4 py-10 text-center text-body-sm text-muted-foreground">
+              <td colSpan={5} className="px-4 py-10 text-center text-body-sm text-card-beige-muted-foreground">
                 Nenhum lead encontrado.
               </td>
             </tr>
@@ -42,11 +42,11 @@ export function LeadsTable({ leads }: { leads: LeadListItem[] }) {
                     {lead.name}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{lead.source ?? "—"}</td>
+                <td className="px-4 py-3 text-card-beige-muted-foreground">{lead.source ?? "—"}</td>
                 <td className="px-4 py-3">
                   <Badge variant="outline">{lead.status}</Badge>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">
+                <td className="px-4 py-3 text-card-beige-muted-foreground">
                   {lead.assignedAdvisorName ?? "—"}
                 </td>
                 <td className="px-4 py-3">
@@ -56,7 +56,7 @@ export function LeadsTable({ leads }: { leads: LeadListItem[] }) {
                       {lead.nextTask.dueAt ? ` · ${formatDate(lead.nextTask.dueAt)}` : ""}
                     </span>
                   ) : (
-                    <span className="text-muted-foreground">—</span>
+                    <span className="text-card-beige-muted-foreground">—</span>
                   )}
                 </td>
               </tr>

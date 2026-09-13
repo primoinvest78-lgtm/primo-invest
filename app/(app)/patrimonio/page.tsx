@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AllocationBar } from "@/components/wealth/allocation-bar";
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { getWealthOverview } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -27,34 +28,40 @@ export default async function PatrimonioPage() {
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="card-premium rounded-2xl p-5">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
-            Total de Ativos
-          </p>
-          <p className="mt-2 text-h2 font-bold text-foreground">
-            {formatCurrencyBRL(wealth.totalAssets)}
-          </p>
-        </div>
-        <div className="card-premium rounded-2xl p-5">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
-            Total de Passivos
-          </p>
-          <p className="mt-2 text-h2 font-bold text-destructive">
-            {formatCurrencyBRL(wealth.totalLiabilities)}
-          </p>
-        </div>
-        <div className="card-premium rounded-2xl p-5">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
-            Patrimônio Líquido
-          </p>
-          <p className="mt-2 text-h2 font-bold text-foreground">
-            {formatCurrencyBRL(wealth.netWorth)}
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
+              Total de Ativos
+            </p>
+            <p className="mt-2 text-h2 font-bold text-foreground">
+              {formatCurrencyBRL(wealth.totalAssets)}
+            </p>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal delay={0.05}>
+          <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
+              Total de Passivos
+            </p>
+            <p className="mt-2 text-h2 font-bold text-destructive">
+              {formatCurrencyBRL(wealth.totalLiabilities)}
+            </p>
+          </div>
+        </ScrollReveal>
+        <ScrollReveal delay={0.1}>
+          <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
+              Patrimônio Líquido
+            </p>
+            <p className="mt-2 text-h2 font-bold text-foreground">
+              {formatCurrencyBRL(wealth.netWorth)}
+            </p>
+          </div>
+        </ScrollReveal>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <div className="card-premium rounded-2xl p-5 md:p-6">
+        <ScrollReveal className="card-premium rounded-2xl p-5 md:p-6">
           <h3 className="mb-4 text-h2 font-bold text-foreground">Composição da carteira</h3>
           {wealth.allocation.length === 0 ? (
             <p className="text-body-sm text-card-beige-muted-foreground">Sem posições registradas.</p>
@@ -76,9 +83,9 @@ export default async function PatrimonioPage() {
               })}
             </div>
           )}
-        </div>
+        </ScrollReveal>
 
-        <div className="card-premium rounded-2xl p-5 md:p-6">
+        <ScrollReveal delay={0.1} className="card-premium rounded-2xl p-5 md:p-6">
           <h3 className="mb-4 text-h2 font-bold text-foreground">Metas vinculadas</h3>
           {wealth.goals.length === 0 ? (
             <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma meta ativa.</p>
@@ -110,11 +117,11 @@ export default async function PatrimonioPage() {
               })}
             </div>
           )}
-        </div>
+        </ScrollReveal>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <div className="card-premium rounded-2xl p-5 md:p-6">
+        <ScrollReveal className="card-premium rounded-2xl p-5 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-h2 font-bold text-foreground">Contas</h3>
             <Link href="/patrimonio/contas" className="text-xs font-semibold text-accent hover:underline">
@@ -145,9 +152,9 @@ export default async function PatrimonioPage() {
               ))}
             </div>
           )}
-        </div>
+        </ScrollReveal>
 
-        <div className="card-premium rounded-2xl p-5 md:p-6">
+        <ScrollReveal delay={0.1} className="card-premium rounded-2xl p-5 md:p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-h2 font-bold text-foreground">Passivos</h3>
             <Link href="/patrimonio/passivos" className="text-xs font-semibold text-accent hover:underline">
@@ -179,7 +186,7 @@ export default async function PatrimonioPage() {
               ))}
             </div>
           )}
-        </div>
+        </ScrollReveal>
       </div>
     </div>
   );

@@ -15,8 +15,8 @@ export function RiskProfileTab({ client }: { client: ClientProfile }) {
 
   if (!current) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 text-center">
-        <p className="text-body-sm text-muted-foreground">
+      <div className="card-premium rounded-2xl p-8 text-center">
+        <p className="text-body-sm text-card-beige-muted-foreground">
           Nenhuma avaliação de suitability registrada para este cliente ainda.
         </p>
       </div>
@@ -28,12 +28,12 @@ export function RiskProfileTab({ client }: { client: ClientProfile }) {
       <div
         className={[
           "rounded-2xl border p-5 md:p-6",
-          isExpired ? "border-destructive/40 bg-destructive/5" : "border-border bg-card",
+          isExpired ? "border-destructive/40 bg-destructive/5" : "card-premium",
         ].join(" ")}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
               Perfil vigente
             </p>
             <h3 className="mt-1 text-h2 font-bold text-foreground">{current.risk_tolerance}</h3>
@@ -55,33 +55,33 @@ export function RiskProfileTab({ client }: { client: ClientProfile }) {
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Objetivo</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Objetivo</p>
             <p className="mt-1 text-sm font-medium text-foreground">
               {current.investment_objective}
             </p>
           </div>
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Horizonte</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Horizonte</p>
             <p className="mt-1 text-sm font-medium text-foreground">
               {current.investment_horizon}
             </p>
           </div>
           <div>
-            <p className="text-label font-bold uppercase text-muted-foreground">Score</p>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Score</p>
             <p className="mt-1 text-sm font-medium text-foreground">{current.score ?? "—"}</p>
           </div>
         </div>
 
-        <p className="mt-4 text-xs font-medium text-muted-foreground">
+        <p className="mt-4 text-xs font-medium text-card-beige-muted-foreground">
           Válido de {formatDate(current.valid_from)}
           {current.valid_until ? ` até ${formatDate(current.valid_until)}` : " (sem prazo definido)"}
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Histórico de avaliações</h3>
         {history.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">
+          <p className="text-body-sm text-card-beige-muted-foreground">
             Esta é a primeira avaliação registrada — sem histórico anterior.
           </p>
         ) : (
@@ -93,11 +93,11 @@ export function RiskProfileTab({ client }: { client: ClientProfile }) {
               >
                 <div>
                   <p className="text-sm font-semibold text-foreground">{item.risk_tolerance}</p>
-                  <p className="text-xs font-medium text-muted-foreground">
+                  <p className="text-xs font-medium text-card-beige-muted-foreground">
                     {item.investment_objective} · {item.investment_horizon}
                   </p>
                 </div>
-                <p className="text-xs font-medium text-muted-foreground">
+                <p className="text-xs font-medium text-card-beige-muted-foreground">
                   {formatDate(item.valid_from)}
                   {item.valid_until ? ` – ${formatDate(item.valid_until)}` : ""}
                 </p>

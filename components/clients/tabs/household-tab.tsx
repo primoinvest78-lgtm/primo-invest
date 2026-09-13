@@ -5,8 +5,8 @@ import type { ClientProfile } from "@/lib/data/clients";
 export function HouseholdTab({ client }: { client: ClientProfile }) {
   if (!client.household) {
     return (
-      <div className="rounded-2xl border border-border bg-card p-8 text-center">
-        <p className="text-body-sm text-muted-foreground">
+      <div className="card-premium rounded-2xl p-8 text-center">
+        <p className="text-body-sm text-card-beige-muted-foreground">
           Este cliente não está vinculado a nenhum núcleo familiar.
         </p>
       </div>
@@ -17,17 +17,17 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="text-h2 font-bold text-foreground">{household.name}</h3>
         {household.description ? (
-          <p className="mt-2 text-body-sm text-muted-foreground">{household.description}</p>
+          <p className="mt-2 text-body-sm text-card-beige-muted-foreground">{household.description}</p>
         ) : null}
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+      <div className="card-premium rounded-2xl p-5 md:p-6">
         <h3 className="mb-4 text-h2 font-bold text-foreground">Membros</h3>
         {household.household_members.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">Nenhum membro cadastrado.</p>
+          <p className="text-body-sm text-card-beige-muted-foreground">Nenhum membro cadastrado.</p>
         ) : (
           <div className="space-y-2">
             {household.household_members.map((member) => (
@@ -39,7 +39,7 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
                   <p className="text-sm font-semibold text-foreground">
                     {member.client?.full_name ?? "—"}
                   </p>
-                  <p className="text-xs font-medium uppercase text-muted-foreground">
+                  <p className="text-xs font-medium uppercase text-card-beige-muted-foreground">
                     {member.relationship ?? "Relação não informada"}
                   </p>
                 </div>

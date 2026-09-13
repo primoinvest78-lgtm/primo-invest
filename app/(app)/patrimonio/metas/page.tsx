@@ -1,3 +1,4 @@
+import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { getGoalsDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -26,14 +27,15 @@ export default async function MetasPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {goals.map((goal) => {
+          {goals.map((goal, index) => {
             const pct = goal.targetAmount
               ? Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)
               : 0;
 
             return (
-              <div
+              <ScrollReveal
                 key={goal.id}
+                delay={Math.min(index * 0.04, 0.2)}
                 className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
               >
                 <div className="flex items-start justify-between gap-2">
@@ -66,7 +68,7 @@ export default async function MetasPage() {
                     Prazo: {formatDate(goal.targetDate)}
                   </p>
                 ) : null}
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
