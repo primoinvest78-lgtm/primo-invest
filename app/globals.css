@@ -258,8 +258,21 @@
 
 /*
  * BASE
+ *
+ * Tudo abaixo fica dentro de @layer base — SEM isso, essas regras
+ * (aplicadas em seletores de elemento como h1..h6 e a) ficam
+ * "sem camada" (unlayered) e, pela spec de CSS Cascade Layers,
+ * unlayered SEMPRE vence sobre qualquer classe utilitária do Tailwind
+ * (que vive em @layer utilities) — não importa a ordem no arquivo nem
+ * a especificidade. Foi exatamente essa a causa raiz do texto
+ * "invisível até selecionar" no menu lateral (a { color: inherit }
+ * sobrescrevia text-white/90 no <Link>) e nos títulos do kanban de
+ * Leads (h3 { color: var(--foreground) } sobrescrevia text-white/90
+ * no <h3>) — o CSS de cada componente estava certo, mas essa regra
+ * de base, fora de qualquer @layer, sempre ganhava.
  */
 
+@layer base {
 * {
   box-sizing: border-box;
 }
@@ -356,6 +369,8 @@ input::placeholder,
 textarea::placeholder {
   color: var(--muted-foreground);
 }
+
+} /* fim @layer base */
 
 /*
  * SELECTION
