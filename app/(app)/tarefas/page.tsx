@@ -1,25 +1,28 @@
-import { ExecutivePage } from "@/components/dashboard/executive-page";
+import { TasksBoard } from "@/components/tasks/tasks-board";
+import { getMyTasks } from "@/lib/data/tasks";
+import { requireActiveMembership } from "@/lib/supabase/session";
 
-export default function TarefasPage() {
+export default async function TarefasPage() {
+  const { organizationId, userId } = await requireActiveMembership();
+  const tasks = await getMyTasks(organizationId, userId);
+  const total = tasks.overdue.length + tasks.today.length + tasks.upcoming.length;
+
   return (
-    <ExecutivePage
-      badge="Relacionamento"
-      title="Tarefas"
-      subtitle="Operação e execução de atividades prioritárias"
-      context="Monitoramento de ações pendentes, prazos e carga operacional do time executivo."
-    >
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Pendentes</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">26</h2>
-      </div>
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Em atraso</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">2</h2>
-      </div>
-      <div className="rounded-2xl border border-border bg-card p-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Concluídas</p>
-        <h2 className="mt-3 text-3xl font-bold text-foreground">91%</h2>
-      </div>
-    </ExecutivePage>
+    <div className="space-y-6">
+      <section className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-secondary p-5 shadow-panel-3d md:flex-row md:items-end md:justify-between md:p-6">
+        <div className="min-w-0">
+          <p className="text-label font-bold uppercase text-primary">Operação</p>
+          <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
+            Minhas Tarefas
+          </h1>
+          <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
+            {total} {total === 1 ? "tarefa pendente" : "tarefas pendentes"} — atrasadas primeiro,
+            depois hoje e os próximos dias.
+          </p>
+        </div>
+      </section>
+
+      <TasksBoard tasks={tasks} />
+    </div>
   );
 }
