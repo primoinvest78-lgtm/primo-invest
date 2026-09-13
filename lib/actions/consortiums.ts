@@ -9,6 +9,7 @@ function revalidateContract(contractId: string, clientId?: string | null) {
   revalidatePath("/consorcios");
   revalidatePath("/consorcios/contratos");
   revalidatePath(`/consorcios/contratos/${contractId}`);
+  revalidatePath("/consorcios/parcelas");
   if (clientId) revalidatePath(`/clientes/${clientId}`);
 }
 
@@ -217,6 +218,114 @@ export async function deleteInstallment(installmentId: string, contractId: strin
   if (error) throw error;
 
   revalidateContract(contractId, clientId);
+  revalidatePath("/consorcios/parcelas");
+}
+
+/**
+ * Reajuste de valor — guarda o valor anterior no próprio evento
+ * (metadata), nunca recalcula com regra própria: o novo valor vem de
+ * quem está registrando a alteração (referência contratual/motivo real).
+ */
+export async function recordInstallmentAdjustment(
+  installmentId: string,
+  contractId: string,
+  clientId: string | null,
+  input: { newAmount: number; reason: string; contractualReference: string },
+) {
+  await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { data: installment, error: fetchError } = await supabase
+    .from("consortium_installments")
+    .select("installment_number, amount")
+    .eq("id", installmentId)
+    .single();
+  if (fetchError) throw fetchError;
+
+  const { error } = await supabase
+    .from("consortium_installments")
+    .update({ amount: input.newAmount })
+    .eq("id", installmentId);
+  if (error) throw error;
+
+  await supabase.from("consortium_events").insert({
+    consortium_contract_id: contractId,
+    event_type: "adjustment",
+    event_date: new Date().toISOString().slice(0, 10),
+    description: `Parcela ${installment.installment_number}: valor alterado de ${installment.amount} para ${input.newAmount}. Motivo: ${input.reason}.`,
+    metadata: {
+      installmentNumber: installment.installment_number,
+      previousAmount: installment.amount,
+      newAmount: input.newAmount,
+      reason: input.reason,
+      contractualReference: input.contractualReference || null,
+    },
+  });
+
+  revalidateContract(contractId, clientId);
+  revalidatePath("/consorcios/parcelas");
+}
+
+/**
+ * Negociação — muda vencimento/status pra "negotiated" e preserva a
+ * condição original (vencimento anterior) no evento, com o
+ * responsável identificado pela sessão autenticada.
+ */
+export async function negotiateInstallment(
+  installmentId: string,
+  contractId: string,
+  clientId: string | null,
+  input: { newDueDate: string; condition: string; notes: string },
+) {
+  const { fullName } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { data: installment, error: fetchError } = await supabase
+    .from("consortium_installments")
+    .select("installment_number, due_date")
+    .eq("id", installmentId)
+    .single();
+  if (fetchError) throw fetchError;
+
+  const { error } = await supabase
+    .from("consortium_installments")
+    .update({ due_date: input.newDueDate, status: "negotiated" })
+    .eq("id", installmentId);
+  if (error) throw error;
+
+  await supabase.from("consortium_events").insert({
+    consortium_contract_id: contractId,
+    event_type: "negotiation",
+    event_date: new Date().toISOString().slice(0, 10),
+    description: `Parcela ${installment.installment_number} negociada: ${input.condition}.`,
+    metadata: {
+      installmentNumber: installment.installment_number,
+      previousDueDate: installment.due_date,
+      newDueDate: input.newDueDate,
+      condition: input.condition,
+      notes: input.notes || null,
+      responsibleName: fullName,
+    },
+  });
+
+  revalidateContract(contractId, clientId);
+  revalidatePath("/consorcios/parcelas");
+}
+
+export async function updateInstallmentStatus(
+  installmentId: string,
+  contractId: string,
+  clientId: string | null,
+  status: string,
+) {
+  await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("consortium_installments").update({ status }).eq("id", installmentId);
+  if (error) throw error;
+
+  revalidateContract(contractId, clientId);
+  revalidatePath("/consorcios/parcelas");
 }
 
 const BID_RESULT_EVENT: Record<string, { type: string; label: string }> = {

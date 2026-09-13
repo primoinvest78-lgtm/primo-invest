@@ -428,3 +428,73 @@ export async function getContractAuditEntries(
     createdAt: row.created_at,
   }));
 }
+
+export type InstallmentAdjustmentEvent = {
+  id: string;
+  eventType: "adjustment" | "negotiation";
+  eventDate: string;
+  createdAt: string;
+  description: string | null;
+  metadata: Record<string, unknown> | null;
+  contractId: string;
+  contractLabel: string;
+  clientId: string | null;
+  clientName: string | null;
+};
+
+/**
+ * Reajustes e negociações de parcela — registrados como eventos em
+ * consortium_events (event_type "adjustment"/"negotiation"), nunca uma
+ * tabela nova. Preserva a condição original: o metadata de cada evento
+ * guarda o valor/vencimento anterior, o installments.amount/due_date
+ * atual só reflete o estado corrente.
+ */
+export async function getConsortiumAdjustmentEvents(
+  organizationId: string,
+): Promise<InstallmentAdjustmentEvent[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("consortium_events")
+    .select(
+      `id, event_type, event_date, description, metadata, created_at,
+       consortium_contracts!inner(id, administrator_name, contract_number, organization_id,
+         client:clients(id, full_name))`,
+    )
+    .in("event_type", ["adjustment", "negotiation"])
+    .eq("consortium_contracts.organization_id", organizationId)
+    .order("event_date", { ascending: false });
+
+  if (error) throw error;
+
+  type Raw = {
+    id: string;
+    event_type: string;
+    event_date: string;
+    description: string | null;
+    metadata: Record<string, unknown> | null;
+    created_at: string;
+    consortium_contracts: {
+      id: string;
+      administrator_name: string | null;
+      contract_number: string | null;
+      client: { id: string; full_name: string } | null;
+    };
+  };
+  const rows = (data ?? []) as unknown as Raw[];
+
+  return rows.map((row) => ({
+    id: row.id,
+    eventType: row.event_type as "adjustment" | "negotiation",
+    eventDate: row.event_date,
+    createdAt: row.created_at,
+    description: row.description,
+    metadata: row.metadata,
+    contractId: row.consortium_contracts.id,
+    contractLabel: [row.consortium_contracts.administrator_name, row.consortium_contracts.contract_number]
+      .filter(Boolean)
+      .join(" · "),
+    clientId: row.consortium_contracts.client?.id ?? null,
+    clientName: row.consortium_contracts.client?.full_name ?? null,
+  }));
+}
