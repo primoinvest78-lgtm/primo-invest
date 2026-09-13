@@ -68,6 +68,15 @@
   --input: #e4e7ec;
   --ring: #2ecc9b;
 
+  /* Card premium — bege com borda verde-menta, pra cards/painéis em
+     destaque (não é a superfície padrão, é uma variação de ênfase).
+     --card-beige-muted-foreground é mais escuro que --muted-foreground
+     porque #6b7280 dá só 4.38:1 sobre o bege (abaixo de AA pra texto
+     normal, ok só pra texto grande) — testado com fórmula WCAG antes
+     de escolher. #101b3d (--foreground) já dá 15.26:1, ok como está. */
+  --card-beige: #f6f7c4;
+  --card-beige-muted-foreground: #374151;
+
   /* Radius */
   --radius: 0.875rem;
 
@@ -169,6 +178,8 @@
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-card-beige: var(--card-beige);
+  --color-card-beige-muted-foreground: var(--card-beige-muted-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
@@ -254,6 +265,25 @@
 
   --text-financial: 1rem;
   --text-financial--line-height: 1.2;
+}
+
+/*
+ * CARD PREMIUM (bege + borda verde-menta + sombra 3D)
+ *
+ * Classe única e reutilizável — não repetir bg/border/shadow card a
+ * card. Uso: className="card-premium rounded-2xl p-5" (arredondamento
+ * e espaçamento continuam livres por instância). Texto principal usa
+ * text-foreground (15.26:1 sobre o bege, testado); texto secundário
+ * usa text-card-beige-muted-foreground em vez de text-muted-foreground
+ * (o tom padrão só dá 4.38:1 sobre o bege — abaixo do mínimo AA pra
+ * texto normal).
+ */
+@layer components {
+  .card-premium {
+    background-color: var(--card-beige);
+    border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: var(--shadow-panel-3d);
+  }
 }
 
 /*

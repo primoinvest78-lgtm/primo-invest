@@ -6,14 +6,14 @@ import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 export function AttentionPanel({ items }: { items: AttentionItem[] }) {
   if (items.length === 0) {
     return (
-      <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 md:p-6">
+      <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
         <div className="mb-2">
-          <p className="text-label font-bold uppercase text-muted-foreground">Atenção</p>
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Atenção</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">
             O que precisa da sua atenção
           </h3>
         </div>
-        <p className="text-body-sm text-muted-foreground">
+        <p className="text-body-sm text-card-beige-muted-foreground">
           Nenhum item pendente no momento.
         </p>
       </section>
@@ -21,9 +21,9 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 md:p-6">
+    <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-5">
-        <p className="text-label font-bold uppercase text-muted-foreground">Atenção</p>
+        <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Atenção</p>
         <h3 className="mt-1 text-h2 font-bold text-foreground">
           O que precisa da sua atenção
         </h3>

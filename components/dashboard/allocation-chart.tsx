@@ -10,9 +10,9 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+    <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-4">
-        <p className="text-label font-bold uppercase text-muted-foreground">Alocação</p>
+        <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Alocação</p>
         <h3 className="mt-1 text-h2 font-bold text-foreground">Alocação patrimonial</h3>
       </div>
 
@@ -25,7 +25,7 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
               innerRadius={62}
               outerRadius={88}
               paddingAngle={2}
-              stroke="var(--card)"
+              stroke="var(--card-beige)"
               strokeWidth={3}
             >
               {data.map((entry, index) => (
@@ -37,7 +37,7 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
 
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-card-beige-muted-foreground">
               Total
             </div>
             <div className="mt-1 font-heading text-xl font-bold tracking-[-0.04em] text-foreground">
@@ -55,7 +55,7 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
                 className="h-2.5 w-2.5 shrink-0 rounded-full shadow-ring-primary-sm"
                 style={{ backgroundColor: chartColors[index] }}
               />
-              <span className="truncate text-sm font-medium text-muted-foreground">
+              <span className="truncate text-sm font-medium text-card-beige-muted-foreground">
                 {item.name}
               </span>
             </div>

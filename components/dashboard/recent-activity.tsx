@@ -6,20 +6,20 @@ import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 export function RecentActivity({ items }: { items: RecentActivityItem[] }) {
   if (items.length === 0) {
     return (
-      <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 md:p-6">
+      <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
         <div className="mb-2">
-          <p className="text-label font-bold uppercase text-muted-foreground">Movimento</p>
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Movimento</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Atividade recente</h3>
         </div>
-        <p className="text-body-sm text-muted-foreground">Nenhuma atividade registrada.</p>
+        <p className="text-body-sm text-card-beige-muted-foreground">Nenhuma atividade registrada.</p>
       </section>
     );
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 md:p-6">
+    <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-5">
-        <p className="text-label font-bold uppercase text-muted-foreground">Movimento</p>
+        <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Movimento</p>
         <h3 className="mt-1 text-h2 font-bold text-foreground">Atividade recente</h3>
       </div>
 
@@ -42,7 +42,7 @@ export function RecentActivity({ items }: { items: RecentActivityItem[] }) {
 
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold leading-5 text-foreground">{item.title}</p>
-                <p className="mt-1 text-xs font-medium text-muted-foreground">{item.time}</p>
+                <p className="mt-1 text-xs font-medium text-card-beige-muted-foreground">{item.time}</p>
               </div>
             </div>
           );

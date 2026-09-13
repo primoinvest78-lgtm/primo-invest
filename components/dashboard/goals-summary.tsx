@@ -7,9 +7,9 @@ import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
 export function GoalsSummary({ items }: { items: GoalItem[] }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 md:p-6">
+    <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-5">
-        <p className="text-label font-bold uppercase text-muted-foreground">Patrimônio</p>
+        <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Patrimônio</p>
         <h3 className="mt-1 text-h2 font-bold text-foreground">Metas patrimoniais</h3>
       </div>
 

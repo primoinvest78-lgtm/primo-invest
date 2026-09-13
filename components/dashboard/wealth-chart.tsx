@@ -14,10 +14,10 @@ import type { WealthPoint } from "@/lib/mock/dashboard";
 
 export function WealthChart({ data }: { data: WealthPoint[] }) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card md:p-6">
+    <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-6 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <p className="text-label font-bold uppercase text-muted-foreground">
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
             Patrimônio
           </p>
 
@@ -26,7 +26,7 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
           </h3>
         </div>
 
-        <p className="shrink-0 text-body-sm text-muted-foreground">
+        <p className="shrink-0 text-body-sm text-card-beige-muted-foreground">
           Evolução nos últimos 12 meses
         </p>
       </div>
@@ -51,14 +51,14 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
               dataKey="month"
               tickLine={false}
               axisLine={false}
-              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+              tick={{ fill: "var(--card-beige-muted-foreground)", fontSize: 12 }}
               dy={10}
             />
 
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+              tick={{ fill: "var(--card-beige-muted-foreground)", fontSize: 12 }}
               tickFormatter={(value: number) => `R$ ${Math.round(value / 1000000)}M`}
             />
 
@@ -107,7 +107,7 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
               activeDot={{
                 r: 6,
                 fill: "var(--primary)",
-                stroke: "var(--card)",
+                stroke: "var(--card-beige)",
                 strokeWidth: 3,
               }}
             />
@@ -117,7 +117,7 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
 
       <div className="mt-4 flex items-center gap-2 border-t border-border pt-4">
         <span className="h-2.5 w-2.5 rounded-full bg-primary shadow-ring-primary-lg" />
-        <span className="text-[11px] font-semibold text-muted-foreground">
+        <span className="text-[11px] font-semibold text-card-beige-muted-foreground">
           Evolução do patrimônio
         </span>
       </div>

@@ -60,7 +60,7 @@ export function KpiCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
       whileHover={{ y: -2 }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card transition-all duration-200 hover:border-primary/40 hover:shadow-card-hover"
+      className="card-premium group relative overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
     >
       {/* TOP ACCENT */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
@@ -68,7 +68,7 @@ export function KpiCard({
       {/* MAIN CONTENT */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-label font-bold uppercase text-muted-foreground">
+          <p className="truncate text-label font-bold uppercase text-card-beige-muted-foreground">
             {title}
           </p>
 
@@ -92,7 +92,7 @@ export function KpiCard({
           <span className="truncate">{change}</span>
         </span>
 
-        <span className="shrink-0 text-label font-bold uppercase text-muted-foreground">
+        <span className="shrink-0 text-label font-bold uppercase text-card-beige-muted-foreground">
           {formattedDelta}
         </span>
       </div>
