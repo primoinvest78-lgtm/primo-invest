@@ -8,14 +8,16 @@ import { HouseholdTab } from "@/components/clients/tabs/household-tab";
 import { OverviewTab } from "@/components/clients/tabs/overview-tab";
 import { RelationshipTab } from "@/components/clients/tabs/relationship-tab";
 import { RiskProfileTab } from "@/components/clients/tabs/risk-profile-tab";
-import type { ClientProfile } from "@/lib/data/clients";
+import type { ClientProfile, WealthHistoryPoint } from "@/lib/data/clients";
 
 export function ClientProfileTabs({
   client,
   organizationId,
+  wealthHistory,
 }: {
   client: ClientProfile;
   organizationId: string;
+  wealthHistory: WealthHistoryPoint[];
 }) {
   return (
     <Tabs defaultValue="overview">
@@ -30,7 +32,7 @@ export function ClientProfileTabs({
       </TabsList>
 
       <TabsContent value="overview" className="mt-5">
-        <OverviewTab client={client} />
+        <OverviewTab client={client} wealthHistory={wealthHistory} />
       </TabsContent>
       <TabsContent value="household" className="mt-5">
         <HouseholdTab client={client} />

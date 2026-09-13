@@ -20,6 +20,40 @@ export async function updateOpportunityStage(opportunityId: string, stageId: str
   revalidatePath("/oportunidades");
 }
 
+export async function createOpportunityForClient(
+  clientId: string,
+  input: { title: string; opportunityType: string; estimatedValue: number | null },
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { data: firstStage, error: stageError } = await supabase
+    .from("opportunity_stages")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .order("position")
+    .limit(1)
+    .maybeSingle();
+
+  if (stageError) throw stageError;
+  if (!firstStage) throw new Error("Nenhum estágio de oportunidade configurado.");
+
+  const { error } = await supabase.from("opportunities").insert({
+    organization_id: organizationId,
+    client_id: clientId,
+    stage_id: firstStage.id,
+    title: input.title,
+    opportunity_type: input.opportunityType,
+    estimated_value: input.estimatedValue,
+    status: "open",
+  });
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${clientId}`);
+  revalidatePath("/oportunidades");
+}
+
 export async function createOpportunityActivity(
   opportunityId: string,
   input: { activityType: string; description: string },

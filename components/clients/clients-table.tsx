@@ -32,9 +32,15 @@ export function ClientsTable({ clients }: { clients: ClientListItem[] }) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [advisorFilter, setAdvisorFilter] = useState("all");
+  const [tagFilter, setTagFilter] = useState("all");
 
   const advisors = useMemo(() => {
     const names = new Set(clients.map((c) => c.assignedAdvisorName).filter(Boolean) as string[]);
+    return Array.from(names).sort();
+  }, [clients]);
+
+  const tags = useMemo(() => {
+    const names = new Set(clients.flatMap((c) => c.tags.map((t) => t.name)));
     return Array.from(names).sort();
   }, [clients]);
 
@@ -44,9 +50,10 @@ export function ClientsTable({ clients }: { clients: ClientListItem[] }) {
       if (term && !client.fullName.toLowerCase().includes(term)) return false;
       if (statusFilter !== "all" && client.status !== statusFilter) return false;
       if (advisorFilter !== "all" && client.assignedAdvisorName !== advisorFilter) return false;
+      if (tagFilter !== "all" && !client.tags.some((t) => t.name === tagFilter)) return false;
       return true;
     });
-  }, [clients, search, statusFilter, advisorFilter]);
+  }, [clients, search, statusFilter, advisorFilter, tagFilter]);
 
   return (
     <div className="space-y-4">
@@ -77,6 +84,20 @@ export function ClientsTable({ clients }: { clients: ClientListItem[] }) {
           <SelectContent>
             <SelectItem value="all">Todos os assessores</SelectItem>
             {advisors.map((name) => (
+              <SelectItem key={name} value={name}>
+                {name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={tagFilter} onValueChange={(value) => setTagFilter(value ?? "all")}>
+          <SelectTrigger className="md:w-[180px]">
+            <SelectValue placeholder="Tag" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as tags</SelectItem>
+            {tags.map((name) => (
               <SelectItem key={name} value={name}>
                 {name}
               </SelectItem>

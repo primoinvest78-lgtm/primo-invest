@@ -98,7 +98,12 @@ export type ClientProfile = {
     household_members: {
       id: string;
       relationship: string | null;
-      client: { id: string; full_name: string } | null;
+      client: {
+        id: string;
+        full_name: string;
+        financial_accounts: { holdings: { valuation: number | null }[] }[];
+        wealth_goals: { id: string }[];
+      } | null;
     }[];
   } | null;
   client_contacts: {
@@ -250,7 +255,11 @@ export async function getClientProfile(
       *,
       assigned_advisor:profiles!clients_assigned_advisor_id_fkey(id, full_name),
       household:households(id, name, description,
-        household_members(id, relationship, client:clients(id, full_name))
+        household_members(id, relationship, client:clients(
+          id, full_name,
+          financial_accounts(holdings(valuation)),
+          wealth_goals(id)
+        ))
       ),
       client_contacts(*),
       client_addresses(*),
@@ -273,4 +282,53 @@ export async function getClientProfile(
 
   if (error) throw error;
   return client as unknown as ClientProfile | null;
+}
+
+export type WealthHistoryPoint = { month: string; value: number };
+
+/**
+ * Evolução patrimonial real, derivada de transactions (não é dado
+ * inventado): soma acumulada de amount por mês, das contas do cliente.
+ * Se não houver transactions suficientes, retorna array vazio — a UI
+ * deve mostrar "dados insuficientes", nunca preencher com número falso.
+ */
+export async function getClientWealthHistory(
+  organizationId: string,
+  clientId: string,
+): Promise<WealthHistoryPoint[]> {
+  const supabase = await createClient();
+
+  const { data: accounts, error: accountsError } = await supabase
+    .from("financial_accounts")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .eq("client_id", clientId);
+
+  if (accountsError) throw accountsError;
+  const accountIds = (accounts ?? []).map((a) => a.id);
+  if (accountIds.length === 0) return [];
+
+  const { data: transactions, error } = await supabase
+    .from("transactions")
+    .select("amount, transaction_date")
+    .eq("organization_id", organizationId)
+    .in("financial_account_id", accountIds)
+    .order("transaction_date", { ascending: true });
+
+  if (error) throw error;
+  if (!transactions || transactions.length === 0) return [];
+
+  const monthly = new Map<string, number>();
+  for (const t of transactions) {
+    const month = String(t.transaction_date).slice(0, 7);
+    monthly.set(month, (monthly.get(month) ?? 0) + Number(t.amount ?? 0));
+  }
+
+  let cumulative = 0;
+  return Array.from(monthly.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, value]) => {
+      cumulative += value;
+      return { month, value: cumulative };
+    });
 }

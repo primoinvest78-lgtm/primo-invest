@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { ClientProfileTabs } from "@/components/clients/client-profile-tabs";
-import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
-import { getClientProfile } from "@/lib/data/clients";
+import { ClientQuickActions } from "@/components/clients/quick-actions";
+import { getClientProfile, getClientWealthHistory } from "@/lib/data/clients";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
 export default async function ClientProfilePage({
@@ -17,6 +17,8 @@ export default async function ClientProfilePage({
   if (!client) {
     notFound();
   }
+
+  const wealthHistory = await getClientWealthHistory(organizationId, id);
 
   return (
     <div className="space-y-6">
@@ -33,10 +35,10 @@ export default async function ClientProfilePage({
           </p>
         </div>
 
-        <NewTaskDialog clientId={client.id} />
+        <ClientQuickActions clientId={client.id} />
       </section>
 
-      <ClientProfileTabs client={client} organizationId={organizationId} />
+      <ClientProfileTabs client={client} organizationId={organizationId} wealthHistory={wealthHistory} />
     </div>
   );
 }
