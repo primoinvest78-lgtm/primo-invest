@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { BackLink } from "@/components/ui/back-link";
 import { getGoalsDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -19,6 +20,8 @@ export default async function MetasPage() {
             {goals.length} {goals.length === 1 ? "meta" : "metas"} cadastradas.
           </p>
         </div>
+
+        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
       </section>
 
       {goals.length === 0 ? (

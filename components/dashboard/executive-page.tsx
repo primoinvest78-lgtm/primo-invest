@@ -1,5 +1,6 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+
+import { BackLink } from "@/components/ui/back-link";
 
 export function ExecutivePage({
   title,
@@ -7,12 +8,16 @@ export function ExecutivePage({
   badge,
   context,
   children,
+  backHref = "/dashboard",
+  backLabel = "Voltar ao dashboard",
 }: {
   title: string;
   subtitle: string;
   badge: string;
   context: string;
   children?: ReactNode;
+  backHref?: string;
+  backLabel?: string;
 }) {
   return (
     <div className="space-y-6">
@@ -25,12 +30,7 @@ export function ExecutivePage({
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">{subtitle}</p>
         </div>
 
-        <Link
-          href="/dashboard"
-          className="inline-flex shrink-0 items-center justify-center rounded-full border border-border bg-primary px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          Voltar ao dashboard
-        </Link>
+        <BackLink href={backHref} label={backLabel} />
       </section>
 
       <section className="card-premium rounded-2xl p-5 md:p-6">

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { ClientProfileTabs } from "@/components/clients/client-profile-tabs";
 import { ClientQuickActions } from "@/components/clients/quick-actions";
+import { BackLink } from "@/components/ui/back-link";
 import { getClientProfile, getClientWealthHistory } from "@/lib/data/clients";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -35,7 +36,10 @@ export default async function ClientProfilePage({
           </p>
         </div>
 
-        <ClientQuickActions clientId={client.id} />
+        <div className="flex shrink-0 flex-col items-end gap-3">
+          <BackLink href="/clientes" label="Voltar a Clientes" />
+          <ClientQuickActions clientId={client.id} />
+        </div>
       </section>
 
       <ClientProfileTabs client={client} organizationId={organizationId} wealthHistory={wealthHistory} />

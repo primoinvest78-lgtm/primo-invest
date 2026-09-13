@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { LeadProfileView } from "@/components/leads/lead-profile";
+import { BackLink } from "@/components/ui/back-link";
 import { getLeadProfile } from "@/lib/data/leads";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -31,6 +32,8 @@ export default async function LeadProfilePage({
               : "Sem assessor vinculado"}
           </p>
         </div>
+
+        <BackLink href="/leads" label="Voltar a Leads" />
       </section>
 
       <LeadProfileView lead={lead} />

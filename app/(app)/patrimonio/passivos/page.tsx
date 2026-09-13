@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { BackLink } from "@/components/ui/back-link";
 import { getLiabilitiesDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -19,6 +20,8 @@ export default async function PassivosPage() {
             {liabilities.length} {liabilities.length === 1 ? "passivo" : "passivos"} registrados.
           </p>
         </div>
+
+        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
       </section>
 
       <ScrollReveal className="card-premium overflow-hidden rounded-2xl">

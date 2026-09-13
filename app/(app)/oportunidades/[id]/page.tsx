@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { OpportunityProfileView } from "@/components/opportunities/opportunity-profile";
 import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
+import { BackLink } from "@/components/ui/back-link";
 import { getOpportunityProfile } from "@/lib/data/opportunities";
 import { createClient } from "@/lib/supabase/server";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -43,7 +44,10 @@ export default async function OpportunityProfilePage({
           </p>
         </div>
 
-        <NewTaskDialog opportunityId={opportunity.id} />
+        <div className="flex shrink-0 flex-col items-end gap-3">
+          <BackLink href="/oportunidades" label="Voltar a Oportunidades" />
+          <NewTaskDialog opportunityId={opportunity.id} />
+        </div>
       </section>
 
       <OpportunityProfileView

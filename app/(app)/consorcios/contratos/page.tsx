@@ -7,6 +7,8 @@ export default function ContratosPage() {
       title="Contratos"
       subtitle="Detalhamento de contratos vigentes"
       context="Acompanhamento de contratos por status, valor e relativa maturidade financeira."
+      backHref="/consorcios"
+      backLabel="Voltar a Consórcios"
     >
       <div className="card-premium rounded-2xl p-4">
         <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Ativos</p>

@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { BackLink } from "@/components/ui/back-link";
 import { getAccountsDetail } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL } from "@/lib/utils/format";
@@ -19,6 +20,8 @@ export default async function ContasPage() {
             {accounts.length} {accounts.length === 1 ? "conta" : "contas"} financeiras.
           </p>
         </div>
+
+        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
       </section>
 
       {accounts.length === 0 ? (

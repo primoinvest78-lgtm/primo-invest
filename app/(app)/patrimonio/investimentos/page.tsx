@@ -1,5 +1,6 @@
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
 import { AnimatedNumber } from "@/components/ui/animated-number";
+import { BackLink } from "@/components/ui/back-link";
 import { InvestmentsTable } from "@/components/wealth/investments-table";
 import { ValueByTypeBarChart } from "@/components/wealth/value-by-type-bar-chart";
 import { getInvestmentsDetail } from "@/lib/data/wealth";
@@ -40,6 +41,8 @@ export default async function InvestimentosPage() {
             {holdings.length} {holdings.length === 1 ? "posição" : "posições"} em carteira.
           </p>
         </div>
+
+        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

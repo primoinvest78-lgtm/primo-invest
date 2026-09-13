@@ -7,6 +7,8 @@ export default function LancesPage() {
       title="Lances"
       subtitle="Gestão de lances e competitividade"
       context="Acompanhamento dos lances em disputa e evolução do processo de aquisição."
+      backHref="/consorcios"
+      backLabel="Voltar a Consórcios"
     >
       <div className="card-premium rounded-2xl p-4">
         <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Lances ativos</p>

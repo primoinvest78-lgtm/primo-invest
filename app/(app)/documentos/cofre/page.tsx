@@ -7,6 +7,8 @@ export default function CofrePage() {
       title="Cofre digital"
       subtitle="Arquivos sensíveis e ativos documentais"
       context="Estrutura para o armazenamento e controle de documentos confidenciais e registros patrimoniais."
+      backHref="/documentos"
+      backLabel="Voltar a Documentos"
     >
       <div className="card-premium rounded-2xl p-4">
         <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Itens</p>
