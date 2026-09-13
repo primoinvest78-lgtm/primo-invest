@@ -41,7 +41,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       "text-sm font-semibold transition-colors duration-150",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-nav-active"
-                        : "text-secondary-foreground/80 hover:bg-secondary-foreground/[0.06] hover:text-secondary-foreground",
+                        : "text-secondary-foreground hover:bg-secondary-foreground/[0.06] hover:text-secondary-foreground",
                     ].join(" ")}
                   >
                     <span
