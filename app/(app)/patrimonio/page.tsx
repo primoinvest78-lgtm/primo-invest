@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AllocationBar } from "@/components/wealth/allocation-bar";
 import { ScrollReveal } from "@/components/motion/scroll-reveal";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import { getWealthOverview } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
@@ -15,7 +16,7 @@ export default async function PatrimonioPage() {
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-secondary p-5 shadow-panel-3d md:flex-row md:items-end md:justify-between md:p-6">
+      <section className="flex flex-col gap-4 block-navy-3d rounded-2xl p-5 md:flex-row md:items-end md:justify-between md:p-6">
         <div className="min-w-0">
           <p className="text-label font-bold uppercase text-primary">Patrimônio</p>
           <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
@@ -34,7 +35,7 @@ export default async function PatrimonioPage() {
               Total de Ativos
             </p>
             <p className="mt-2 text-h2 font-bold text-foreground">
-              {formatCurrencyBRL(wealth.totalAssets)}
+              <AnimatedNumber value={formatCurrencyBRL(wealth.totalAssets)} />
             </p>
           </div>
         </ScrollReveal>
@@ -44,7 +45,7 @@ export default async function PatrimonioPage() {
               Total de Passivos
             </p>
             <p className="mt-2 text-h2 font-bold text-destructive">
-              {formatCurrencyBRL(wealth.totalLiabilities)}
+              <AnimatedNumber value={formatCurrencyBRL(wealth.totalLiabilities)} />
             </p>
           </div>
         </ScrollReveal>
@@ -54,7 +55,7 @@ export default async function PatrimonioPage() {
               Patrimônio Líquido
             </p>
             <p className="mt-2 text-h2 font-bold text-foreground">
-              {formatCurrencyBRL(wealth.netWorth)}
+              <AnimatedNumber value={formatCurrencyBRL(wealth.netWorth)} />
             </p>
           </div>
         </ScrollReveal>

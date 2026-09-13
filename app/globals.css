@@ -279,10 +279,71 @@
  * texto normal).
  */
 @layer components {
+  /*
+   * Efeito padrão de TODO modal do site (regra fixa, nunca opcional):
+   * uma barra de luz aparece no topo ao passar o mouse + brilho ambiente
+   * na cor de destaque do modal. Verde-menta nos modais bege
+   * (.card-premium), branco/claro nos modais azul-marinho (.block-navy-3d).
+   * Isso vive na classe compartilhada de propósito — todo modal novo que
+   * usar .card-premium ou .block-navy-3d já ganha o efeito automaticamente,
+   * sem precisar lembrar de adicionar em cada arquivo.
+   */
   .card-premium {
+    position: relative;
+    overflow: hidden;
     background-color: var(--card-beige);
     border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
     box-shadow: var(--shadow-panel-3d);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .card-premium::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .card-premium:hover {
+    border-color: var(--primary);
+    box-shadow:
+      var(--shadow-panel-3d-hover),
+      0 0 28px rgba(46, 204, 155, 0.22);
+  }
+  .card-premium:hover::before {
+    opacity: 1;
+  }
+
+  .block-navy-3d {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-panel-3d);
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .block-navy-3d::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .block-navy-3d:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow:
+      var(--shadow-panel-3d-hover),
+      0 0 28px rgba(255, 255, 255, 0.14);
+  }
+  .block-navy-3d:hover::before {
+    opacity: 1;
   }
 }
 
