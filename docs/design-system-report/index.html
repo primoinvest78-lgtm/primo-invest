@@ -1,187 +1,220 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Primo Invest — Relatório de Design System &amp; UX/UI</title>
+<title>Primo Invest Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --background: #f7f8fa;
-    --foreground: #101b3d;
-    --card: #ffffff;
-    --primary: #2ecc9b;
-    --primary-foreground: #101b3d;
-    --secondary: #101b3d;
-    --secondary-foreground: #ffffff;
-    --muted: #edf0f4;
-    --muted-foreground: #6b7280;
-    --accent: #122b54;
-    --success: #16a97d;
-    --warning: #f5a623;
-    --info: #38bdf8;
-    --destructive: #ff5a6b;
-    --border: #e4e7ec;
-    --card-beige: #f6f7c4;
-    --card-beige-muted-foreground: #374151;
-    --shadow-card: 0 8px 20px rgba(16, 27, 61, 0.08);
-    --shadow-card-lg: 0 16px 32px rgba(16, 27, 61, 0.14);
-    --shadow-panel-3d: inset 0 1px 0 0 rgba(255,255,255,.12), inset 0 -1px 0 0 rgba(0,0,0,.25), 0 1px 2px rgba(16,27,61,.3), 0 24px 48px -12px rgba(16,27,61,.55);
-    --shadow-panel-3d-hover: inset 0 1px 0 0 rgba(255,255,255,.22), inset 0 -1px 0 0 rgba(0,0,0,.3), 0 1px 2px rgba(16,27,61,.35), 0 32px 56px -14px rgba(16,27,61,.65);
+    --bg: #f4f5f8;
+    --surface: #ffffff;
+    --surface-2: #eceef3;
+    --border: #dfe2e9;
+    --ink: #101b3d;
+    --ink-muted: #5b6478;
+    --navy: #101b3d;
+    --navy-2: #122b54;
+    --mint: #2ecc9b;
+    --mint-ink: #0d5c44;
+    --beige: #f6f7c4;
+    --beige-ink: #4a4b1f;
+    --danger: #d63f52;
+    --shadow: 0 1px 2px rgba(16,27,61,.06), 0 12px 28px -10px rgba(16,27,61,.16);
+    --shadow-lg: 0 1px 2px rgba(16,27,61,.08), 0 28px 56px -18px rgba(16,27,61,.28);
+    --radius-card: 18px;
+    --font-display: 'Manrope', 'Segoe UI', sans-serif;
+    --font-body: 'Inter', 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1120;
+      --surface: #131a2e;
+      --surface-2: #1a2340;
+      --border: #253154;
+      --ink: #eef1fa;
+      --ink-muted: #97a1bd;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -10px rgba(0,0,0,.45);
+      --shadow-lg: 0 1px 2px rgba(0,0,0,.35), 0 28px 56px -18px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1120;
+    --surface: #131a2e;
+    --surface-2: #1a2340;
+    --border: #253154;
+    --ink: #eef1fa;
+    --ink-muted: #97a1bd;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -10px rgba(0,0,0,.45);
+    --shadow-lg: 0 1px 2px rgba(0,0,0,.35), 0 28px 56px -18px rgba(0,0,0,.55);
+  }
+
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--background);
-    color: var(--foreground);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 15px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; margin: 0; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 100px; }
-  header.hero {
-    background: linear-gradient(160deg, var(--secondary), var(--accent));
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  code, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding-inline: 24px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 100%);
     color: #fff;
-    padding: 64px 24px 56px;
-    margin-bottom: 48px;
+    padding-block: 72px 88px;
+    position: relative;
+    overflow: hidden;
   }
-  header.hero .wrap { padding: 0 24px; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .2em; font-size: 11px; font-weight: 800; color: var(--primary); }
-  header.hero h1 { font-size: 40px; margin-top: 10px; color: #fff; }
-  header.hero p { max-width: 640px; color: rgba(255,255,255,.78); font-size: 16px; margin-top: 14px; }
-  .meta { margin-top: 24px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; color: rgba(255,255,255,.6); }
-  section { margin-bottom: 64px; }
-  section > .eyebrow { color: var(--accent); }
-  section > h2 { font-size: 28px; margin-top: 8px; margin-bottom: 8px; }
-  section > .lede { color: var(--muted-foreground); max-width: 720px; margin-bottom: 28px; font-size: 14.5px; }
-  .grid { display: grid; gap: 16px; }
-  .grid-3 { grid-template-columns: repeat(3, 1fr); }
-  .grid-4 { grid-template-columns: repeat(4, 1fr); }
-  .grid-2 { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 760px) { .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 480px) { .grid-3, .grid-4, .grid-2 { grid-template-columns: 1fr; } }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: auto -10% -60% auto;
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(46,204,155,.22), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-inner { position: relative; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    text-transform: uppercase; letter-spacing: .16em; font-size: 11.5px; font-weight: 700;
+    color: var(--mint);
+  }
+  .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+  .hero h1 { font-size: clamp(32px, 5vw, 46px); margin-top: 16px; color: #fff; max-width: 15ch; }
+  .hero p.lede { max-width: 52ch; color: rgba(255,255,255,.72); font-size: 16.5px; margin-top: 16px; }
+  .hero-meta { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 36px; }
+  .hero-meta div { font-size: 12.5px; color: rgba(255,255,255,.55); }
+  .hero-meta strong { display: block; color: #fff; font-family: var(--font-display); font-size: 14px; margin-top: 3px; }
 
-  .swatch { border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow-card); }
-  .swatch .fill { height: 72px; }
-  .swatch .info { padding: 10px 14px; }
-  .swatch .name { font-weight: 700; font-size: 13px; }
-  .swatch .hex { font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted-foreground); }
-  .swatch .use { font-size: 11.5px; color: var(--muted-foreground); margin-top: 4px; }
+  main { padding-block: 0 96px; }
+  section { padding-block: 56px; border-bottom: 1px solid var(--border); }
+  section:last-child { border-bottom: none; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+  .section-num { font-family: var(--font-mono); font-size: 13px; color: var(--ink-muted); }
+  section h2 { font-size: 26px; margin-top: 6px; }
+  .lede-sm { color: var(--ink-muted); max-width: 62ch; font-size: 14.5px; margin-top: 6px; }
 
-  .type-row { display: flex; align-items: baseline; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .type-row .tag { width: 190px; flex-shrink: 0; font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted-foreground); }
-  .type-row .sample { color: var(--foreground); font-family: 'Manrope', sans-serif; font-weight: 700; }
+  /* ---------- swatches ---------- */
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--shadow); }
+  .swatch { background: var(--surface); display: flex; flex-direction: column; }
+  .swatch .fill { height: 84px; }
+  .swatch .info { padding: 14px 16px; flex: 1; }
+  .swatch .name { font-weight: 700; font-size: 13.5px; }
+  .swatch .hex { font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
+  .swatch .use { font-size: 12px; color: var(--ink-muted); margin-top: 8px; line-height: 1.5; }
+  @media (max-width: 720px) { .swatches { grid-template-columns: repeat(2, 1fr); } }
 
-  .token-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .token-table th { text-align: left; text-transform: uppercase; font-size: 10.5px; letter-spacing: .12em; color: var(--muted-foreground); padding: 10px 12px; border-bottom: 2px solid var(--border); }
-  .token-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  .token-table code { font-family: ui-monospace, monospace; background: var(--muted); padding: 2px 6px; border-radius: 6px; font-size: 12px; }
+  /* ---------- type specimen ---------- */
+  .specimen { display: flex; align-items: baseline; gap: 24px; padding-block: 18px; border-bottom: 1px solid var(--border); }
+  .specimen:last-child { border-bottom: none; }
+  .specimen .tag { width: 180px; flex-shrink: 0; font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted); }
+  .specimen .sample { font-family: var(--font-display); color: var(--ink); overflow: hidden; }
+  @media (max-width: 620px) { .specimen { flex-direction: column; gap: 6px; } .specimen .tag { width: auto; } }
+
+  /* ---------- token table ---------- */
+  table.tokens { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.tokens th { text-align: left; text-transform: uppercase; font-size: 10.5px; letter-spacing: .1em; color: var(--ink-muted); padding-block: 10px; border-bottom: 2px solid var(--border); }
+  table.tokens td { padding-block: 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.tokens td:first-child { white-space: nowrap; }
+  table.tokens code.k { font-family: var(--font-mono); background: var(--surface-2); padding: 3px 7px; border-radius: 6px; font-size: 12px; }
+
+  /* ---------- demo cards (real component CSS) ---------- */
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 680px) { .demo-grid { grid-template-columns: 1fr; } }
+  .demo-col figcaption { font-size: 12.5px; color: var(--ink-muted); margin-top: 12px; line-height: 1.5; }
 
   .card-premium-demo {
     position: relative; overflow: hidden;
-    background-color: var(--card-beige);
-    border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
-    box-shadow: var(--shadow-panel-3d);
-    border-radius: 16px; padding: 20px;
+    background-color: var(--beige);
+    border: 1px solid color-mix(in oklab, var(--mint) 45%, transparent);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,.5), inset 0 -1px 0 0 rgba(0,0,0,.12), 0 1px 2px rgba(16,27,61,.15), 0 24px 48px -18px rgba(16,27,61,.4);
+    border-radius: 16px; padding: 22px;
     transition: border-color .2s ease, box-shadow .2s ease;
   }
-  .card-premium-demo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--primary); opacity: 0; transition: opacity .2s ease; }
-  .card-premium-demo:hover { border-color: var(--primary); box-shadow: var(--shadow-panel-3d-hover), 0 0 28px rgba(46,204,155,.22); }
+  .card-premium-demo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--mint); opacity: 0; transition: opacity .2s ease; }
+  .card-premium-demo:hover { border-color: var(--mint); box-shadow: inset 0 1px 0 0 rgba(255,255,255,.6), 0 0 0 1px var(--mint), 0 0 32px rgba(46,204,155,.3); }
   .card-premium-demo:hover::before { opacity: 1; }
+  .card-premium-demo h4 { font-size: 18px; color: var(--navy); }
+  .card-premium-demo p { color: var(--beige-ink); font-size: 13px; margin-top: 8px; }
 
   .block-navy-demo {
     position: relative; overflow: hidden;
-    background-color: var(--secondary); color: #fff;
-    border: 1px solid rgba(255,255,255,.1);
-    box-shadow: var(--shadow-panel-3d);
-    border-radius: 16px; padding: 20px;
-    transition: border-color .2s ease, box-shadow .2s ease;
+    background: linear-gradient(160deg, var(--navy), var(--navy-2));
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 24px 48px -18px rgba(16,27,61,.5);
+    border-radius: 16px; padding: 22px;
+    transition: box-shadow .2s ease;
   }
-  .block-navy-demo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: rgba(255,255,255,.7); opacity: 0; transition: opacity .2s ease; }
-  .block-navy-demo:hover { border-color: rgba(255,255,255,.35); box-shadow: var(--shadow-panel-3d-hover), 0 0 28px rgba(255,255,255,.14); }
+  .block-navy-demo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: rgba(255,255,255,.75); opacity: 0; transition: opacity .2s ease; }
+  .block-navy-demo:hover { box-shadow: 0 0 32px rgba(255,255,255,.16), 0 24px 48px -18px rgba(16,27,61,.6); }
   .block-navy-demo:hover::before { opacity: 1; }
+  .block-navy-demo h4 { font-size: 18px; color: #fff; }
+  .block-navy-demo p { color: rgba(255,255,255,.7); font-size: 13px; margin-top: 8px; }
 
-  .demo-label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; margin-bottom: 8px; opacity: .7; }
-  .hint { font-size: 12.5px; margin-top: 10px; opacity: .75; }
+  .pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 4px 11px; border-radius: 999px; margin-bottom: 4px; }
+  .pill-mint { background: var(--mint); color: #0a3f30; }
+  .pill-ghost { border: 1px solid var(--border); color: var(--ink-muted); background: var(--surface); }
 
-  pre { background: var(--secondary); color: #e6f7ef; padding: 18px 20px; border-radius: 14px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; box-shadow: var(--shadow-card-lg); }
-  code.inline { font-family: ui-monospace, monospace; background: var(--muted); padding: 2px 6px; border-radius: 6px; font-size: 12.5px; }
+  /* ---------- code ---------- */
+  pre { background: var(--navy); color: #d7f2e6; padding: 20px 22px; border-radius: 14px; overflow-x: auto; font-size: 12.8px; line-height: 1.65; box-shadow: var(--shadow); margin-block: 20px 0; }
+  pre code { font-family: var(--font-mono); }
+  .tok-prop { color: #8fd8ff; } .tok-str { color: #ffd98e; } .tok-com { color: #7a8bb8; }
+  code.inline { font-family: var(--font-mono); background: var(--surface-2); padding: 2px 7px; border-radius: 6px; font-size: 12.5px; }
 
-  .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 12px; font-size: 11.5px; font-weight: 700; }
-  .badge-primary { background: var(--primary); color: var(--primary-foreground); }
-  .badge-outline { border: 1px solid var(--border); color: var(--foreground); }
-  .badge-destructive { background: rgba(255,90,107,.1); color: var(--destructive); }
+  /* ---------- rules list ---------- */
+  .rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .rules li { background: var(--surface); padding: 16px 18px; font-size: 13.8px; line-height: 1.55; }
+  .rules li b { color: var(--mint-ink); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rules li b { color: var(--mint); } }
+  :root[data-theme="dark"] .rules li b { color: var(--mint); }
 
-  .rule-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-  .rule-list li { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; font-size: 13.5px; box-shadow: var(--shadow-card); }
-  .rule-list li b { color: var(--accent); }
+  /* ---------- filesystem tree ---------- */
+  .tree { font-family: var(--font-mono); font-size: 12.8px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); line-height: 1.85; white-space: pre; overflow-x: auto; color: var(--ink); }
+  .tree .c { color: var(--ink-muted); }
 
-  .fs-tree { font-family: ui-monospace, monospace; font-size: 12.5px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; box-shadow: var(--shadow-card); line-height: 1.8; white-space: pre; overflow-x: auto; }
-
-  footer { text-align: center; padding: 40px 0; color: var(--muted-foreground); font-size: 12.5px; }
+  footer { text-align: center; padding-block: 48px; color: var(--ink-muted); font-size: 12.5px; }
 </style>
-</head>
-<body>
 
 <header class="hero">
-  <div class="wrap">
-    <p class="eyebrow">Relatório técnico</p>
-    <h1>Design System &amp; Arquitetura — Primo Invest</h1>
-    <p>Documentação completa de cores, tipografia, espaçamento, efeitos visuais, padrões de motion e arquitetura de código construídos ao longo do desenvolvimento da plataforma.</p>
-    <div class="meta">
-      <span>Gerado em 13/09/2026</span>
-      <span>Next.js 16 · Tailwind CSS v4 · Supabase</span>
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Referência técnica &mdash; v1</span>
+    <h1>O sistema visual por trás do Primo Invest</h1>
+    <p class="lede">Cor, tipografia, espaçamento e os padrões de código que sustentam a plataforma &mdash; documentados a partir do <code class="inline" style="background:rgba(255,255,255,.1);color:#fff">globals.css</code> real do projeto, nada inventado pra essa página.</p>
+    <div class="hero-meta">
+      <div>Stack<strong>Next.js 16 &middot; Tailwind v4</strong></div>
+      <div>Banco<strong>Supabase &middot; RLS multi-tenant</strong></div>
+      <div>Motion<strong>Framer Motion &middot; GSAP</strong></div>
     </div>
   </div>
 </header>
 
-<div class="wrap">
+<main class="wrap">
 
   <section>
-    <p class="eyebrow">01 — Paleta de marca</p>
-    <h2>Cores principais</h2>
-    <p class="lede">Três cores estruturais: azul-marinho (blocos/headers), verde-menta (ação/destaque) e bege premium (cards de conteúdo em evidência). Nunca usamos azul como fundo de página ou card comum — é reservado pra blocos estruturais fixos.</p>
-    <div class="grid grid-4">
-      <div class="swatch">
-        <div class="fill" style="background:#101b3d"></div>
-        <div class="info"><div class="name">Azul-marinho</div><div class="hex">#101B3D</div><div class="use">Headers, sidebar, nav ativo</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#122b54"></div>
-        <div class="info"><div class="name">Azul-marinho (accent)</div><div class="hex">#122B54</div><div class="use">Eyebrows, títulos secundários</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#2ecc9b"></div>
-        <div class="info"><div class="name">Verde-menta</div><div class="hex">#2ECC9B</div><div class="use">CTAs, sucesso, destaque</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#f6f7c4"></div>
-        <div class="info"><div class="name">Bege premium</div><div class="hex">#F6F7C4</div><div class="use">Cards de conteúdo em evidência</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#f7f8fa"></div>
-        <div class="info"><div class="name">Fundo (root)</div><div class="hex">#F7F8FA</div><div class="use">Fundo geral de página</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#ffffff;border-bottom:1px solid #e4e7ec"></div>
-        <div class="info"><div class="name">Fundo (.light)</div><div class="hex">#FFFFFF</div><div class="use">Variante branco puro</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#6b7280"></div>
-        <div class="info"><div class="name">Texto de apoio</div><div class="hex">#6B7280</div><div class="use">Labels, texto secundário</div></div>
-      </div>
-      <div class="swatch">
-        <div class="fill" style="background:#374151"></div>
-        <div class="info"><div class="name">Texto de apoio (bege)</div><div class="hex">#374151</div><div class="use">Secundário sobre fundo bege — mais escuro pra manter contraste AA (o tom padrão só dá 4.38:1 no bege)</div></div>
-      </div>
+    <div class="section-head"><div><span class="section-num">01</span><h2>Paleta de marca</h2></div></div>
+    <p class="lede-sm">Três papéis fixos, nunca intercambiáveis: azul-marinho para blocos estruturais (nunca fundo de página), verde-menta como única cor de ação, e um bege premium reservado pra cards de conteúdo em evidência.</p>
+    <div class="swatches">
+      <div class="swatch"><div class="fill" style="background:#101b3d"></div><div class="info"><div class="name">Azul-marinho</div><div class="hex">#101B3D</div><div class="use">Headers de módulo, sidebar, nav ativo</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#122b54"></div><div class="info"><div class="name">Azul-marinho claro</div><div class="hex">#122B54</div><div class="use">Fim do gradiente, eyebrows, títulos secundários</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#2ecc9b"></div><div class="info"><div class="name">Verde-menta</div><div class="hex">#2ECC9B</div><div class="use">CTAs, sucesso, único acento de ação</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#f6f7c4"></div><div class="info"><div class="name">Bege premium</div><div class="hex">#F6F7C4</div><div class="use">Cards de conteúdo em evidência</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#f7f8fa"></div><div class="info"><div class="name">Fundo (root)</div><div class="hex">#F7F8FA</div><div class="use">Fundo geral de página</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#ffffff;border-bottom:1px solid #e4e7ec"></div><div class="info"><div class="name">Fundo (.light)</div><div class="hex">#FFFFFF</div><div class="use">Variante branco puro</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#6b7280"></div><div class="info"><div class="name">Texto de apoio</div><div class="hex">#6B7280</div><div class="use">Labels e texto secundário padrão</div></div></div>
+      <div class="swatch"><div class="fill" style="background:#374151"></div><div class="info"><div class="name">Texto de apoio (sobre bege)</div><div class="hex">#374151</div><div class="use">4.38:1 do tom padrão falha AA no bege &mdash; este dá 9.34:1</div></div></div>
     </div>
   </section>
 
   <section>
-    <p class="eyebrow">02 — Status semânticos</p>
-    <h2>Cores de estado</h2>
-    <p class="lede">Usadas em badges, alertas e indicadores — nunca fora desse contexto semântico.</p>
-    <div class="grid grid-4">
+    <div class="section-head"><div><span class="section-num">02</span><h2>Status semânticos</h2></div></div>
+    <p class="lede-sm">Restritos a badges, alertas e indicadores de estado &mdash; nunca usados como cor decorativa.</p>
+    <div class="swatches">
       <div class="swatch"><div class="fill" style="background:#16a97d"></div><div class="info"><div class="name">Success</div><div class="hex">#16A97D</div></div></div>
       <div class="swatch"><div class="fill" style="background:#f5a623"></div><div class="info"><div class="name">Warning</div><div class="hex">#F5A623</div></div></div>
       <div class="swatch"><div class="fill" style="background:#38bdf8"></div><div class="info"><div class="name">Info</div><div class="hex">#38BDF8</div></div></div>
@@ -190,65 +223,60 @@
   </section>
 
   <section>
-    <p class="eyebrow">03 — Tipografia</p>
-    <h2>Manrope (títulos) + Inter (corpo)</h2>
-    <p class="lede">Manrope em tudo que é heading/destaque numérico (peso 700-800, letter-spacing negativo pra sensação premium/compacta); Inter no corpo de texto, labels e dados tabulares.</p>
+    <div class="section-head"><div><span class="section-num">03</span><h2>Manrope + Inter</h2></div></div>
+    <p class="lede-sm">Manrope carrega títulos e números de destaque &mdash; peso 700&ndash;800, letter-spacing negativo pra uma leitura mais compacta e executiva. Inter cuida do corpo de texto, labels e dados tabulares.</p>
     <div>
-      <div class="type-row"><span class="tag">--text-display · 2.75rem</span><span class="sample" style="font-size:2.75rem;letter-spacing:-.045em">Display</span></div>
-      <div class="type-row"><span class="tag">--text-h1 · 2.125rem</span><span class="sample" style="font-size:2.125rem;letter-spacing:-.04em">Heading 1</span></div>
-      <div class="type-row"><span class="tag">--text-h2 · 1.5rem</span><span class="sample" style="font-size:1.5rem;letter-spacing:-.035em">Heading 2</span></div>
-      <div class="type-row"><span class="tag">--text-h3 · 1.25rem</span><span class="sample" style="font-size:1.25rem;letter-spacing:-.02em">Heading 3</span></div>
-      <div class="type-row"><span class="tag">--text-kpi · 1.75rem</span><span class="sample" style="font-size:1.75rem;letter-spacing:-.045em">R$ 48.750.320</span></div>
-      <div class="type-row"><span class="tag">--text-body · 0.875rem</span><span class="sample" style="font-family:Inter,sans-serif;font-weight:400;font-size:.875rem">Texto de corpo padrão, Inter regular.</span></div>
-      <div class="type-row"><span class="tag">--text-body-sm · 0.8125rem</span><span class="sample" style="font-family:Inter,sans-serif;font-weight:400;font-size:.8125rem">Texto de corpo pequeno / descrições.</span></div>
-      <div class="type-row"><span class="tag">--text-label · 0.625rem</span><span class="sample" style="font-family:Inter,sans-serif;font-weight:700;font-size:.625rem;text-transform:uppercase;letter-spacing:.2em">Label uppercase</span></div>
+      <div class="specimen"><span class="tag">display &middot; 2.75rem</span><span class="sample" style="font-size:2.75rem;letter-spacing:-.045em">Display</span></div>
+      <div class="specimen"><span class="tag">h1 &middot; 2.125rem</span><span class="sample" style="font-size:2.125rem;letter-spacing:-.04em">Heading 1</span></div>
+      <div class="specimen"><span class="tag">h2 &middot; 1.5rem</span><span class="sample" style="font-size:1.5rem;letter-spacing:-.035em">Heading 2</span></div>
+      <div class="specimen"><span class="tag">kpi &middot; 1.75rem</span><span class="sample mono" style="font-size:1.75rem;letter-spacing:-.03em">R$ 48.750.320</span></div>
+      <div class="specimen"><span class="tag">body &middot; 0.875rem</span><span class="sample" style="font-family:var(--font-body);font-weight:400;font-size:.875rem">Texto de corpo padrão, em Inter regular, pensado pra telas densas de dado financeiro.</span></div>
+      <div class="specimen"><span class="tag">label &middot; 0.625rem</span><span class="sample" style="font-family:var(--font-body);font-weight:700;font-size:.625rem;text-transform:uppercase;letter-spacing:.2em">Label uppercase</span></div>
     </div>
   </section>
 
   <section>
-    <p class="eyebrow">04 — Espaçamento, raio e sombra</p>
-    <h2>Fundação estrutural</h2>
-    <table class="token-table">
+    <div class="section-head"><div><span class="section-num">04</span><h2>Espaçamento &amp; elevação</h2></div></div>
+    <table class="tokens">
       <tr><th>Token</th><th>Valor</th><th>Uso</th></tr>
-      <tr><td><code>--radius</code></td><td>0.875rem (14px)</td><td>Base de arredondamento — a maioria dos cards usa <code>rounded-2xl</code> (16px) por cima disso</td></tr>
-      <tr><td><code>--sidebar-width</code></td><td>272px</td><td>Largura fixa do menu lateral</td></tr>
-      <tr><td><code>--header-height</code></td><td>76px</td><td>Altura fixa do header/topbar</td></tr>
-      <tr><td><code>--shadow-card</code></td><td>0 8px 20px rgba(16,27,61,.08)</td><td>Elevação padrão de card</td></tr>
-      <tr><td><code>--shadow-card-hover</code></td><td>0 12px 28px rgba(16,27,61,.12)</td><td>Elevação no hover de card comum</td></tr>
-      <tr><td><code>--shadow-card-lg</code></td><td>0 16px 32px rgba(16,27,61,.14)</td><td>Elevação de destaque (tooltips, dropdowns)</td></tr>
+      <tr><td><code class="k">--radius</code></td><td class="mono">0.875rem</td><td>Base de arredondamento &mdash; a maioria dos cards soma <code class="inline">rounded-2xl</code> (16px) por cima</td></tr>
+      <tr><td><code class="k">--sidebar-width</code></td><td class="mono">272px</td><td>Largura fixa do menu lateral</td></tr>
+      <tr><td><code class="k">--header-height</code></td><td class="mono">76px</td><td>Altura fixa do header/topbar</td></tr>
+      <tr><td><code class="k">--shadow-card</code></td><td class="mono">0 8px 20px rgba(16,27,61,.08)</td><td>Elevação padrão de card comum</td></tr>
+      <tr><td><code class="k">--shadow-card-lg</code></td><td class="mono">0 16px 32px rgba(16,27,61,.14)</td><td>Elevação de destaque &mdash; tooltips, dropdowns</td></tr>
     </table>
   </section>
 
   <section>
-    <p class="eyebrow">05 — Efeito "3D Premium" (regra fixa do produto)</p>
-    <h2>card-premium &amp; block-navy-3d</h2>
-    <p class="lede">Todo modal do site — grande ou pequeno, bege ou azul-marinho — usa uma dessas duas classes compartilhadas. Ambas têm o mesmo efeito embutido: brilho biselado no topo (visível ao passar o mouse) + sombra profunda em múltiplas camadas + brilho ambiente na cor de destaque. Por viverem numa classe central, todo modal novo herda o efeito automaticamente — não é preciso lembrar de aplicar manualmente em cada tela.</p>
-    <div class="grid grid-2">
-      <div>
+    <div class="section-head"><div><span class="section-num">05</span><h2>O efeito &ldquo;3D premium&rdquo;</h2></div></div>
+    <p class="lede-sm">Regra fixa do produto: todo modal &mdash; grande ou pequeno &mdash; usa uma das duas classes abaixo. Ambas embutem o mesmo comportamento: uma borda de luz acende no topo ao passar o mouse, e a sombra ganha profundidade e um brilho ambiente na cor de destaque. Por viver na classe, todo modal novo herda o efeito sem precisar declarar nada extra.</p>
+    <div class="demo-grid">
+      <figure class="demo-col" style="margin:0">
         <div class="card-premium-demo">
-          <div class="demo-label" style="color:var(--card-beige-muted-foreground)">card-premium</div>
-          <h3 style="font-size:20px;color:#101b3d">Passe o mouse aqui</h3>
-          <p style="color:var(--card-beige-muted-foreground);font-size:13px;margin-top:6px">Fundo bege + borda verde-menta + brilho no hover.</p>
+          <span class="pill pill-mint">card-premium</span>
+          <h4>Passe o mouse aqui</h4>
+          <p>Fundo bege, borda verde-menta, brilho no hover.</p>
         </div>
-        <p class="hint">Uso: cards de conteúdo (KPIs, tabelas, painéis, kanban) — bege com borda verde.</p>
-      </div>
-      <div>
+        <figcaption>Cards de conteúdo: KPIs, tabelas, painéis, colunas de kanban.</figcaption>
+      </figure>
+      <figure class="demo-col" style="margin:0">
         <div class="block-navy-demo">
-          <div class="demo-label">block-navy-3d</div>
-          <h3 style="font-size:20px;color:#fff">Passe o mouse aqui</h3>
-          <p style="color:rgba(255,255,255,.75);font-size:13px;margin-top:6px">Fundo azul-marinho + brilho branco no hover.</p>
+          <span class="pill pill-ghost" style="border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);background:transparent">block-navy-3d</span>
+          <h4>Passe o mouse aqui</h4>
+          <p>Fundo azul-marinho, brilho branco no hover.</p>
         </div>
-        <p class="hint">Uso: headers de módulo (o bloco grande com o nome da tela) — sempre azul-marinho.</p>
-      </div>
+        <figcaption>Headers de módulo &mdash; o bloco grande com o nome da tela. Sempre azul-marinho, nunca bege.</figcaption>
+      </figure>
     </div>
-    <pre>.card-premium {
+    <pre><code><span class="tok-prop">.card-premium</span> {
   position: relative;
   overflow: hidden;
-  background-color: var(--card-beige);
+  background-color: <span class="tok-str">var(--card-beige)</span>;
   border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
   box-shadow: var(--shadow-panel-3d);
 }
-.card-premium::before {
+<span class="tok-prop">.card-premium::before</span> {
+  <span class="tok-com">/* barra de luz no topo, invisível até o hover */</span>
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
@@ -257,91 +285,58 @@
   opacity: 0;
   transition: opacity 200ms ease;
 }
-.card-premium:hover::before { opacity: 1; }
-.card-premium:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-panel-3d-hover), 0 0 28px rgba(46,204,155,.22);
-}</pre>
+<span class="tok-prop">.card-premium:hover::before</span> { opacity: 1; }</code></pre>
   </section>
 
   <section>
-    <p class="eyebrow">06 — Motion &amp; interação</p>
-    <h2>Padrões de animação</h2>
-    <ul class="rule-list">
-      <li><b>Scroll reveal</b> — <code class="inline">components/motion/scroll-reveal.tsx</code>: fade + slide-up (16px) ao entrar na tela, via Framer Motion (<code class="inline">whileInView</code>, dispara uma vez). Usado em praticamente todo card de conteúdo real.</li>
-      <li><b>Contador animado</b> — <code class="inline">components/ui/animated-number.tsx</code>: números de destaque (patrimônio, KPIs) contam de 0 até o valor real via GSAP (<code class="inline">power2.out</code>, ~1.2s) ao carregar a tela.</li>
-      <li><b>Hover 3D</b> — elevação sutil (<code class="inline">-translate-y-0.5</code> a <code class="inline">-translate-y-1</code>) + borda que acende na cor de destaque + sombra mais profunda. Sempre CSS puro (transform/box-shadow), nunca JS, por performance em listas longas.</li>
-      <li><b>Kanban drag-and-drop</b> — HTML5 nativo (<code class="inline">draggable</code>), sem biblioteca externa. Cards entram com stagger leve (delay progressivo por índice) ao carregar a coluna.</li>
-      <li><b>prefers-reduced-motion</b> — respeitado globalmente via media query que zera duração de transições/animações CSS pra quem tem a preferência ativada no sistema.</li>
+    <div class="section-head"><div><span class="section-num">06</span><h2>Motion &amp; interação</h2></div></div>
+    <ul class="rules">
+      <li><b>Scroll reveal</b> &mdash; fade + slide-up de 16px ao entrar na tela, via Framer Motion (<code class="inline">whileInView</code>, dispara uma vez). Aplicado em praticamente todo card de conteúdo real.</li>
+      <li><b>Contador animado</b> &mdash; números de destaque (patrimônio, KPIs) contam de zero até o valor real via GSAP (<code class="inline">power2.out</code>, ~1.2s) ao carregar a tela.</li>
+      <li><b>Hover 3D</b> &mdash; elevação sutil (2&ndash;4px) + borda acendendo na cor de destaque + sombra mais profunda. Sempre CSS puro (transform/box-shadow), nunca JS, pra manter listas longas leves.</li>
+      <li><b>Kanban</b> &mdash; drag-and-drop HTML5 nativo, sem biblioteca externa; cards entram com atraso progressivo por índice ao carregar a coluna.</li>
+      <li><b><code class="inline">prefers-reduced-motion</code></b> &mdash; respeitado globalmente: zera duração de toda transição/animação CSS pra quem ativou a preferência no sistema.</li>
     </ul>
   </section>
 
   <section>
-    <p class="eyebrow">07 — Regras de design fixas</p>
-    <h2>Convenções que todo componente novo deve seguir</h2>
-    <ul class="rule-list">
-      <li><b>Header grande (nome do módulo)</b> → sempre <code class="inline">block-navy-3d</code>, nunca bege.</li>
-      <li><b>Todo card de conteúdo</b> (pequeno ou grande: tabelas, KPIs, painéis, kanban) → sempre <code class="inline">card-premium</code>, nunca branco liso.</li>
-      <li><b>Texto secundário sobre bege</b> → <code class="inline">text-card-beige-muted-foreground</code>, nunca <code class="inline">text-muted-foreground</code> padrão (falha contraste AA).</li>
-      <li><b>Números de destaque</b> → sempre envolvidos em <code class="inline">&lt;AnimatedNumber&gt;</code>.</li>
-      <li><b>Idioma</b> → toda palavra da interface em português, mesmo termos técnicos comuns em inglês (ex: "Suitability" → "Perfil de Investidor").</li>
-      <li><b>Ações destrutivas</b> (excluir) → sempre com confirmação (<code class="inline">window.confirm</code>) antes de executar.</li>
+    <div class="section-head"><div><span class="section-num">07</span><h2>Regras que todo componente novo segue</h2></div></div>
+    <ul class="rules">
+      <li><b>Header grande</b> (nome do módulo) &rarr; sempre <code class="inline">block-navy-3d</code>, nunca bege.</li>
+      <li><b>Todo card de conteúdo</b>, pequeno ou grande &rarr; sempre <code class="inline">card-premium</code>, nunca branco liso.</li>
+      <li><b>Texto secundário sobre bege</b> &rarr; <code class="inline">text-card-beige-muted-foreground</code>, nunca o tom padrão (falha contraste AA).</li>
+      <li><b>Números de destaque</b> &rarr; sempre dentro de <code class="inline">&lt;AnimatedNumber&gt;</code>.</li>
+      <li><b>Idioma</b> &rarr; toda palavra da interface em português, mesmo termos técnicos comuns em inglês.</li>
+      <li><b>Ações destrutivas</b> &rarr; sempre com confirmação explícita antes de executar.</li>
     </ul>
   </section>
 
   <section>
-    <p class="eyebrow">08 — Arquitetura de código</p>
-    <h2>Estrutura do projeto</h2>
-    <div class="fs-tree">app/
-├─ (app)/                    → rotas autenticadas (layout força sessão)
-│  ├─ clientes/[id]/         → perfil 360º do cliente (7 abas)
-│  ├─ leads/[id]/            → kanban + perfil
-│  ├─ oportunidades/[id]/    → kanban + perfil (Ganha/Perdida)
-│  ├─ patrimonio/…           → visão geral + 4 subpáginas
-│  └─ tarefas/               → Atrasadas / Hoje / Próximos dias
-├─ login/                    → único ponto público
+    <div class="section-head"><div><span class="section-num">08</span><h2>Arquitetura de código</h2></div></div>
+    <div class="tree">app/
+<span class="c">├─</span> (app)/                    <span class="c">rotas autenticadas &mdash; layout força sessão</span>
+<span class="c">│  ├─</span> clientes/[id]/         <span class="c">perfil 360º do cliente, 7 abas</span>
+<span class="c">│  ├─</span> leads/[id]/            <span class="c">kanban + perfil</span>
+<span class="c">│  ├─</span> oportunidades/[id]/    <span class="c">kanban + perfil, Ganha/Perdida</span>
+<span class="c">│  ├─</span> patrimonio/…           <span class="c">visão geral + 4 subpáginas</span>
+<span class="c">│  └─</span> tarefas/               <span class="c">Atrasadas / Hoje / Próximos dias</span>
+<span class="c">└─</span> login/                    <span class="c">único ponto público</span>
 components/
-├─ ui/                       → shadcn (base-nova style, sobre @base-ui/react)
-├─ motion/                   → scroll-reveal.tsx (Framer Motion)
-├─ wealth/                   → gráficos recharts reutilizáveis
-└─ clients | leads | opportunities | tasks/
+<span class="c">├─</span> ui/                       <span class="c">shadcn (base-nova, sobre @base-ui/react)</span>
+<span class="c">├─</span> motion/                   <span class="c">scroll-reveal.tsx</span>
+<span class="c">└─</span> wealth/                   <span class="c">gráficos recharts reutilizáveis</span>
 lib/
-├─ data/                     → 1 arquivo por domínio, só leitura (Supabase + RLS)
-├─ actions/                  → server actions ("use server"), toda escrita
-├─ supabase/                 → server.ts / client.ts / session.ts / middleware.ts
-└─ utils/                    → format.ts, client-alerts.ts
-supabase/
-└─ migrations/                → uma migration por mudança de schema, versionada
-</div>
-    <p class="hint">Padrão de dados: toda query em <code class="inline">lib/data/*.ts</code> filtra explicitamente por <code class="inline">organization_id</code> (defesa em profundidade — a RLS do Postgres já garante isso, mas o filtro explícito evita depender só dela). Toda escrita passa por uma server action em <code class="inline">lib/actions/*.ts</code>, nunca direto de dentro de um componente client.</p>
+<span class="c">├─</span> data/                     <span class="c">1 arquivo por domínio, só leitura + RLS</span>
+<span class="c">├─</span> actions/                  <span class="c">server actions &mdash; toda escrita passa aqui</span>
+<span class="c">└─</span> utils/                    <span class="c">format.ts, client-alerts.ts</span></div>
+    <p class="lede-sm" style="margin-top:18px">Toda query em <code class="inline">lib/data/*.ts</code> filtra explicitamente por <code class="inline">organization_id</code> &mdash; defesa em profundidade por cima da RLS do Postgres. Toda escrita passa por uma server action, nunca direto de um componente client.</p>
+    <pre><code><span class="tok-com">-- padrão de policy repetido em toda tabela sensível</span>
+<span class="tok-prop">create policy</span> nome_da_tabela_org_access <span class="tok-prop">on</span> public.nome_da_tabela
+  <span class="tok-prop">for all</span>
+  <span class="tok-prop">using</span> (is_org_member(organization_id))
+  <span class="tok-prop">with check</span> (is_org_member(organization_id));</code></pre>
   </section>
 
-  <section>
-    <p class="eyebrow">09 — Segurança de dados (RLS)</p>
-    <h2>Multi-tenant por organização</h2>
-    <p class="lede">Toda tabela sensível tem uma policy no padrão abaixo — um usuário de uma organização nunca vê dado de outra, reforçado em duas camadas (RLS no banco + filtro explícito no código):</p>
-    <pre>create policy nome_da_tabela_org_access on public.nome_da_tabela
-  for all
-  using (is_org_member(organization_id))
-  with check (is_org_member(organization_id));
+</main>
 
--- is_org_member() verifica auth.uid() contra organization_members,
--- exigindo status = 'active'</pre>
-  </section>
-
-  <section>
-    <p class="eyebrow">10 — Componentes de exemplo</p>
-    <h2>Badges &amp; estados</h2>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <span class="badge badge-primary">Vigente</span>
-      <span class="badge badge-destructive">Vencido</span>
-      <span class="badge badge-outline">Prospect</span>
-    </div>
-  </section>
-
-</div>
-
-<footer>Primo Invest — Relatório gerado automaticamente a partir do código-fonte real do projeto. Sem dado inventado.</footer>
-
-</body>
-</html>
+<footer>Primo Invest &middot; relatório gerado a partir do código-fonte real do projeto, sem dado inventado.</footer>
