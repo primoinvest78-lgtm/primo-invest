@@ -76,7 +76,171 @@ export async function listClients(organizationId: string): Promise<ClientListIte
   });
 }
 
-export async function getClientProfile(organizationId: string, clientId: string) {
+export type ClientProfile = {
+  id: string;
+  household_id: string | null;
+  assigned_advisor_id: string | null;
+  full_name: string;
+  preferred_name: string | null;
+  document_number: string | null;
+  birth_date: string | null;
+  email: string | null;
+  phone: string | null;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  assigned_advisor: { id: string; full_name: string | null } | null;
+  household: {
+    id: string;
+    name: string;
+    description: string | null;
+    household_members: {
+      id: string;
+      relationship: string | null;
+      client: { id: string; full_name: string } | null;
+    }[];
+  } | null;
+  client_contacts: {
+    id: string;
+    contact_type: string;
+    value: string;
+    label: string | null;
+    is_primary: boolean;
+  }[];
+  client_addresses: {
+    id: string;
+    address_type: string;
+    postal_code: string | null;
+    street: string | null;
+    number: string | null;
+    complement: string | null;
+    neighborhood: string | null;
+    city: string | null;
+    state: string | null;
+    country: string | null;
+    is_primary: boolean;
+  }[];
+  client_tags: { tags: { id: string; name: string; color: string | null } | null }[];
+  financial_accounts: {
+    id: string;
+    institution_name: string | null;
+    account_name: string | null;
+    account_type: string;
+    currency: string;
+    status: string;
+    holdings: {
+      id: string;
+      quantity: number;
+      average_price: number | null;
+      current_price: number | null;
+      valuation: number | null;
+      as_of_date: string;
+      investment_products: { name: string; product_type: string } | null;
+    }[];
+  }[];
+  consortium_contracts: {
+    id: string;
+    administrator_name: string | null;
+    contract_number: string | null;
+    consortium_type: string | null;
+    credit_amount: number | null;
+    installment_amount: number | null;
+    total_installments: number | null;
+    paid_installments: number;
+    status: string;
+    start_date: string | null;
+    end_date: string | null;
+  }[];
+  liabilities: {
+    id: string;
+    name: string;
+    liability_type: string | null;
+    outstanding_amount: number | null;
+    interest_rate: number | null;
+    monthly_payment: number | null;
+    maturity_date: string | null;
+    currency: string;
+    status: string;
+  }[];
+  wealth_goals: {
+    id: string;
+    name: string;
+    goal_type: string | null;
+    target_amount: number | null;
+    current_amount: number;
+    target_date: string | null;
+    priority: string;
+    status: string;
+    wealth_goal_accounts: {
+      id: string;
+      allocation_percentage: number | null;
+      financial_accounts: { account_name: string | null } | null;
+    }[];
+  }[];
+  client_risk_profiles: {
+    id: string;
+    risk_tolerance: string;
+    investment_objective: string;
+    investment_horizon: string;
+    score: number | null;
+    questionnaire_data: unknown;
+    valid_from: string;
+    valid_until: string | null;
+    status: string;
+    created_at: string;
+  }[];
+  interactions: {
+    id: string;
+    interaction_type: string;
+    subject: string | null;
+    description: string | null;
+    occurred_at: string;
+  }[];
+  client_notes: {
+    id: string;
+    title: string | null;
+    content: string;
+    is_private: boolean;
+    created_at: string;
+  }[];
+  tasks: {
+    id: string;
+    title: string;
+    description: string | null;
+    due_at: string | null;
+    priority: string;
+    status: string;
+  }[];
+  documents: {
+    id: string;
+    name: string;
+    document_type: string | null;
+    status: string;
+    created_at: string;
+    document_versions: {
+      id: string;
+      version_number: number;
+      file_size: number | null;
+      mime_type: string | null;
+      created_at: string;
+    }[];
+  }[];
+  opportunities: {
+    id: string;
+    title: string;
+    opportunity_type: string | null;
+    estimated_value: number | null;
+    expected_close_date: string | null;
+    status: string;
+    opportunity_stages: { name: string; position: number } | null;
+  }[];
+};
+
+export async function getClientProfile(
+  organizationId: string,
+  clientId: string,
+): Promise<ClientProfile | null> {
   const supabase = await createClient();
 
   const { data: client, error } = await supabase
@@ -97,7 +261,7 @@ export async function getClientProfile(organizationId: string, clientId: string)
       wealth_goals(*, wealth_goal_accounts(*, financial_accounts(account_name))),
       client_risk_profiles(*),
       interactions(*),
-      notes(*),
+      client_notes:notes(*),
       tasks(*),
       documents(*, document_versions(*)),
       opportunities(*, opportunity_stages(name, position))
@@ -108,5 +272,5 @@ export async function getClientProfile(organizationId: string, clientId: string)
     .maybeSingle();
 
   if (error) throw error;
-  return client;
+  return client as unknown as ClientProfile | null;
 }
