@@ -10,6 +10,7 @@ function revalidateContract(contractId: string, clientId?: string | null) {
   revalidatePath("/consorcios/contratos");
   revalidatePath(`/consorcios/contratos/${contractId}`);
   revalidatePath("/consorcios/parcelas");
+  revalidatePath("/consorcios/lances");
   if (clientId) revalidatePath(`/clientes/${clientId}`);
 }
 
@@ -326,10 +327,52 @@ export async function updateInstallmentStatus(
 
 const BID_RESULT_EVENT: Record<string, { type: string; label: string }> = {
   pending: { type: "bid_offered", label: "Lance ofertado" },
+  analyzing: { type: "bid_analyzing", label: "Lance em análise" },
   won: { type: "bid_won", label: "Lance vencedor" },
   lost: { type: "bid_lost", label: "Lance não vencedor" },
   cancelled: { type: "bid_cancelled", label: "Lance cancelado" },
+  expired: { type: "bid_expired", label: "Lance expirado" },
 };
+
+/**
+ * Efeitos de um lance virar vencedor: reflete no contrato (contemplated_at,
+ * só se ainda não tiver — nunca sobrescreve uma data real já registrada)
+ * e cria uma tarefa de pós-contemplação. Nunca duplica: só roda na
+ * transição pra "won", não em toda edição.
+ */
+async function handleBidWon(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  organizationId: string,
+  contractId: string,
+  clientId: string | null,
+  bidDate: string | null,
+) {
+  const { data: contract, error: contractError } = await supabase
+    .from("consortium_contracts")
+    .select("contemplated_at")
+    .eq("id", contractId)
+    .single();
+  if (contractError) throw contractError;
+
+  if (!contract.contemplated_at) {
+    await supabase
+      .from("consortium_contracts")
+      .update({ contemplated_at: bidDate ?? new Date().toISOString().slice(0, 10) })
+      .eq("id", contractId);
+  }
+
+  await supabase.from("tasks").insert({
+    organization_id: organizationId,
+    client_id: clientId,
+    consortium_contract_id: contractId,
+    title: "Pós-contemplação: documentação e liberação do crédito",
+    description:
+      "Lance vencedor registrado. Confirmar pagamento do lance (quando aplicável), reunir documentação, acompanhar análise e liberação do crédito.",
+    priority: "high",
+    category: "consorcio",
+    status: "pending",
+  });
+}
 
 export async function addBid(
   contractId: string,
@@ -343,25 +386,36 @@ export async function addBid(
     notes: string;
   },
 ) {
-  await requireActiveMembership();
+  const { organizationId, fullName } = await requireActiveMembership();
   const supabase = await createClient();
 
-  const { error } = await supabase.from("consortium_bids").insert({
-    consortium_contract_id: contractId,
-    bid_type: input.bidType || null,
-    bid_amount: input.bidAmount,
-    bid_percentage: input.bidPercentage,
-    bid_date: input.bidDate,
-    result: input.result,
-    notes: input.notes || null,
-  });
+  const { data: bid, error } = await supabase
+    .from("consortium_bids")
+    .insert({
+      consortium_contract_id: contractId,
+      bid_type: input.bidType || null,
+      bid_amount: input.bidAmount,
+      bid_percentage: input.bidPercentage,
+      bid_date: input.bidDate,
+      result: input.result,
+      notes: input.notes || null,
+      created_by_name: fullName,
+    })
+    .select("id")
+    .single();
 
   if (error) throw error;
 
   const event = BID_RESULT_EVENT[input.result] ?? BID_RESULT_EVENT.pending;
   await logEvent(supabase, contractId, event.type, event.label);
 
+  if (input.result === "won") {
+    await handleBidWon(supabase, organizationId, contractId, clientId, input.bidDate);
+  }
+
   revalidateContract(contractId, clientId);
+
+  return { id: bid.id as string };
 }
 
 export async function updateBid(
@@ -377,7 +431,7 @@ export async function updateBid(
     notes: string;
   },
 ) {
-  await requireActiveMembership();
+  const { organizationId } = await requireActiveMembership();
   const supabase = await createClient();
 
   const { data: before, error: beforeError } = await supabase
@@ -407,10 +461,31 @@ export async function updateBid(
 
     if (input.result === "won") {
       await logEvent(supabase, contractId, "contemplation", "Contemplação registrada via lance vencedor.");
+      await handleBidWon(supabase, organizationId, contractId, clientId, input.bidDate);
     }
   }
 
   revalidateContract(contractId, clientId);
+}
+
+export async function updateContractBidRules(
+  contractId: string,
+  clientId: string | null,
+  rules: Record<string, unknown>,
+) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("consortium_contracts")
+    .update({ bid_rules: rules })
+    .eq("id", contractId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidateContract(contractId, clientId);
+  revalidatePath("/consorcios/lances");
 }
 
 export async function deleteBid(bidId: string, contractId: string, clientId: string | null) {

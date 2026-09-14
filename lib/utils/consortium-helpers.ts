@@ -66,18 +66,13 @@ export const EVENT_TYPE_LABEL: Record<string, string> = {
   installment_added: "Parcela registrada",
   payment: "Pagamento",
   bid_offered: "Lance ofertado",
+  bid_analyzing: "Lance em análise",
   bid_won: "Lance vencedor",
   bid_lost: "Lance não vencedor",
   bid_cancelled: "Lance cancelado",
+  bid_expired: "Lance expirado",
   contemplation: "Contemplação",
   document_uploaded: "Documento enviado",
-};
-
-export const BID_RESULT_LABEL: Record<string, string> = {
-  pending: "Em análise",
-  won: "Vencedor",
-  lost: "Não vencedor",
-  cancelled: "Cancelado",
 };
 
 export const AUDIT_ACTION_LABEL: Record<string, string> = {

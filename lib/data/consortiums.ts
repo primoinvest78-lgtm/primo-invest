@@ -24,12 +24,13 @@ export type ConsortiumContract = {
   insuranceAmount: number | null;
   contemplatedAt: string | null;
   notes: string | null;
+  bidRules: Record<string, unknown> | null;
 };
 
 const CONTRACT_SELECT = `id, administrator_name, contract_number, consortium_type, credit_amount, installment_amount,
        total_installments, paid_installments, status, start_date, end_date, created_at, updated_at,
        group_number, quota_number, asset_description, admin_fee_percentage, reserve_fund_percentage,
-       insurance_amount, contemplated_at, notes,
+       insurance_amount, contemplated_at, notes, bid_rules,
        client:clients!consortium_contracts_client_id_fkey(id, full_name)`;
 
 type RawContract = {
@@ -54,6 +55,7 @@ type RawContract = {
   insurance_amount: number | null;
   contemplated_at: string | null;
   notes: string | null;
+  bid_rules: Record<string, unknown> | null;
   client: { id: string; full_name: string } | null;
 };
 
@@ -82,6 +84,7 @@ function mapContract(row: RawContract): ConsortiumContract {
     insuranceAmount: row.insurance_amount,
     contemplatedAt: row.contemplated_at,
     notes: row.notes,
+    bidRules: row.bid_rules,
   };
 }
 
@@ -228,8 +231,12 @@ export type ConsortiumBid = {
   bidDate: string | null;
   result: string;
   notes: string | null;
+  createdAt: string;
+  createdByName: string | null;
   contractId: string;
   contractLabel: string;
+  contractGroupNumber: string | null;
+  contractQuotaNumber: string | null;
   clientId: string | null;
   clientName: string | null;
 };
@@ -240,8 +247,8 @@ export async function getConsortiumBids(organizationId: string): Promise<Consort
   const { data, error } = await supabase
     .from("consortium_bids")
     .select(
-      `id, bid_type, bid_amount, bid_percentage, bid_date, result, notes,
-       consortium_contracts!inner(id, administrator_name, contract_number, organization_id,
+      `id, bid_type, bid_amount, bid_percentage, bid_date, result, notes, created_at, created_by_name,
+       consortium_contracts!inner(id, administrator_name, contract_number, group_number, quota_number, organization_id,
          client:clients(id, full_name))`,
     )
     .eq("consortium_contracts.organization_id", organizationId)
@@ -257,10 +264,14 @@ export async function getConsortiumBids(organizationId: string): Promise<Consort
     bid_date: string | null;
     result: string;
     notes: string | null;
+    created_at: string;
+    created_by_name: string | null;
     consortium_contracts: {
       id: string;
       administrator_name: string | null;
       contract_number: string | null;
+      group_number: string | null;
+      quota_number: string | null;
       client: { id: string; full_name: string } | null;
     };
   };
@@ -274,10 +285,14 @@ export async function getConsortiumBids(organizationId: string): Promise<Consort
     bidDate: row.bid_date,
     result: row.result,
     notes: row.notes,
+    createdAt: row.created_at,
+    createdByName: row.created_by_name,
     contractId: row.consortium_contracts.id,
     contractLabel: [row.consortium_contracts.administrator_name, row.consortium_contracts.contract_number]
       .filter(Boolean)
       .join(" · "),
+    contractGroupNumber: row.consortium_contracts.group_number,
+    contractQuotaNumber: row.consortium_contracts.quota_number,
     clientId: row.consortium_contracts.client?.id ?? null,
     clientName: row.consortium_contracts.client?.full_name ?? null,
   }));

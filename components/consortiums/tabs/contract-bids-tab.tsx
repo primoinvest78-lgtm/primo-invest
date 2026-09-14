@@ -24,15 +24,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { addBid, deleteBid, updateBid } from "@/lib/actions/consortiums";
 import type { ConsortiumBid, ConsortiumContract } from "@/lib/data/consortiums";
-import { BID_RESULT_LABEL } from "@/lib/utils/consortium-helpers";
+import {
+  allowedModalitiesFor,
+  BID_RESULT_OPTIONS,
+  BID_RESULT_VARIANT,
+  bidResultLabel,
+  modalityLabel,
+  protocolFor,
+} from "@/lib/utils/bid-helpers";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
-
-const RESULT_VARIANT: Record<string, "default" | "destructive" | "outline"> = {
-  pending: "outline",
-  won: "default",
-  lost: "destructive",
-  cancelled: "destructive",
-};
 
 function BidFormDialog({
   contract,
@@ -50,6 +50,7 @@ function BidFormDialog({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(bid?.result ?? "pending");
+  const [bidType, setBidType] = useState(bid?.bidType ?? allowedModalitiesFor(contract)[0]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,7 +60,7 @@ function BidFormDialog({
     const bidPercentage = form.get("bidPercentage");
 
     const input = {
-      bidType: String(form.get("bidType") ?? ""),
+      bidType,
       bidAmount: bidAmount ? Number(bidAmount) : null,
       bidPercentage: bidPercentage ? Number(bidPercentage) : null,
       bidDate: String(form.get("bidDate") ?? "") || null,
@@ -87,7 +88,18 @@ function BidFormDialog({
           <DialogTitle>{bid ? "Editar lance" : "Registrar lance"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <Input name="bidType" placeholder="Tipo (ex: livre, fixo, embutido)" defaultValue={bid?.bidType ?? ""} />
+          <Select value={bidType} onValueChange={(v) => setBidType(v ?? bidType)}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Modalidade" />
+            </SelectTrigger>
+            <SelectContent>
+              {allowedModalitiesFor(contract).map((m) => (
+                <SelectItem key={m} value={m}>
+                  {modalityLabel(m)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="grid grid-cols-2 gap-3">
             <Input name="bidAmount" type="number" step="0.01" placeholder="Valor do lance" defaultValue={bid?.bidAmount ?? ""} />
             <Input name="bidPercentage" type="number" step="0.01" placeholder="% do crédito" defaultValue={bid?.bidPercentage ?? ""} />
@@ -98,9 +110,9 @@ function BidFormDialog({
               <SelectValue placeholder="Resultado" />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(BID_RESULT_LABEL).map(([value, label]) => (
+              {BID_RESULT_OPTIONS.map((value) => (
                 <SelectItem key={value} value={value}>
-                  {label}
+                  {bidResultLabel(value)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -152,11 +164,11 @@ export function ContractBidsTab({
             >
               <div className="min-w-0">
                 <p className="font-semibold text-foreground">
-                  {bid.bidType ?? "Lance"}
+                  {bid.bidType ? modalityLabel(bid.bidType) : "Lance"}
                   {bid.bidPercentage !== null ? ` · ${bid.bidPercentage}%` : ""}
                 </p>
                 <p className="text-xs text-card-beige-muted-foreground">
-                  {bid.bidDate ? formatDate(bid.bidDate) : "Sem data"}
+                  {bid.bidDate ? formatDate(bid.bidDate) : "Sem data"} · {protocolFor(bid)}
                   {bid.notes ? ` · ${bid.notes}` : ""}
                 </p>
               </div>
@@ -164,9 +176,7 @@ export function ContractBidsTab({
                 {bid.bidAmount !== null ? (
                   <span className="font-semibold text-foreground">{formatCurrencyBRL(bid.bidAmount)}</span>
                 ) : null}
-                <Badge variant={RESULT_VARIANT[bid.result] ?? "outline"}>
-                  {BID_RESULT_LABEL[bid.result] ?? bid.result}
-                </Badge>
+                <Badge variant={BID_RESULT_VARIANT[bid.result] ?? "outline"}>{bidResultLabel(bid.result)}</Badge>
                 <BidFormDialog
                   contract={contract}
                   bid={bid}
