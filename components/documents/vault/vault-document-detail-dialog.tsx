@@ -93,17 +93,25 @@ function ShareForm({ documentId, onDone }: { documentId: string; onDone: () => v
 function DocumentDetailBody({ documentId }: { documentId: string }) {
   const [detail, setDetail] = useState<VaultDocumentDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [uploadingVersion, setUploadingVersion] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetchVaultDocumentDetail(documentId).then((data) => {
-      if (cancelled) return;
-      setDetail(data);
-      setLoading(false);
-    });
+    fetchVaultDocumentDetail(documentId)
+      .then((data) => {
+        if (cancelled) return;
+        setDetail(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Falha ao carregar detalhe do documento", err);
+        setLoadError(true);
+        setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
@@ -178,6 +186,10 @@ function DocumentDetailBody({ documentId }: { documentId: string }) {
     <>
       {loading ? (
         <p className="py-8 text-center text-sm text-card-beige-muted-foreground">Carregando...</p>
+      ) : loadError ? (
+        <p className="py-8 text-center text-sm text-destructive">
+          Não foi possível carregar este documento. Tente novamente em instantes.
+        </p>
       ) : detail ? (
         <>
           <DialogHeader>
@@ -301,7 +313,9 @@ function DocumentDetailBody({ documentId }: { documentId: string }) {
               )}
             </div>
         </>
-      ) : null}
+      ) : (
+        <p className="py-8 text-center text-sm text-card-beige-muted-foreground">Documento não encontrado.</p>
+      )}
     </>
   );
 }

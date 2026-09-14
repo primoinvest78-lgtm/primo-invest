@@ -22,10 +22,12 @@ export type VaultDocument = {
   versionCount: number;
 };
 
-const VAULT_DOCUMENT_SELECT = `id, name, document_type, category, status, expires_at, tags, created_at, updated_at,
+const VAULT_DOCUMENT_BASE_FIELDS = `id, name, document_type, category, status, expires_at, tags, created_at, updated_at,
        client:clients(id, full_name),
        consortium_contracts(id, administrator_name, contract_number),
-       uploaded_by_profile:profiles!documents_uploaded_by_fkey(full_name),
+       uploaded_by_profile:profiles!documents_uploaded_by_fkey(full_name)`;
+
+const VAULT_DOCUMENT_SELECT = `${VAULT_DOCUMENT_BASE_FIELDS},
        document_versions(version_number, file_size, created_at)`;
 
 type RawVaultDocument = {
@@ -139,7 +141,7 @@ export async function getVaultDocumentDetail(
   const { data, error } = await supabase
     .from("documents")
     .select(
-      `${VAULT_DOCUMENT_SELECT},
+      `${VAULT_DOCUMENT_BASE_FIELDS},
        document_versions(id, version_number, storage_path, file_size, mime_type, created_at,
          uploaded_by_profile:profiles!document_versions_uploaded_by_fkey(full_name)),
        document_relationships(id, entity_type, entity_id, created_at),
