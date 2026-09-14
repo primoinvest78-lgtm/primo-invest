@@ -14,10 +14,7 @@ import {
 } from "@/components/ui/select";
 import type { VaultDocument } from "@/lib/data/documents";
 import {
-  categoryLabel,
-  DEFAULT_VAULT_FILTERS,
   documentStatusLabel,
-  DOCUMENT_CATEGORIES,
   hasActiveVaultFilters,
   type VaultFilters,
 } from "@/lib/utils/document-helpers";
@@ -26,20 +23,17 @@ export function VaultSearchBar({
   documents,
   filters,
   onChange,
+  onClear,
 }: {
   documents: VaultDocument[];
   filters: VaultFilters;
   onChange: (filters: VaultFilters) => void;
+  onClear: () => void;
 }) {
   const clients = useMemo(() => {
     const map = new Map<string, string>();
     for (const d of documents) if (d.clientId) map.set(d.clientId, d.clientName ?? "—");
     return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
-  }, [documents]);
-
-  const usedCategories = useMemo(() => {
-    const set = new Set(documents.map((d) => d.category).filter((c): c is string => Boolean(c)));
-    return DOCUMENT_CATEGORIES.filter((c) => set.has(c));
   }, [documents]);
 
   function set<K extends keyof VaultFilters>(key: K, value: VaultFilters[K]) {
@@ -61,23 +55,6 @@ export function VaultSearchBar({
             className="h-8 w-[280px] pl-8 text-sm"
           />
         </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-[10px] font-bold uppercase text-card-beige-muted-foreground">Categoria</label>
-        <Select value={filters.category} onValueChange={(v) => set("category", v ?? "all")}>
-          <SelectTrigger className="w-[170px]" size="sm">
-            <SelectValue placeholder="Todas" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas</SelectItem>
-            {usedCategories.map((c) => (
-              <SelectItem key={c} value={c}>
-                {categoryLabel(c)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -112,7 +89,7 @@ export function VaultSearchBar({
       </div>
 
       {hasActiveVaultFilters(filters) ? (
-        <Button type="button" size="sm" variant="ghost" onClick={() => onChange(DEFAULT_VAULT_FILTERS)} className="gap-1 text-xs">
+        <Button type="button" size="sm" variant="ghost" onClick={onClear} className="gap-1 text-xs">
           <X className="h-3.5 w-3.5" />
           Limpar filtros
         </Button>

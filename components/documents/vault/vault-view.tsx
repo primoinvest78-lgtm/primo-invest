@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { VaultCategoriesGrid } from "@/components/documents/vault/vault-categories-grid";
@@ -30,9 +31,35 @@ export function VaultView({
   organizationId: string;
   clients: { id: string; fullName: string }[];
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [filters, setFilters] = useState<VaultFilters>(DEFAULT_VAULT_FILTERS);
 
-  const filtered = useMemo(() => applyVaultFilters(documents, filters), [documents, filters]);
+  // A categoria vive na URL (?categoria=financeiro) — é um caminho de
+  // verdade (navegável, com "voltar" do navegador funcionando, e
+  // compartilhável), não só um estado interno que some ao recarregar.
+  // Ela é derivada direto da URL a cada render (sem useEffect + setState)
+  // para não disparar renders em cascata.
+  const categoryFromUrl = searchParams.get("categoria") ?? "all";
+  const effectiveFilters = useMemo(
+    () => ({ ...filters, category: categoryFromUrl }),
+    [filters, categoryFromUrl],
+  );
+
+  function selectCategory(category: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (category === "all") params.delete("categoria");
+    else params.set("categoria", category);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
+
+  const filtered = useMemo(
+    () => applyVaultFilters(documents, effectiveFilters),
+    [documents, effectiveFilters],
+  );
   const alerts = useMemo(() => computeVaultAlerts(documents, clientsWithoutDocs), [documents, clientsWithoutDocs]);
 
   return (
@@ -41,14 +68,22 @@ export function VaultView({
 
       <WealthAlertsSection alerts={alerts} />
 
-      <VaultCategoriesGrid documents={documents} activeCategory={filters.category} onSelect={(category) => setFilters((f) => ({ ...f, category }))} />
+      <VaultCategoriesGrid documents={documents} activeCategory={effectiveFilters.category} onSelect={selectCategory} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-h2 font-bold text-foreground">Documentos</h3>
         <VaultUploadDialog organizationId={organizationId} clients={clients} />
       </div>
 
-      <VaultSearchBar documents={documents} filters={filters} onChange={setFilters} />
+      <VaultSearchBar
+        documents={documents}
+        filters={effectiveFilters}
+        onChange={setFilters}
+        onClear={() => {
+          setFilters(DEFAULT_VAULT_FILTERS);
+          selectCategory("all");
+        }}
+      />
 
       <VaultDocumentsTable documents={filtered} />
 

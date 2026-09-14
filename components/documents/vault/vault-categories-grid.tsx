@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 import {
   Briefcase,
   Building2,
@@ -30,6 +31,20 @@ const CATEGORY_ICON: Record<string, React.ComponentType<{ className?: string }>>
   outro: Briefcase,
 };
 
+/**
+ * Só as categorias com um módulo real e específico no app ganham o
+ * link "Abrir módulo". As demais (pessoal, jurídico, fiscal, seguro,
+ * outro) não têm uma tela dedicada hoje — mostrar um link ali seria
+ * inventar um destino que não existe.
+ */
+const CATEGORY_MODULE_HREF: Partial<Record<string, string>> = {
+  financeiro: "/patrimonio",
+  patrimonial: "/patrimonio",
+  investimento: "/patrimonio/investimentos",
+  consorcio: "/consorcios",
+  contrato: "/consorcios/contratos",
+};
+
 export function VaultCategoriesGrid({
   documents,
   activeCategory,
@@ -51,12 +66,11 @@ export function VaultCategoriesGrid({
         const Icon = CATEGORY_ICON[category] ?? FileText;
         const count = counts.get(category) ?? 0;
         const active = activeCategory === category;
+        const moduleHref = CATEGORY_MODULE_HREF[category];
 
         return (
-          <motion.button
+          <motion.div
             key={category}
-            type="button"
-            onClick={() => onSelect(active ? "all" : category)}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: index * 0.03, ease: "easeOut" }}
@@ -66,14 +80,30 @@ export function VaultCategoriesGrid({
               active ? "border-primary" : "",
             ].join(" ")}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Icon className="h-4.5 w-4.5" />
-            </div>
-            <p className="text-sm font-bold text-foreground">{categoryLabel(category)}</p>
-            <p className="text-xs text-card-beige-muted-foreground">
-              {count} {count === 1 ? "documento" : "documentos"}
-            </p>
-          </motion.button>
+            <button
+              type="button"
+              onClick={() => onSelect(active ? "all" : category)}
+              className="flex w-full flex-col items-start gap-2 text-left"
+            >
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Icon className="h-4.5 w-4.5" />
+              </div>
+              <p className="text-sm font-bold text-foreground">{categoryLabel(category)}</p>
+              <p className="text-xs text-card-beige-muted-foreground">
+                {count} {count === 1 ? "documento" : "documentos"}
+              </p>
+            </button>
+
+            {moduleHref ? (
+              <Link
+                href={moduleHref}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1 text-[11px] font-semibold text-primary hover:underline"
+              >
+                Abrir módulo →
+              </Link>
+            ) : null}
+          </motion.div>
         );
       })}
     </div>
