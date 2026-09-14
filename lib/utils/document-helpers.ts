@@ -37,7 +37,7 @@ export function categoryLabel(category: string | null): string {
 export const STATUS_LABEL: Record<string, string> = {
   active: "Ativo",
   archived: "Arquivado",
-  pending_approval: "Aguardando aprovação",
+  deleted: "Excluído",
 };
 
 export function documentStatusLabel(status: string): string {
@@ -74,12 +74,12 @@ export function daysUntil(dateStr: string): number {
   return Math.round((new Date(dateStr).getTime() - Date.now()) / DAY_MS);
 }
 
-export function isExpired(doc: VaultDocument): boolean {
+export function isExpired(doc: { expiresAt: string | null }): boolean {
   if (!doc.expiresAt) return false;
   return daysUntil(doc.expiresAt) < 0;
 }
 
-export function isExpiringSoon(doc: VaultDocument, withinDays = 30): boolean {
+export function isExpiringSoon(doc: { expiresAt: string | null }, withinDays = 30): boolean {
   if (!doc.expiresAt) return false;
   const days = daysUntil(doc.expiresAt);
   return days >= 0 && days <= withinDays;

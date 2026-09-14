@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const GAME_SECONDS = 20;
 
@@ -15,16 +15,20 @@ export function ReflexGame() {
   const [timeLeft, setTimeLeft] = useState(GAME_SECONDS);
   const [target, setTarget] = useState(randomPosition());
   const [pop, setPop] = useState(0);
-  const bestRef = useRef(0);
+  const [best, setBest] = useState(0);
 
   useEffect(() => {
-    if (status !== "playing") return;
-    if (timeLeft <= 0) {
-      setStatus("done");
-      bestRef.current = Math.max(bestRef.current, score);
-      return;
-    }
-    const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+    if (status !== "playing" || timeLeft <= 0) return;
+    const id = setTimeout(() => {
+      setTimeLeft((t) => {
+        const next = t - 1;
+        if (next <= 0) {
+          setStatus("done");
+          setBest((b) => Math.max(b, score));
+        }
+        return next;
+      });
+    }, 1000);
     return () => clearTimeout(id);
   }, [status, timeLeft, score]);
 
@@ -91,8 +95,8 @@ export function ReflexGame() {
             <p className="text-3xl font-bold text-white">
               {score} <span className="text-base font-semibold text-white/60">pontos</span>
             </p>
-            {bestRef.current > 0 ? (
-              <p className="text-xs text-white/50">Melhor pontuação nesta visita: {bestRef.current}</p>
+            {best > 0 ? (
+              <p className="text-xs text-white/50">Melhor pontuação nesta visita: {best}</p>
             ) : null}
             <button
               type="button"

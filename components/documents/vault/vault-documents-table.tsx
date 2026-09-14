@@ -9,8 +9,14 @@ import type { VaultDocument } from "@/lib/data/documents";
 import { categoryLabel, documentStatusLabel, formatBytes, isExpired, isExpiringSoon } from "@/lib/utils/document-helpers";
 import { formatDate } from "@/lib/utils/format";
 
-export function VaultDocumentsTable({ documents }: { documents: VaultDocument[] }) {
-  const [selected, setSelected] = useState<VaultDocument | null>(null);
+export function VaultDocumentsTable({
+  documents,
+  initialSelected,
+}: {
+  documents: VaultDocument[];
+  initialSelected?: VaultDocument | null;
+}) {
+  const [selected, setSelected] = useState<VaultDocument | null>(initialSelected ?? null);
 
   return (
     <div className="space-y-4">

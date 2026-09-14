@@ -124,6 +124,7 @@ export async function recordVaultDocument(input: {
   if (versionError) throw versionError;
 
   revalidatePath("/documentos/cofre");
+  revalidatePath("/documentos/documentos");
   if (input.clientId) revalidatePath(`/clientes/${input.clientId}`);
   if (input.consortiumContractId) revalidatePath(`/consorcios/contratos/${input.consortiumContractId}`);
 

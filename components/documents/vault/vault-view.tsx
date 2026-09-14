@@ -60,6 +60,12 @@ export function VaultView({
     () => applyVaultFilters(documents, effectiveFilters),
     [documents, effectiveFilters],
   );
+
+  // Deep link vindo da Central de Documentos (?documento=<id>) — abre
+  // o detalhe direto, mesmo que o filtro de categoria ativo escondesse
+  // a linha na tabela.
+  const deepLinkedId = searchParams.get("documento");
+  const deepLinkedDocument = deepLinkedId ? (documents.find((d) => d.id === deepLinkedId) ?? null) : null;
   const alerts = useMemo(() => computeVaultAlerts(documents, clientsWithoutDocs), [documents, clientsWithoutDocs]);
 
   return (
@@ -85,7 +91,7 @@ export function VaultView({
         }}
       />
 
-      <VaultDocumentsTable documents={filtered} />
+      <VaultDocumentsTable documents={filtered} initialSelected={deepLinkedDocument} />
 
       <VaultPendingSection documents={documents} clientsWithoutDocs={clientsWithoutDocs} />
     </div>
