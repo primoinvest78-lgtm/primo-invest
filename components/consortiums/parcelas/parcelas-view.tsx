@@ -38,7 +38,10 @@ export function ParcelasView({
     <div className="space-y-6">
       <NextInstallmentHighlight installments={installments} />
 
-      <InstallmentsKpis installments={installments} />
+      <InstallmentsKpis
+        installments={installments}
+        onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))}
+      />
 
       <WealthAlertsSection alerts={alerts} />
 

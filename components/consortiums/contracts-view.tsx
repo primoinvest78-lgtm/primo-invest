@@ -25,7 +25,10 @@ export function ContractsView({
 
   return (
     <div className="space-y-6">
-      <ContractsKpis contracts={contracts} />
+      <ContractsKpis
+        contracts={contracts}
+        onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))}
+      />
 
       <ContractsFilterBar contracts={contracts} filters={filters} onChange={setFilters} />
 

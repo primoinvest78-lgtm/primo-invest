@@ -36,7 +36,11 @@ export function LancesView({
 
   return (
     <div className="space-y-6">
-      <BidsKpis bids={bids} contracts={contracts} />
+      <BidsKpis
+        bids={bids}
+        contracts={contracts}
+        onSelectResult={(result) => setFilters((f) => ({ ...f, result }))}
+      />
 
       <WealthAlertsSection alerts={alerts} />
 
