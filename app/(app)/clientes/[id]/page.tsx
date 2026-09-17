@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ClientProfileTabs } from "@/components/clients/client-profile-tabs";
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { ClientQuickActions } from "@/components/clients/quick-actions";
 import { BackLink } from "@/components/ui/back-link";
 import { getClientProfile, getClientWealthHistory } from "@/lib/data/clients";
@@ -38,7 +39,17 @@ export default async function ClientProfilePage({
 
         <div className="flex shrink-0 flex-col items-end gap-3">
           <BackLink href="/clientes" label="Voltar a Clientes" />
-          <ClientQuickActions clientId={client.id} />
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {/* Leva este cliente direto pro gerador — o assessor não
+                precisa ir a /relatorios e reselecionar quem já está
+                olhando. */}
+            <ReportShortcutButton
+              type="cliente"
+              clientId={client.id}
+              label="Relatório do cliente"
+            />
+            <ClientQuickActions clientId={client.id} />
+          </div>
         </div>
       </section>
 

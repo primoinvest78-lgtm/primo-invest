@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { WealthOverviewView } from "@/components/wealth/wealth-overview-view";
 import { getWealthHistory, getWealthOverview } from "@/lib/data/wealth";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -20,6 +21,10 @@ export default async function PatrimonioPage() {
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
             Painel patrimonial consolidado — ativos, passivos e patrimônio líquido de toda a carteira.
           </p>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="patrimonial" label="Relatório patrimonial" />
         </div>
       </section>
 

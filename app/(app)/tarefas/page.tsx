@@ -1,4 +1,5 @@
 import { TaskCreateDialog } from "@/components/tasks/task-create-dialog";
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { TasksView } from "@/components/tasks/tasks-view";
 import { getTaskFormOptions, listTasks } from "@/lib/data/tasks";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -26,7 +27,10 @@ export default async function TarefasPage() {
           </p>
         </div>
 
-        <TaskCreateDialog options={options} />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="operacional" label="Relatório operacional" />
+          <TaskCreateDialog options={options} />
+        </div>
       </section>
 
       <TasksView tasks={tasks} options={options} />

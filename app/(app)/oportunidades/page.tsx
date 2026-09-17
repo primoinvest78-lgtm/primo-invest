@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { OpportunitiesView } from "@/components/opportunities/opportunities-view";
 import { listOpportunitiesByStage } from "@/lib/data/opportunities";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -18,6 +19,10 @@ export default async function OportunidadesPage() {
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
             {total} {total === 1 ? "oportunidade" : "oportunidades"} em andamento.
           </p>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="operacional" label="Relatório operacional" />
         </div>
       </section>
 

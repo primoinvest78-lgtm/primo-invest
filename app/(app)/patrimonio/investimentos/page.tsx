@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { BackLink } from "@/components/ui/back-link";
 import { InvestmentsView } from "@/components/wealth/investments-view";
 import { getInvestmentsDetail, getWealthHistory } from "@/lib/data/wealth";
@@ -23,7 +24,10 @@ export default async function InvestimentosPage() {
           </p>
         </div>
 
-        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="investimentos" label="Relatório da carteira" />
+          <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
+        </div>
       </section>
 
       <InvestmentsView holdings={holdings} history={history} />

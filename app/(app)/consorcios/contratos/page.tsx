@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { BackLink } from "@/components/ui/back-link";
 import { ContractsView } from "@/components/consortiums/contracts-view";
 import { listClients } from "@/lib/data/clients";
@@ -24,7 +25,10 @@ export default async function ContratosPage() {
             {contracts.length === 1 ? "contrato" : "contratos"}.
           </p>
         </div>
-        <BackLink href="/consorcios" label="Voltar a Consórcios" />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="consorcios" label="Relatório de consórcios" />
+          <BackLink href="/consorcios" label="Voltar a Consórcios" />
+        </div>
       </section>
 
       {contracts.length === 0 ? (

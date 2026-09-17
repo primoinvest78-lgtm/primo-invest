@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { ClientsTable } from "@/components/clients/clients-table";
 import { listClients } from "@/lib/data/clients";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -18,6 +19,10 @@ export default async function ClientesPage() {
             Base de relacionamento e carteira ativa — {clients.length}{" "}
             {clients.length === 1 ? "cliente" : "clientes"}.
           </p>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="executivo" label="Relatório executivo" />
         </div>
       </section>
 
