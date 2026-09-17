@@ -31,7 +31,10 @@ export function DashboardHeader({
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-secondary-foreground/10 bg-secondary/95 backdrop-blur-md">
+    <header
+      data-app-header
+      className="sticky top-0 z-40 border-b border-secondary-foreground/10 bg-secondary/95 backdrop-blur-md"
+    >
       <div className="flex min-h-[76px] items-center gap-3 px-4 md:px-6 xl:px-8">
         <button
           type="button"

@@ -37,6 +37,7 @@ import {
   REPORT_TYPE_SECTIONS,
   type ReportAudience,
   type ReportChart,
+  type ReportChartFormat,
   type ReportPayload,
   type ReportSection,
   type ReportSource,
@@ -156,11 +157,17 @@ function tableFrom<T>(
   );
 }
 
-function donut(id: string, title: string, entries: [string, number][]): ReportChart {
+function donut(
+  id: string,
+  title: string,
+  entries: [string, number][],
+  format: ReportChartFormat = "currency",
+): ReportChart {
   return {
     id,
     kind: "donut",
     title,
+    format,
     data: entries
       .filter(([, value]) => value > 0)
       .sort((a, b) => b[1] - a[1])
@@ -168,11 +175,18 @@ function donut(id: string, title: string, entries: [string, number][]): ReportCh
   };
 }
 
-function ranking(id: string, title: string, entries: [string, number][], limit = 8): ReportChart {
+function ranking(
+  id: string,
+  title: string,
+  entries: [string, number][],
+  limit = 8,
+  format: ReportChartFormat = "currency",
+): ReportChart {
   return {
     id,
     kind: "bar-horizontal",
     title,
+    format,
     data: entries
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit)
@@ -311,6 +325,7 @@ async function buildPatrimonial(
                 id: "evolucao-linha",
                 kind: "line",
                 title: "Patrimônio acumulado por mês",
+                format: "currency",
                 data: history.map((p) => ({ label: formatMonthLabel(p.month), value: p.value })),
               },
             ],
@@ -587,6 +602,7 @@ async function buildInvestimentos(
                       id: "movimentacoes-barras",
                       kind: "bar",
                       title: "Volume movimentado por mês",
+                      format: "currency",
                       data: Array.from(byMonth.entries())
                         .sort((a, b) => (a[0] < b[0] ? -1 : 1))
                         .map(([month, value]) => ({ label: formatMonthLabel(month), value })),
@@ -694,6 +710,7 @@ async function buildCliente(
                 id: "evolucao-linha",
                 kind: "line",
                 title: "Patrimônio acumulado por mês",
+                format: "currency",
                 data: scoped.map((p) => ({ label: formatMonthLabel(p.month), value: p.value })),
               },
             ],
@@ -774,6 +791,8 @@ async function buildCliente(
                   g.name,
                   g.targetAmount ? Math.round((g.currentAmount / g.targetAmount) * 100) : 0,
                 ]),
+                8,
+                "percent",
               ),
             ],
             source: source("Patrimônio › Metas", MODULE_ROUTES.metas),
@@ -984,6 +1003,7 @@ async function buildConsorcios(
                 id: "status-barras",
                 kind: "bar",
                 title: "Distribuição por situação",
+                format: "number",
                 data: counted(byStatus)
                   .sort((a, b) => b[1] - a[1])
                   .map(([label, value]) => ({ label, value })),
@@ -1101,6 +1121,7 @@ async function buildConsorcios(
                 id: "lances-barras",
                 kind: "bar",
                 title: "Lances por resultado",
+                format: "number",
                 data: counted(byResult)
                   .sort((a, b) => b[1] - a[1])
                   .map(([label, value]) => ({ label, value })),
@@ -1201,6 +1222,7 @@ async function buildOperacional(
                 id: "tarefas-status-barras",
                 kind: "bar",
                 title: "Distribuição das tarefas",
+                format: "number",
                 data: counted(byStatus)
                   .sort((a, b) => b[1] - a[1])
                   .map(([label, value]) => ({ label, value })),
@@ -1309,7 +1331,7 @@ async function buildOperacional(
             id: "leads_origem",
             title: "Leads por origem",
             source: source("Leads", MODULE_ROUTES.leads),
-            charts: [donut("leads-origem-donut", "Distribuição por canal de origem", counted(bySource))],
+            charts: [donut("leads-origem-donut", "Distribuição por canal de origem", counted(bySource), "number")],
             tables: [
               table(
                 "leads-origem-tabela",
@@ -1381,6 +1403,7 @@ async function buildExecutivo(
                 id: "evolucao-linha",
                 kind: "line",
                 title: "Patrimônio sob gestão por mês",
+                format: "currency",
                 data: scoped.map((p) => ({ label: formatMonthLabel(p.month), value: p.value })),
               },
             ],

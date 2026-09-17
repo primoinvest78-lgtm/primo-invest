@@ -118,10 +118,20 @@ export const REPORT_STATUS_LABEL: Record<string, string> = {
 
 export type ReportKpi = { label: string; value: string; sub?: string | null };
 export type ReportChartPoint = { label: string; value: number };
+export type ReportChartFormat = "currency" | "number" | "percent";
+
 export type ReportChart = {
   id: string;
+  /**
+   * LINHA = evolução no tempo · BARRAS = comparação entre categorias ·
+   * BARRAS HORIZONTAIS = ranking (rótulo longo cabe) · DONUT =
+   * composição de um todo. O builder escolhe pelo que o dado É, nunca
+   * por variedade visual — gráfico sem propósito não entra.
+   */
   kind: "line" | "bar" | "bar-horizontal" | "donut";
   title: string;
+  /** Como formatar os valores nos eixos e no tooltip. */
+  format?: ReportChartFormat;
   data: ReportChartPoint[];
 };
 export type ReportTable = {

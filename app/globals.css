@@ -539,16 +539,86 @@ td {
  * PRINT
  */
 
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
 @media print {
+  html,
   body {
     background: #ffffff !important;
     color: #010a42 !important;
   }
 
-  * {
-    color: #010a42 !important;
-    background: transparent !important;
+  /*
+   * Regra geral de impressão: tinta preta sobre papel branco. Um `*`
+   * com !important era a regra ANTERIOR e destruía o relatório — pintava
+   * de azul-marinho também o texto que vive DENTRO do bloco azul-marinho
+   * da capa, resultando em capa invisível. Por isso agora a regra é
+   * limitada ao que não faz parte de um documento: o `:not()` abaixo
+   * preserva capa e cabeçalhos escuros.
+   */
+  *:not([data-report-document] *) {
     box-shadow: none !important;
+  }
+
+  /*
+   * Cromo do app fora do papel. Um relatório impresso não leva menu
+   * lateral, cabeçalho de navegação nem botão de ação junto.
+   */
+  aside,
+  header[data-app-header],
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /*
+   * DOCUMENTO
+   *
+   * Dentro do relatório as cores são intencionais e precisam sobreviver
+   * à impressão: a capa azul-marinho identifica a Primo Invest, e as
+   * cores dos gráficos são o que distingue uma fatia da outra. Sem
+   * `print-color-adjust: exact` o navegador "economiza tinta" e entrega
+   * um documento cinza, ilegível como peça institucional.
+   */
+  [data-report-document],
+  [data-report-document] * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  [data-report-document] {
+    max-width: none !important;
+  }
+
+  /* Seção não parte no meio entre duas páginas. */
+  [data-report-document] section,
+  [data-report-document] header,
+  [data-report-document] footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Tabela longa parte, mas repetindo o cabeçalho em cada página. */
+  [data-report-document] thead {
+    display: table-header-group;
+  }
+
+  [data-report-document] tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Recharts desenha em SVG com largura calculada em JS: sem isto o
+     gráfico sai cortado na largura da viewport da tela, não do papel. */
+  [data-report-document] .recharts-wrapper,
+  [data-report-document] .recharts-surface {
+    max-width: 100% !important;
   }
 }
 
