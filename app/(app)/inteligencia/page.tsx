@@ -1,7 +1,4 @@
-import { AiNarrativeSlot } from "@/components/intelligence/ai-narrative-slot";
-import { ClientsNeedingAttention } from "@/components/intelligence/clients-needing-attention";
-import { InsightFeed } from "@/components/intelligence/insight-feed";
-import { InsightKpis } from "@/components/intelligence/insight-kpis";
+import { IntelligenceView } from "@/components/intelligence/intelligence-view";
 import { getIntelligenceData } from "@/lib/data/intelligence";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -21,13 +18,7 @@ export default async function InteligenciaPage() {
     <div className="space-y-6">
       <Header />
 
-      <InsightKpis counts={counts} />
-
-      <ClientsNeedingAttention insights={insights} />
-
-      <InsightFeed insights={insights} />
-
-      <AiNarrativeSlot insights={insights} />
+      <IntelligenceView insights={insights} counts={counts} />
     </div>
   );
 }

@@ -43,7 +43,9 @@ export default async function IntegracoesPage() {
 
       <CenterKpis kpis={kpis} />
 
-      <CenterAttentionPanel alerts={alerts} />
+      <div id="integrations-attention">
+        <CenterAttentionPanel alerts={alerts} />
+      </div>
 
       <section>
         <div className="mb-4">

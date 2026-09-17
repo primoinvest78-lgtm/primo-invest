@@ -55,8 +55,15 @@ export function AdminShell({
       </TabsList>
 
       <TabsContent value="dashboard" className="mt-5 space-y-6">
-        <AdminKpis data={dashboardData} />
-        <AdminAlerts alerts={dashboardData.alerts} />
+        <AdminKpis
+          data={dashboardData}
+          onGoToUsers={() => setTab("usuarios")}
+          onGoToAlerts={() => document.getElementById("admin-alerts")?.scrollIntoView({ behavior: "smooth" })}
+          onGoToActivity={() => setTab("auditoria")}
+        />
+        <div id="admin-alerts">
+          <AdminAlerts alerts={dashboardData.alerts} />
+        </div>
         <AdminCharts countsByRole={dashboardData.countsByRole} activityTrend={activityTrend} byModule={byModule} />
         <RecentActivity entries={dashboardData.recentActivity} members={dashboardData.members} />
       </TabsContent>

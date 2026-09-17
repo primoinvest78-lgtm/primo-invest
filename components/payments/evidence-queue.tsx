@@ -8,7 +8,7 @@ import type { MatchableClient, MatchableInstallment } from "@/lib/payments/match
 import { PAYMENT_STATUS_CLASS, PAYMENT_STATUS_LABEL, type PaymentEvidence, type PaymentStatus } from "@/lib/payments/types";
 import { formatCurrencyBRL, formatDate, formatDateTime } from "@/lib/utils/format";
 
-type TabKey = "todos" | "recebidos" | "conciliados" | "revisao" | "excecoes" | "duplicidades";
+export type TabKey = "todos" | "recebidos" | "conciliados" | "revisao" | "excecoes" | "duplicidades";
 
 const TABS: { key: TabKey; label: string; statuses: PaymentStatus[] }[] = [
   { key: "todos", label: "Todos", statuses: [] },
@@ -23,12 +23,19 @@ export function EvidenceQueue({
   evidences,
   clients,
   installments,
+  tab: controlledTab,
+  onTabChange,
 }: {
   evidences: PaymentEvidence[];
   clients: MatchableClient[];
   installments: MatchableInstallment[];
+  /** Controlado externamente (ex.: clique num KPI) — se omitido, o filtro fica local à fila. */
+  tab?: TabKey;
+  onTabChange?: (tab: TabKey) => void;
 }) {
-  const [tab, setTab] = useState<TabKey>("todos");
+  const [internalTab, setInternalTab] = useState<TabKey>("todos");
+  const tab = controlledTab ?? internalTab;
+  const setTab = onTabChange ?? setInternalTab;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const counts = useMemo(() => {

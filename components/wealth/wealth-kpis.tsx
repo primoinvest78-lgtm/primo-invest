@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import type { WealthHistoryPoint, WealthOverview } from "@/lib/data/wealth";
@@ -12,20 +13,25 @@ function Kpi({
   valueClassName,
   animate = true,
   index,
+  href,
 }: {
   label: string;
   value: string;
   valueClassName?: string;
   animate?: boolean;
   index: number;
+  href?: string;
 }) {
-  return (
+  const content = (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05, ease: "easeOut" }}
       whileHover={{ y: -2 }}
-      className="card-premium rounded-2xl p-5 transition-all duration-200"
+      className={[
+        "card-premium rounded-2xl p-5 transition-all duration-200",
+        href ? "hover:border-primary/60 hover:shadow-card" : "",
+      ].join(" ")}
     >
       <p className="truncate text-label font-bold uppercase text-card-beige-muted-foreground">
         {label}
@@ -35,6 +41,8 @@ function Kpi({
       </p>
     </motion.div>
   );
+
+  return href ? <Link href={href}>{content}</Link> : content;
 }
 
 export function WealthKpis({
@@ -60,13 +68,24 @@ export function WealthKpis({
         valueClassName="text-primary"
         index={1}
       />
-      <Kpi label="Investimentos" value={formatCurrencyBRL(overview.investmentsTotal)} index={2} />
-      <Kpi label="Liquidez" value={formatCurrencyBRL(overview.liquidTotal)} index={3} />
+      <Kpi
+        label="Investimentos"
+        value={formatCurrencyBRL(overview.investmentsTotal)}
+        index={2}
+        href="/patrimonio/investimentos"
+      />
+      <Kpi
+        label="Liquidez"
+        value={formatCurrencyBRL(overview.liquidTotal)}
+        index={3}
+        href="/patrimonio/contas"
+      />
       <Kpi
         label="Passivos"
         value={formatCurrencyBRL(overview.totalLiabilities)}
         valueClassName="text-destructive"
         index={4}
+        href="/patrimonio/passivos"
       />
       <Kpi
         label="Variação patrimonial"

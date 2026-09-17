@@ -70,7 +70,12 @@ export function VaultView({
 
   return (
     <div className="space-y-6">
-      <VaultKpis documents={documents} clientsWithoutDocsCount={clientsWithoutDocs.length} sharedCount={sharedCount} />
+      <VaultKpis
+        documents={documents}
+        clientsWithoutDocsCount={clientsWithoutDocs.length}
+        sharedCount={sharedCount}
+        onSelectExpiry={(expiry) => setFilters((f) => ({ ...f, expiry }))}
+      />
 
       <WealthAlertsSection alerts={alerts} />
 

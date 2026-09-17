@@ -64,7 +64,9 @@ export default async function RelatoriosPage() {
 
       <CenterKpis kpis={kpis} />
 
-      <CenterPendingSection scheduled={scheduled} />
+      <div id="pendentes">
+        <CenterPendingSection scheduled={scheduled} />
+      </div>
 
       <CenterTypeGrid counts={counts} canUseInternalTypes={isManagementRole(role)} />
 
@@ -72,7 +74,9 @@ export default async function RelatoriosPage() {
 
       <CenterCharts reports={reports} />
 
-      <CenterTemplatesSection templates={templates} />
+      <div id="modelos">
+        <CenterTemplatesSection templates={templates} />
+      </div>
     </div>
   );
 }

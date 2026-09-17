@@ -96,6 +96,8 @@ export type VaultFilters = {
   category: string;
   clientId: string;
   status: string;
+  /** Espelha isExpired/isExpiringSoon/isRecent — usado pelo clique nos KPIs. */
+  expiry: "all" | "expired" | "expiringSoon" | "recent";
 };
 
 export const DEFAULT_VAULT_FILTERS: VaultFilters = {
@@ -103,6 +105,7 @@ export const DEFAULT_VAULT_FILTERS: VaultFilters = {
   category: "all",
   clientId: "all",
   status: "all",
+  expiry: "all",
 };
 
 export function hasActiveVaultFilters(filters: VaultFilters): boolean {
@@ -126,6 +129,9 @@ export function applyVaultFilters(documents: VaultDocument[], filters: VaultFilt
     if (filters.category !== "all" && doc.category !== filters.category) return false;
     if (filters.clientId !== "all" && (doc.clientId ?? "none") !== filters.clientId) return false;
     if (filters.status !== "all" && doc.status !== filters.status) return false;
+    if (filters.expiry === "expired" && !isExpired(doc)) return false;
+    if (filters.expiry === "expiringSoon" && !isExpiringSoon(doc)) return false;
+    if (filters.expiry === "recent" && !isRecent(doc)) return false;
     return true;
   });
 }

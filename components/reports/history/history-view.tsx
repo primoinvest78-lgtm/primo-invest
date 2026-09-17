@@ -3,6 +3,7 @@
 import { Copy, Eye, FileText, Search, Share2, X } from "lucide-react";
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -35,9 +36,10 @@ const STATUS_CLASS: Record<string, string> = {
 };
 
 export function HistoryView({ reports }: { reports: ReportListItem[] }) {
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [type, setType] = useState(ALL);
-  const [status, setStatus] = useState(ALL);
+  const [status, setStatus] = useState(() => searchParams.get("status") ?? ALL);
   const [author, setAuthor] = useState(ALL);
 
   const authors = useMemo(

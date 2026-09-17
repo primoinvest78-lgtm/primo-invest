@@ -1,7 +1,5 @@
-import { EvidenceQueue } from "@/components/payments/evidence-queue";
 import { PaymentsAccessGate } from "@/components/payments/payments-access-gate";
-import { PaymentsCharts } from "@/components/payments/payments-charts";
-import { PaymentsKpis } from "@/components/payments/payments-kpis";
+import { PaymentsView } from "@/components/payments/payments-view";
 import { UploadEvidenceDialog } from "@/components/payments/upload-evidence-dialog";
 import { getPaymentDashboardData, listMatchableClients, listMatchableInstallments, listPaymentEvidences } from "@/lib/data/payments";
 import { canAccessPayments } from "@/lib/payments/permissions";
@@ -38,11 +36,12 @@ export default async function PagamentosPage() {
     <div className="space-y-6">
       <Header organizationId={organizationId} clientNames={clients.map((c) => c.fullName)} />
 
-      <PaymentsKpis data={dashboardData} />
-
-      <PaymentsCharts data={dashboardData} />
-
-      <EvidenceQueue evidences={evidences} clients={clients} installments={installments} />
+      <PaymentsView
+        dashboardData={dashboardData}
+        evidences={evidences}
+        clients={clients}
+        installments={installments}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import type { IntegrationsKpis } from "@/lib/data/integrations";
@@ -12,20 +13,25 @@ function Kpi({
   sub,
   valueClassName,
   index,
+  href,
 }: {
   label: string;
   value: string;
   sub?: string;
   valueClassName?: string;
   index: number;
+  href?: string;
 }) {
-  return (
+  const content = (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.04, ease: "easeOut" }}
       whileHover={{ y: -2 }}
-      className="card-premium rounded-2xl p-4 transition-all duration-200"
+      className={[
+        "card-premium rounded-2xl p-4 transition-all duration-200",
+        href ? "hover:border-primary/60 hover:shadow-card" : "",
+      ].join(" ")}
     >
       <p className="truncate text-label font-bold uppercase text-card-beige-muted-foreground">
         {label}
@@ -36,6 +42,8 @@ function Kpi({
       {sub ? <p className="mt-1 truncate text-caption text-card-beige-muted-foreground">{sub}</p> : null}
     </motion.div>
   );
+
+  return href ? <Link href={href}>{content}</Link> : content;
 }
 
 export function CenterKpis({ kpis }: { kpis: IntegrationsKpis }) {
@@ -49,12 +57,18 @@ export function CenterKpis({ kpis }: { kpis: IntegrationsKpis }) {
         index={1}
       />
       <Kpi label="Não configuradas" value={String(kpis.notConfigured)} index={2} />
-      <Kpi label="Sincronizações executadas" value={String(kpis.totalSyncRuns)} index={3} />
+      <Kpi
+        label="Sincronizações executadas"
+        value={String(kpis.totalSyncRuns)}
+        index={3}
+        href="/integracoes/historico"
+      />
       <Kpi
         label="Erros de sincronização"
         value={String(kpis.errorRuns)}
         valueClassName={kpis.errorRuns > 0 ? "text-destructive" : "text-foreground"}
         index={4}
+        href="/integracoes/historico"
       />
       <Kpi
         label="Precisam de atenção"
@@ -62,6 +76,7 @@ export function CenterKpis({ kpis }: { kpis: IntegrationsKpis }) {
         sub={kpis.lastSyncAt ? `Última sincronização: ${formatDateTime(kpis.lastSyncAt)}` : "Sem sincronizações ainda"}
         valueClassName={kpis.needsAttention > 0 ? "text-destructive" : "text-foreground"}
         index={5}
+        href="#integrations-attention"
       />
     </div>
   );

@@ -181,8 +181,19 @@ function InsightCard({ insight, index }: { insight: Insight; index: number }) {
   );
 }
 
-export function InsightFeed({ insights }: { insights: Insight[] }) {
-  const [typeFilter, setTypeFilter] = useState<"all" | InsightType>("all");
+export function InsightFeed({
+  insights,
+  typeFilter: controlledTypeFilter,
+  onTypeFilterChange,
+}: {
+  insights: Insight[];
+  /** Controlado externamente (ex.: clique num KPI) — se omitido, o filtro fica local ao feed. */
+  typeFilter?: "all" | InsightType;
+  onTypeFilterChange?: (type: "all" | InsightType) => void;
+}) {
+  const [internalTypeFilter, setInternalTypeFilter] = useState<"all" | InsightType>("all");
+  const typeFilter = controlledTypeFilter ?? internalTypeFilter;
+  const setTypeFilter = onTypeFilterChange ?? setInternalTypeFilter;
   const [showResolved, setShowResolved] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 

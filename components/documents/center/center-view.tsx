@@ -36,7 +36,7 @@ export function CenterView({
 
   return (
     <div className="space-y-6">
-      <CenterKpis kpis={kpis} />
+      <CenterKpis kpis={kpis} onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))} />
 
       <CenterCriticalSection rows={rows} />
 
