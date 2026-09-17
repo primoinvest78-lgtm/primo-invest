@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import { NewTaskDialog } from "@/components/tasks/new-task-dialog";
 import { deleteTask } from "@/lib/actions/tasks";
 import {
   createOpportunityActivity,
+  deleteOpportunity,
   markOpportunityWonLost,
   updateOpportunityProfile,
 } from "@/lib/actions/opportunities";
@@ -284,6 +285,8 @@ export function OpportunityProfileView({
 }) {
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const isOpen = opportunity.status !== "won" && opportunity.status !== "lost";
 
@@ -335,6 +338,17 @@ export function OpportunityProfileView({
   async function handleDeleteTask(taskId: string) {
     await deleteTask(taskId, { opportunityId: opportunity.id });
     router.refresh();
+  }
+
+  async function handleDeleteOpportunity() {
+    setDeleting(true);
+    try {
+      await deleteOpportunity(opportunity.id);
+      router.push("/oportunidades");
+    } finally {
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
   }
 
   return (
@@ -423,7 +437,25 @@ export function OpportunityProfileView({
       <div className="card-premium rounded-2xl p-5 md:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-h2 font-bold text-foreground">Detalhes</h3>
-          <EditOpportunityDialog opportunity={opportunity} />
+          <div className="flex flex-wrap items-center gap-2">
+            <EditOpportunityDialog opportunity={opportunity} />
+            {confirmingDelete ? (
+              <div className="flex items-center gap-2">
+                <Button variant="destructive" size="sm" onClick={handleDeleteOpportunity} disabled={deleting}>
+                  {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                  {deleting ? "Excluindo..." : "Confirmar exclusão"}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setConfirmingDelete(false)} disabled={deleting}>
+                  Cancelar
+                </Button>
+              </div>
+            ) : (
+              <Button variant="destructive" size="sm" onClick={() => setConfirmingDelete(true)}>
+                <Trash2 className="h-3.5 w-3.5" />
+                Excluir
+              </Button>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Field label="Categoria" value={typeLabel} />

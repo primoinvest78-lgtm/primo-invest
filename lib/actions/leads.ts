@@ -160,3 +160,18 @@ export async function convertLeadToClient(leadId: string) {
 
   return client.id as string;
 }
+
+export async function deleteLead(leadId: string) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("leads")
+    .delete()
+    .eq("id", leadId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath("/leads");
+}

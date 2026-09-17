@@ -1,9 +1,14 @@
 "use client";
 
+import { Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { AnimatedNumber } from "@/components/ui/animated-number";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { deleteHolding } from "@/lib/actions/investments";
 import type { HoldingDetail } from "@/lib/data/wealth";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
 import { computeGainLoss, holdingCost, MOVEMENT_TYPE_LABEL } from "@/lib/utils/investment-helpers";
@@ -36,8 +41,24 @@ export function InvestmentDetailDialog({
   holding: HoldingDetail | null;
   onClose: () => void;
 }) {
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const { gainLoss, gainLossPct } = holding ? computeGainLoss(holding) : { gainLoss: null, gainLossPct: null };
   const cost = holding ? holdingCost(holding) : null;
+
+  async function handleDelete() {
+    if (!holding) return;
+    setDeleting(true);
+    try {
+      await deleteHolding(holding.id, holding.accountId, holding.clientId);
+      router.refresh();
+      onClose();
+    } finally {
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  }
 
   return (
     <Dialog open={holding !== null} onOpenChange={(open) => !open && onClose()}>
@@ -112,6 +133,25 @@ export function InvestmentDetailDialog({
                 )}
               </div>
             </div>
+
+            <DialogFooter>
+              {confirmingDelete ? (
+                <div className="flex items-center gap-2">
+                  <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
+                    {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                    {deleting ? "Removendo..." : "Confirmar remoção"}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setConfirmingDelete(false)} disabled={deleting}>
+                    Cancelar
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="destructive" size="sm" onClick={() => setConfirmingDelete(true)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Remover posição
+                </Button>
+              )}
+            </DialogFooter>
           </>
         ) : null}
       </DialogContent>

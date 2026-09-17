@@ -140,3 +140,18 @@ export async function markOpportunityWonLost(
   revalidatePath("/oportunidades");
   revalidatePath(`/oportunidades/${opportunityId}`);
 }
+
+export async function deleteOpportunity(opportunityId: string) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("opportunities")
+    .delete()
+    .eq("id", opportunityId)
+    .eq("organization_id", organizationId);
+
+  if (error) throw error;
+
+  revalidatePath("/oportunidades");
+}

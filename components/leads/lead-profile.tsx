@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Pencil } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import {
   convertLeadToClient,
   createInteraction,
   createLeadNote,
+  deleteLead,
   updateLeadProfile,
 } from "@/lib/actions/leads";
 import { deleteTask } from "@/lib/actions/tasks";
@@ -229,6 +230,8 @@ type TimelineEntry = {
 export function LeadProfileView({ lead }: { lead: LeadProfile }) {
   const router = useRouter();
   const [converting, setConverting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const pendingTasks = lead.tasks
     .filter((t) => t.status !== "completed" && t.status !== "cancelled")
@@ -299,6 +302,17 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
     router.refresh();
   }
 
+  async function handleDeleteLead() {
+    setDeleting(true);
+    try {
+      await deleteLead(lead.id);
+      router.push("/leads");
+    } finally {
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  }
+
   return (
     <div className="space-y-5">
       <motion.div
@@ -358,6 +372,24 @@ export function LeadProfileView({ lead }: { lead: LeadProfile }) {
             <Button onClick={handleConvert} disabled={converting}>
               {converting ? "Convertendo..." : "Converter em Cliente"}
             </Button>
+          ) : null}
+          {!lead.converted_client_id ? (
+            confirmingDelete ? (
+              <div className="flex items-center gap-2">
+                <Button variant="destructive" size="sm" onClick={handleDeleteLead} disabled={deleting}>
+                  {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+                  {deleting ? "Excluindo..." : "Confirmar exclusão"}
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setConfirmingDelete(false)} disabled={deleting}>
+                  Cancelar
+                </Button>
+              </div>
+            ) : (
+              <Button variant="destructive" size="sm" onClick={() => setConfirmingDelete(true)}>
+                <Trash2 className="h-3.5 w-3.5" />
+                Excluir lead
+              </Button>
+            )
           ) : null}
         </div>
       </motion.div>

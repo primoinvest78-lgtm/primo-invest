@@ -119,7 +119,7 @@ export default async function AccountDetailPage({
 
       <div>
         <h3 className="mb-3 text-h2 font-bold text-foreground">Investimentos vinculados</h3>
-        <AccountHoldingsTable holdings={account.holdings} />
+        <AccountHoldingsTable holdings={account.holdings} accountId={account.id} clientId={account.clientId} />
       </div>
 
       <WealthEvolutionSection
