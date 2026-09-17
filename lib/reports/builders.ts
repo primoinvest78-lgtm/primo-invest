@@ -47,6 +47,7 @@ import {
 import { bidResultLabel } from "@/lib/utils/bid-helpers";
 import { contractStatusLabel } from "@/lib/utils/consortium-helpers";
 import { installmentStatusLabel, isEffectivelyOverdue } from "@/lib/utils/installment-helpers";
+import { movementTypeLabel } from "@/lib/utils/investment-helpers";
 import { CATEGORY_LABEL, PRIORITY_LABEL, STATUS_LABEL, isTaskOpen } from "@/lib/utils/task-helpers";
 import { formatCurrencyBRL, formatDate, formatMonthLabel } from "@/lib/utils/format";
 import { isLiquidAccountType } from "@/lib/utils/wealth-helpers";
@@ -618,7 +619,7 @@ async function buildInvestimentos(
                 movements.map((m) => [
                   formatDateOnly(m.transactionDate),
                   m.productName ?? "—",
-                  m.transactionType,
+                  movementTypeLabel(m.transactionType),
                   m.clientName ?? "—",
                   formatCurrencyBRL(m.amount),
                 ]),

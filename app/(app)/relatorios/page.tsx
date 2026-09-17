@@ -51,11 +51,11 @@ export default async function RelatoriosPage() {
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Button size="lg" render={<Link href="/relatorios/novo" />}>
+          <Button size="lg" nativeButton={false} render={<Link href="/relatorios/novo" />}>
             <Plus className="h-4 w-4" />
             Novo relatório
           </Button>
-          <Button variant="outline" size="lg" render={<Link href="/relatorios/historico" />}>
+          <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/relatorios/historico" />}>
             <History className="h-4 w-4" />
             Histórico
           </Button>

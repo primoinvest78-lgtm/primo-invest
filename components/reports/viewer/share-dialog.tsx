@@ -103,7 +103,9 @@ export function ShareDialog({ report }: { report: ReportDetail }) {
                 onValueChange={(v) => setAudience((v as ShareAudience) ?? "advisor")}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  {/* children como função: sem isso a Base UI só resolve o
+                      rótulo enquanto o item está montado (dropdown aberto). */}
+                  <SelectValue>{() => SHARE_AUDIENCE_LABEL[audience]}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {SHARE_AUDIENCES.map((a) => (

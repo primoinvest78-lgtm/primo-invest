@@ -89,7 +89,9 @@ export function ScheduleDialog({ state }: { state: GeneratorState }) {
                 onValueChange={(v) => setFrequency((v as ScheduleFrequency) ?? "mensal")}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  {/* children como função: sem isso a Base UI só resolve o
+                      rótulo enquanto o item está montado (dropdown aberto). */}
+                  <SelectValue>{() => SCHEDULE_FREQUENCY_LABEL[frequency]}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {SCHEDULE_FREQUENCIES.map((f) => (

@@ -6,15 +6,7 @@ import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { HoldingDetail } from "@/lib/data/wealth";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
-import { computeGainLoss, holdingCost } from "@/lib/utils/investment-helpers";
-
-const MOVEMENT_LABEL: Record<string, string> = {
-  buy: "Compra",
-  sell: "Venda",
-  dividend: "Dividendo",
-  interest: "Juros",
-  fee: "Taxa",
-};
+import { computeGainLoss, holdingCost, MOVEMENT_TYPE_LABEL } from "@/lib/utils/investment-helpers";
 
 function Field({
   label,
@@ -104,7 +96,7 @@ export function InvestmentDetailDialog({
                       >
                         <div className="min-w-0">
                           <p className="truncate font-semibold text-foreground">
-                            {MOVEMENT_LABEL[m.transactionType] ?? m.transactionType}
+                            {MOVEMENT_TYPE_LABEL[m.transactionType] ?? m.transactionType}
                           </p>
                           <p className="text-xs text-card-beige-muted-foreground">
                             {formatDate(m.transactionDate)}

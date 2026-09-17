@@ -40,6 +40,7 @@ export function ReportShortcutButton({
       variant={variant}
       size={size}
       className={className}
+      nativeButton={false}
       render={
         <Link
           href={generatorHref({

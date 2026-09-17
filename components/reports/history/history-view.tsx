@@ -22,6 +22,7 @@ import {
   REPORT_STATUS_LABEL,
   REPORT_TYPE_LABEL,
   REPORT_TYPES,
+  type ReportType,
 } from "@/lib/reports/types";
 import { formatDateTime } from "@/lib/utils/format";
 
@@ -87,7 +88,15 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
 
           <Select value={type} onValueChange={(v) => setType(v ?? ALL)}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Tipo" />
+              {/* children como função: a Base UI só resolve o rótulo do
+                  valor selecionado enquanto o SelectItem correspondente
+                  está montado no DOM (dropdown aberto) — fechado, ele cai
+                  de volta pro valor cru ("patrimonial" em vez de
+                  "Patrimonial"). Resolver o rótulo aqui, a partir do
+                  próprio state, evita depender desse timing de montagem. */}
+              <SelectValue placeholder="Tipo">
+                {() => (type === ALL ? "Todos os tipos" : REPORT_TYPE_LABEL[type as ReportType])}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todos os tipos</SelectItem>
@@ -101,7 +110,9 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
 
           <Select value={status} onValueChange={(v) => setStatus(v ?? ALL)}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Situação" />
+              <SelectValue placeholder="Situação">
+                {() => (status === ALL ? "Todas as situações" : (REPORT_STATUS_LABEL[status] ?? status))}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todas as situações</SelectItem>
@@ -115,7 +126,9 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
 
           <Select value={author} onValueChange={(v) => setAuthor(v ?? ALL)}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Emitido por" />
+              <SelectValue placeholder="Emitido por">
+                {() => (author === ALL ? "Todos os autores" : author)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todos os autores</SelectItem>
@@ -154,7 +167,7 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
               : "Ajuste os filtros para encontrar o que procura."}
           </p>
           {reports.length === 0 ? (
-            <Button className="mt-4" render={<Link href="/relatorios/novo" />}>
+            <Button className="mt-4" nativeButton={false} render={<Link href="/relatorios/novo" />}>
               Novo relatório
             </Button>
           ) : null}
@@ -249,6 +262,7 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
                           variant="ghost"
                           size="icon-sm"
                           aria-label="Visualizar relatório"
+                          nativeButton={false}
                           render={<Link href={`/relatorios/${report.id}`} />}
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -257,6 +271,7 @@ export function HistoryView({ reports }: { reports: ReportListItem[] }) {
                           variant="ghost"
                           size="icon-sm"
                           aria-label="Duplicar configuração"
+                          nativeButton={false}
                           render={
                             <Link
                               href={generatorHref({

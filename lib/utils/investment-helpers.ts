@@ -115,3 +115,23 @@ export function applyInvestmentFilters(holdings: HoldingDetail[], filters: Inves
 export function isLiquidHolding(holding: HoldingDetail): boolean {
   return isLiquidAccountType(holding.accountType);
 }
+
+/**
+ * Rótulo do tipo de movimentação (transactions.transaction_type).
+ * Centralizado aqui — vivia duplicado em `investment-detail-dialog.tsx` e
+ * `account-movements-table.tsx`, com o mesmo nome de constante e conjuntos
+ * de chaves levemente diferentes.
+ */
+export const MOVEMENT_TYPE_LABEL: Record<string, string> = {
+  buy: "Compra",
+  sell: "Venda",
+  dividend: "Dividendo",
+  interest: "Juros",
+  fee: "Taxa",
+  deposit: "Depósito",
+  withdrawal: "Saque",
+};
+
+export function movementTypeLabel(type: string): string {
+  return MOVEMENT_TYPE_LABEL[type] ?? type;
+}

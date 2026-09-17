@@ -12,16 +12,7 @@ import {
 } from "@/components/ui/select";
 import type { AccountMovement } from "@/lib/data/wealth";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
-
-const MOVEMENT_LABEL: Record<string, string> = {
-  buy: "Compra",
-  sell: "Venda",
-  dividend: "Dividendo",
-  interest: "Juros",
-  fee: "Taxa",
-  deposit: "Depósito",
-  withdrawal: "Saque",
-};
+import { MOVEMENT_TYPE_LABEL } from "@/lib/utils/investment-helpers";
 
 export function AccountMovementsTable({ movements }: { movements: AccountMovement[] }) {
   const [type, setType] = useState("all");
@@ -65,7 +56,7 @@ export function AccountMovementsTable({ movements }: { movements: AccountMovemen
               <SelectItem value="all">Todos</SelectItem>
               {types.map((t) => (
                 <SelectItem key={t} value={t}>
-                  {MOVEMENT_LABEL[t] ?? t}
+                  {MOVEMENT_TYPE_LABEL[t] ?? t}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -117,7 +108,7 @@ export function AccountMovementsTable({ movements }: { movements: AccountMovemen
                 >
                   <td className="px-4 py-3 text-card-beige-muted-foreground">{formatDate(m.transactionDate)}</td>
                   <td className="px-4 py-3 font-semibold text-foreground">
-                    {MOVEMENT_LABEL[m.transactionType] ?? m.transactionType}
+                    {MOVEMENT_TYPE_LABEL[m.transactionType] ?? m.transactionType}
                   </td>
                   <td className="px-4 py-3 text-card-beige-muted-foreground">{m.description ?? "—"}</td>
                   <td className="px-4 py-3 text-card-beige-muted-foreground">{m.productName ?? "—"}</td>

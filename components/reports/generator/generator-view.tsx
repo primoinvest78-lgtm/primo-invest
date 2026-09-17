@@ -333,7 +333,11 @@ export function GeneratorView({
                   disabled={INTERNAL_ONLY_TYPES.includes(state.type)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue />
+                    {/* children como função: sem isso a Base UI só resolve
+                        o rótulo enquanto o SelectItem está montado no DOM
+                        (dropdown aberto) — fechado, mostra o valor cru
+                        ("cliente" em vez de "Cliente"). */}
+                    <SelectValue>{() => REPORT_AUDIENCE_LABEL[state.audience]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {REPORT_AUDIENCES.map((a) => (
@@ -359,7 +363,15 @@ export function GeneratorView({
                   </FieldLabel>
                   <Select value={state.clientId ?? NONE} onValueChange={(v) => handleClient(v ?? NONE)}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione o cliente" />
+                      <SelectValue placeholder="Selecione o cliente">
+                        {() =>
+                          state.clientId
+                            ? (selectedClient?.fullName ?? state.clientId)
+                            : FILTER_SUPPORT.requiresClient[state.type]
+                              ? "Selecione o cliente"
+                              : "Toda a carteira"
+                        }
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {!FILTER_SUPPORT.requiresClient[state.type] ? (
@@ -389,7 +401,9 @@ export function GeneratorView({
                     onValueChange={(v) => update({ ...state, institution: v === NONE ? null : v })}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Todas" />
+                      <SelectValue placeholder="Todas">
+                        {() => (state.institution ? state.institution : "Todas as instituições")}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={NONE}>Todas as instituições</SelectItem>

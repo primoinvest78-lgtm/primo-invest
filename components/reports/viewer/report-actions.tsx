@@ -82,7 +82,7 @@ export function ReportActions({ report, canDelete }: { report: ReportDetail; can
 
           <ShareDialog report={report} />
 
-          <Button variant="outline" size="sm" render={<Link href={duplicateHref} />}>
+          <Button variant="outline" size="sm" nativeButton={false} render={<Link href={duplicateHref} />}>
             <Copy className="h-3.5 w-3.5" />
             Duplicar configuração
           </Button>

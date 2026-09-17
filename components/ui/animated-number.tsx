@@ -28,7 +28,18 @@ export function AnimatedNumber({
     const prefix = prefixMatch ? prefixMatch[0] : "";
     const suffixMatch = value.match(/[^\d]*$/);
     const suffix = suffixMatch ? suffixMatch[0] : "";
-    const numericTarget = Number(value.replace(/[^\d]/g, ""));
+    const numericPortion = value.slice(prefix.length, value.length - suffix.length);
+
+    // pt-BR usa "." como separador de milhar e "," como decimal
+    // ("R$ 76.470,00"). Descartar TODO caractere não-dígito (regra antiga)
+    // apaga o "," mas mantém os dígitos dos centavos, concatenando-os ao
+    // inteiro — "76.470,00" virava 7647000, cem vezes o valor real. Aqui a
+    // vírgula decimal (no máximo 2 dígitos, no final) é lida antes de
+    // remover os separadores de milhar, preservando a casa decimal.
+    const decimalMatch = numericPortion.match(/,(\d{1,2})$/);
+    const decimals = decimalMatch ? decimalMatch[1].length : 0;
+    const cleaned = numericPortion.replace(/\./g, "").replace(",", ".");
+    const numericTarget = Number(cleaned);
 
     if (!Number.isFinite(numericTarget) || numericTarget === 0) {
       ref.current.textContent = value;
@@ -42,9 +53,10 @@ export function AnimatedNumber({
       ease: "power2.out",
       onUpdate: () => {
         if (!ref.current) return;
-        ref.current.textContent = `${prefix}${new Intl.NumberFormat("pt-BR").format(
-          Math.round(counter.current),
-        )}${suffix}`;
+        ref.current.textContent = `${prefix}${new Intl.NumberFormat("pt-BR", {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        }).format(counter.current)}${suffix}`;
       },
     });
 
