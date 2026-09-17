@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   MessageSquareText,
   PiggyBank,
+  Radar,
   ShieldCheck,
   TrendingUp,
   Users,
@@ -88,6 +89,7 @@ export const navigationGroups: SidebarGroup[] = [
   {
     title: "Relacionamento",
     items: [
+      { label: "Hub CRM", icon: Radar, href: "/crm" },
       { label: "Clientes", icon: Users, href: "/clientes" },
       { label: "Leads", icon: MessageSquareText, href: "/leads" },
       { label: "Oportunidades", icon: TrendingUp, href: "/oportunidades" },
