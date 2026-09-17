@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
+import { AuthBackground } from "@/components/auth/auth-background";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -49,8 +50,9 @@ export default function RedefinirSenhaPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
+    <div className="relative flex min-h-screen w-full items-center justify-center px-4">
+      <AuthBackground />
+      <div className="relative z-10 w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
