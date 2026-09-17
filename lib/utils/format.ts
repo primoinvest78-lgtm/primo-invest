@@ -5,6 +5,16 @@ export function formatCurrencyBRL(value: number | null | undefined): string {
 
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "—";
+  // Colunas `date` do Postgres voltam como "YYYY-MM-DD" puro, sem hora.
+  // `new Date("YYYY-MM-DD")` interpreta isso como meia-noite UTC — em
+  // qualquer fuso atrás de UTC (Brasília inclusive) isso formata como o
+  // dia ANTERIOR. Datas puras não têm hora pra converter; tratamos o
+  // ano/mês/dia como já sendo o dia local, sem passar por UTC.
+  const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (dateOnly) {
+    const [, year, month, day] = dateOnly;
+    return new Intl.DateTimeFormat("pt-BR").format(new Date(Number(year), Number(month) - 1, Number(day)));
+  }
   return new Intl.DateTimeFormat("pt-BR").format(new Date(value));
 }
 

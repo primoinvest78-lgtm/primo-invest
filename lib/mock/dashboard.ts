@@ -15,6 +15,7 @@ import {
   MessageSquareText,
   PiggyBank,
   Radar,
+  Receipt,
   ShieldCheck,
   TrendingUp,
   Users,
@@ -114,6 +115,7 @@ export const navigationGroups: SidebarGroup[] = [
       { label: "Lances", icon: ArrowUpRight, href: "/consorcios/lances" },
     ],
   },
+  { items: [{ label: "Pagamentos", icon: Receipt, href: "/pagamentos" }] },
   {
     title: "Documentos",
     items: [
