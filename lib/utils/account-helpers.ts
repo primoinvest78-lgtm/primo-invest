@@ -100,6 +100,7 @@ export type AccountFilters = {
   clientId: string;
   accountType: string;
   status: string;
+  attentionOnly: boolean;
 };
 
 export const DEFAULT_ACCOUNT_FILTERS: AccountFilters = {
@@ -108,11 +109,13 @@ export const DEFAULT_ACCOUNT_FILTERS: AccountFilters = {
   clientId: "all",
   accountType: "all",
   status: "all",
+  attentionOnly: false,
 };
 
 export function hasActiveAccountFilters(filters: AccountFilters): boolean {
   return Object.entries(filters).some(([key, value]) => {
     if (key === "search") return value !== "";
+    if (key === "attentionOnly") return value === true;
     return value !== "all";
   });
 }
@@ -132,26 +135,29 @@ export function applyAccountFilters(accounts: AccountDetail[], filters: AccountF
     if (filters.clientId !== "all" && (account.clientId ?? "none") !== filters.clientId) return false;
     if (filters.accountType !== "all" && account.accountType !== filters.accountType) return false;
     if (filters.status !== "all" && account.status !== filters.status) return false;
+    if (filters.attentionOnly && !accountNeedsAttention(account)) return false;
     return true;
   });
 }
 
 const NINETY_DAYS_MS = 1000 * 60 * 60 * 24 * 90;
 
-/** Contas que precisam de atenção: inativas, sem atualização há mais de
- * 90 dias, ou com cadastro incompleto. Usado pelo KPI e pela tabela. */
+/** Uma conta precisa de atenção se: inativa, sem atualização há mais de
+ * 90 dias, ou com cadastro incompleto. */
+export function accountNeedsAttention(account: AccountDetail, now: number = Date.now()): boolean {
+  const inactive = account.status !== "active";
+  const stale = Boolean(account.updatedAt) && now - new Date(account.updatedAt as string).getTime() > NINETY_DAYS_MS;
+  const incomplete = !account.clientId || !account.institutionName || !account.accountName;
+  return inactive || stale || incomplete;
+}
+
+/** Contas que precisam de atenção — usado pelo KPI e pela tabela. */
 export function computeAccountsNeedingAttention(accounts: AccountDetail[]): Set<string> {
   const now = Date.now();
   const ids = new Set<string>();
-
   for (const account of accounts) {
-    const inactive = account.status !== "active";
-    const stale = Boolean(account.updatedAt) && now - new Date(account.updatedAt as string).getTime() > NINETY_DAYS_MS;
-    const incomplete = !account.clientId || !account.institutionName || !account.accountName;
-
-    if (inactive || stale || incomplete) ids.add(account.id);
+    if (accountNeedsAttention(account, now)) ids.add(account.id);
   }
-
   return ids;
 }
 

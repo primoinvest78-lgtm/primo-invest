@@ -13,20 +13,28 @@ function Kpi({
   valueClassName,
   animate = true,
   index,
+  onClick,
 }: {
   label: string;
   value: string;
   valueClassName?: string;
   animate?: boolean;
   index: number;
+  onClick?: () => void;
 }) {
   return (
-    <motion.div
+    <motion.button
+      type="button"
+      onClick={onClick}
+      disabled={!onClick}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.04, ease: "easeOut" }}
-      whileHover={{ y: -2 }}
-      className="card-premium rounded-2xl p-4 transition-all duration-200"
+      whileHover={onClick ? { y: -2 } : undefined}
+      className={[
+        "card-premium rounded-2xl p-4 text-left transition-all duration-200",
+        onClick ? "cursor-pointer hover:border-primary/60 hover:shadow-card" : "",
+      ].join(" ")}
     >
       <p className="truncate text-label font-bold uppercase text-card-beige-muted-foreground">
         {label}
@@ -34,16 +42,20 @@ function Kpi({
       <p className={["mt-2 truncate text-lg font-bold", valueClassName ?? "text-foreground"].join(" ")}>
         {animate ? <AnimatedNumber value={value} /> : value}
       </p>
-    </motion.div>
+    </motion.button>
   );
 }
 
 export function InvestmentsKpis({
   holdings,
   history,
+  onSelectAll,
+  onSelectLiquid,
 }: {
   holdings: HoldingDetail[];
   history: WealthHistoryPoint[];
+  onSelectAll?: () => void;
+  onSelectLiquid?: () => void;
 }) {
   const invested = holdings.reduce((sum, h) => sum + Number(h.valuation ?? 0), 0);
   const liquidTotal = holdings.filter(isLiquidHolding).reduce((sum, h) => sum + Number(h.valuation ?? 0), 0);
@@ -84,8 +96,8 @@ export function InvestmentsKpis({
         valueClassName={hasCostData && totalGain < 0 ? "text-destructive" : "text-primary"}
         index={2}
       />
-      <Kpi label="Quantidade" value={String(holdings.length)} index={3} />
-      <Kpi label="Liquidez" value={formatCurrencyBRL(liquidTotal)} index={4} />
+      <Kpi label="Quantidade" value={String(holdings.length)} index={3} onClick={onSelectAll} />
+      <Kpi label="Liquidez" value={formatCurrencyBRL(liquidTotal)} index={4} onClick={onSelectLiquid} />
       <Kpi
         label="Variação no período"
         value={variation === null ? "—" : `${variation >= 0 ? "+" : ""}${variation.toFixed(1)}%`}

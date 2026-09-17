@@ -6,6 +6,8 @@ export type LiabilityFilters = {
   liabilityType: string;
   clientId: string;
   status: string;
+  attentionOnly: boolean;
+  nearMaturityOnly: boolean;
 };
 
 export const DEFAULT_LIABILITY_FILTERS: LiabilityFilters = {
@@ -13,11 +15,14 @@ export const DEFAULT_LIABILITY_FILTERS: LiabilityFilters = {
   liabilityType: "all",
   clientId: "all",
   status: "all",
+  attentionOnly: false,
+  nearMaturityOnly: false,
 };
 
 export function hasActiveLiabilityFilters(filters: LiabilityFilters): boolean {
   return Object.entries(filters).some(([key, value]) => {
     if (key === "search") return value !== "";
+    if (key === "attentionOnly" || key === "nearMaturityOnly") return value === true;
     return value !== "all";
   });
 }
@@ -39,6 +44,8 @@ export function applyLiabilityFilters(
     if (filters.liabilityType !== "all" && liability.liabilityType !== filters.liabilityType) return false;
     if (filters.clientId !== "all" && (liability.clientId ?? "none") !== filters.clientId) return false;
     if (filters.status !== "all" && liability.status !== filters.status) return false;
+    if (filters.attentionOnly && !liabilityNeedsAttention(liability)) return false;
+    if (filters.nearMaturityOnly && !isLiabilityNearMaturity(liability)) return false;
     return true;
   });
 }
@@ -76,31 +83,34 @@ export function monthsToPayoff(liability: LiabilityDetail): number | null {
 const NINETY_DAYS_MS = 1000 * 60 * 60 * 24 * 90;
 const MATURITY_ATTENTION_MS = 1000 * 60 * 60 * 24 * 180;
 
-/** Passivos que merecem atenção: vencimento próximo, status fora de
- * "active", ou muito perto da quitação no ritmo atual. Usado pelo KPI
- * e pela tabela. */
+/** Um passivo merece atenção se: vencimento próximo, status fora de
+ * "active", ou muito perto da quitação no ritmo atual. */
+export function liabilityNeedsAttention(liability: LiabilityDetail, now: number = Date.now()): boolean {
+  const maturitySoon =
+    Boolean(liability.maturityDate) && new Date(liability.maturityDate as string).getTime() - now <= NINETY_DAYS_MS;
+  const notActive = liability.status !== "active";
+  const months = monthsToPayoff(liability);
+  const nearPayoff = months !== null && months <= 3;
+  return maturitySoon || notActive || nearPayoff;
+}
+
+/** Passivos que merecem atenção — usado pelo KPI e pela tabela. */
 export function computeLiabilitiesNeedingAttention(liabilities: LiabilityDetail[]): Set<string> {
   const now = Date.now();
   const ids = new Set<string>();
-
   for (const liability of liabilities) {
-    const maturitySoon =
-      Boolean(liability.maturityDate) && new Date(liability.maturityDate as string).getTime() - now <= NINETY_DAYS_MS;
-    const notActive = liability.status !== "active";
-    const months = monthsToPayoff(liability);
-    const nearPayoff = months !== null && months <= 3;
-
-    if (maturitySoon || notActive || nearPayoff) ids.add(liability.id);
+    if (liabilityNeedsAttention(liability, now)) ids.add(liability.id);
   }
-
   return ids;
+}
+
+export function isLiabilityNearMaturity(liability: LiabilityDetail, now: number = Date.now()): boolean {
+  return Boolean(liability.maturityDate) && new Date(liability.maturityDate as string).getTime() - now <= MATURITY_ATTENTION_MS;
 }
 
 export function countLiabilitiesNearMaturity(liabilities: LiabilityDetail[]): number {
   const now = Date.now();
-  return liabilities.filter(
-    (l) => l.maturityDate && new Date(l.maturityDate).getTime() - now <= MATURITY_ATTENTION_MS,
-  ).length;
+  return liabilities.filter((l) => isLiabilityNearMaturity(l, now)).length;
 }
 
 /**

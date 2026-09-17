@@ -75,6 +75,7 @@ export type InvestmentFilters = {
   assetClass: string;
   product: string;
   status: string;
+  liquidOnly: boolean;
   asOfFrom: string;
   asOfTo: string;
 };
@@ -86,6 +87,7 @@ export const DEFAULT_INVESTMENT_FILTERS: InvestmentFilters = {
   assetClass: "all",
   product: "all",
   status: "active",
+  liquidOnly: false,
   asOfFrom: "",
   asOfTo: "",
 };
@@ -94,6 +96,7 @@ export function hasActiveInvestmentFilters(filters: InvestmentFilters): boolean 
   return Object.entries(filters).some(([key, value]) => {
     if (key === "asOfFrom" || key === "asOfTo") return value !== "";
     if (key === "status") return value !== "active";
+    if (key === "liquidOnly") return value === true;
     return value !== "all";
   });
 }
@@ -108,6 +111,7 @@ export function applyInvestmentFilters(holdings: HoldingDetail[], filters: Inves
     if (filters.status !== "all" && h.accountStatus !== filters.status) return false;
     if (filters.asOfFrom !== "" && h.asOfDate.slice(0, 10) < filters.asOfFrom) return false;
     if (filters.asOfTo !== "" && h.asOfDate.slice(0, 10) > filters.asOfTo) return false;
+    if (filters.liquidOnly && !isLiquidHolding(h)) return false;
     return true;
   });
 }

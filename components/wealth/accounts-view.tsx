@@ -29,7 +29,10 @@ export function AccountsView({
 
   return (
     <div className="space-y-6">
-      <AccountsKpis accounts={accounts} />
+      <AccountsKpis
+        accounts={accounts}
+        onSelectAttention={() => setFilters((f) => ({ ...DEFAULT_ACCOUNT_FILTERS, attentionOnly: !f.attentionOnly }))}
+      />
 
       <WealthAlertsSection alerts={alerts} />
 

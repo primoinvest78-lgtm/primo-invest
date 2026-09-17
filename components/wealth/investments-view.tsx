@@ -29,7 +29,14 @@ export function InvestmentsView({
 
   return (
     <div className="space-y-6">
-      <InvestmentsKpis holdings={filteredHoldings} history={history} />
+      <InvestmentsKpis
+        holdings={filteredHoldings}
+        history={history}
+        onSelectAll={() => setFilters(DEFAULT_INVESTMENT_FILTERS)}
+        onSelectLiquid={() =>
+          setFilters((f) => ({ ...DEFAULT_INVESTMENT_FILTERS, liquidOnly: !f.liquidOnly }))
+        }
+      />
 
       <InvestmentsFilterBar holdings={holdings} filters={filters} onChange={setFilters} />
 

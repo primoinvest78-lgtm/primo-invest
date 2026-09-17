@@ -33,7 +33,7 @@ export function GoalsView({
 
   return (
     <div className="space-y-6">
-      <GoalsKpis goals={goals} />
+      <GoalsKpis goals={goals} onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))} />
 
       <WealthAlertsSection alerts={alerts} />
 

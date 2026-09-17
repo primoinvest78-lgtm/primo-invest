@@ -31,7 +31,16 @@ export function LiabilitiesView({
 
   return (
     <div className="space-y-6">
-      <LiabilitiesKpis liabilities={liabilities} netWorth={netWorth} />
+      <LiabilitiesKpis
+        liabilities={liabilities}
+        netWorth={netWorth}
+        onSelectAttention={() =>
+          setFilters((f) => ({ ...DEFAULT_LIABILITY_FILTERS, attentionOnly: !f.attentionOnly }))
+        }
+        onSelectNearMaturity={() =>
+          setFilters((f) => ({ ...DEFAULT_LIABILITY_FILTERS, nearMaturityOnly: !f.nearMaturityOnly }))
+        }
+      />
 
       <WealthAlertsSection alerts={alerts} />
 
