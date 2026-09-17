@@ -3,7 +3,7 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   Building2,
-  ChevronRight,
+  Cable,
   CreditCard,
   FileBarChart,
   FileText,
@@ -126,7 +126,13 @@ export const navigationGroups: SidebarGroup[] = [
       { label: "Relatórios gerados", icon: History, href: "/relatorios/historico" },
     ],
   },
-  { items: [{ label: "Integrações", icon: ChevronRight, href: "/integracoes" }] },
+  {
+    title: "Integrações",
+    items: [
+      { label: "Centro de Integrações", icon: Cable, href: "/integracoes" },
+      { label: "Histórico de sincronização", icon: History, href: "/integracoes/historico" },
+    ],
+  },
   { items: [{ label: "Inteligência", icon: TrendingUp, href: "/inteligencia" }] },
   { items: [{ label: "Administração", icon: FolderKanban, href: "/administracao" }] },
 ];

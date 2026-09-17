@@ -13,8 +13,15 @@
 
 import { INTERNAL_ONLY_TYPES, type ReportType } from "@/lib/reports/types";
 
-/** Papéis com visão da operação inteira da casa. */
-const MANAGEMENT_ROLES = new Set(["admin", "owner", "manager", "gestor"]);
+/**
+ * Papéis com visão da operação inteira da casa. `organization_members.role`
+ * é o enum `app_role` do banco (admin, manager, advisor, operations,
+ * finance, compliance, viewer) — nenhum outro valor existe. Este set
+ * tinha "owner"/"gestor" antes, que não batem com papel real nenhum;
+ * corrigido ao descobrir o enum verdadeiro construindo o Centro de
+ * Integrações (que já se apoiava nele via RLS).
+ */
+const MANAGEMENT_ROLES = new Set(["admin", "manager"]);
 
 export function isManagementRole(role: string): boolean {
   return MANAGEMENT_ROLES.has(role.toLowerCase());
