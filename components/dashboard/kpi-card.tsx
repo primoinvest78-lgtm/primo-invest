@@ -65,7 +65,7 @@ export function KpiCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
       whileHover={{ y: -2 }}
-      className="card-premium group relative overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
+      className="card-premium group relative flex h-full flex-col overflow-hidden rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
     >
       {/* TOP ACCENT */}
       <div className="absolute inset-x-0 top-0 h-[2px] bg-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
@@ -90,26 +90,30 @@ export function KpiCard({
         </div>
       </div>
 
-      {/* FOOTER */}
-      {change ? (
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-primary/25 bg-primary/15 px-2.5 py-1.5 text-[11px] font-bold text-foreground">
-            <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
-            <span className="truncate">{change}</span>
-          </span>
-
-          {formattedDelta ? (
-            <span className="shrink-0 text-label font-bold uppercase text-card-beige-muted-foreground">
-              {formattedDelta}
+      {/* FOOTER — espaço sempre reservado (mesmo sem "change") pra
+          todo card ficar do mesmo tamanho, independente de ter ou não
+          variação a mostrar. */}
+      <div className="mt-5 flex min-h-[30px] flex-1 items-end justify-between gap-3">
+        {change ? (
+          <>
+            <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-primary/25 bg-primary/15 px-2.5 py-1.5 text-[11px] font-bold text-foreground">
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0" strokeWidth={2.2} />
+              <span className="truncate">{change}</span>
             </span>
-          ) : null}
-        </div>
-      ) : null}
+
+            {formattedDelta ? (
+              <span className="shrink-0 text-label font-bold uppercase text-card-beige-muted-foreground">
+                {formattedDelta}
+              </span>
+            ) : null}
+          </>
+        ) : null}
+      </div>
     </motion.article>
   );
 
   return href ? (
-    <Link href={href} className="block">
+    <Link href={href} className="block h-full">
       {content}
     </Link>
   ) : (
