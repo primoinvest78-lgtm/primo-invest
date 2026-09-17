@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Pencil, Trash2, X } from "lucide-react";
 import { useState } from "react";
 
-import { removeHouseholdMember } from "@/lib/actions/household";
+import { removeHouseholdMember, updateHouseholdMemberRelationship } from "@/lib/actions/household";
 import type { ClientProfile } from "@/lib/data/clients";
 import { formatCurrencyBRL } from "@/lib/utils/format";
 
@@ -17,7 +18,11 @@ function memberWealth(member: NonNullable<ClientProfile["household"]>["household
 }
 
 export function HouseholdTab({ client }: { client: ClientProfile }) {
+  const router = useRouter();
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [relationshipDraft, setRelationshipDraft] = useState("");
+  const [savingRelationship, setSavingRelationship] = useState(false);
 
   if (!client.household) {
     return (
@@ -42,6 +47,17 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
     if (!window.confirm("Remover este membro do núcleo familiar?")) return;
     setDeletedIds((prev) => new Set(prev).add(memberId));
     await removeHouseholdMember(memberId, client.id);
+  }
+
+  async function handleSaveRelationship(memberId: string) {
+    setSavingRelationship(true);
+    try {
+      await updateHouseholdMemberRelationship(memberId, client.id, relationshipDraft);
+      setEditingId(null);
+      router.refresh();
+    } finally {
+      setSavingRelationship(false);
+    }
   }
 
   return (
@@ -91,10 +107,50 @@ export function HouseholdTab({ client }: { client: ClientProfile }) {
                   <p className="text-sm font-semibold text-foreground">
                     {member.client?.full_name ?? "—"}
                   </p>
-                  <p className="text-xs font-medium uppercase text-card-beige-muted-foreground">
-                    {member.relationship ?? "Relação não informada"}
-                    {member.client ? ` · ${member.client.wealth_goals.length} meta(s)` : ""}
-                  </p>
+                  {editingId === member.id ? (
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <input
+                        autoFocus
+                        value={relationshipDraft}
+                        onChange={(e) => setRelationshipDraft(e.target.value)}
+                        placeholder="Ex.: Cônjuge, Filho(a)"
+                        className="h-6 rounded-md border border-input bg-card px-1.5 text-xs text-foreground outline-none focus-visible:border-ring"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Salvar relação"
+                        disabled={savingRelationship}
+                        onClick={() => handleSaveRelationship(member.id)}
+                        className="text-primary hover:text-primary/70"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Cancelar"
+                        onClick={() => setEditingId(null)}
+                        className="text-card-beige-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="flex items-center gap-1.5 text-xs font-medium uppercase text-card-beige-muted-foreground">
+                      {member.relationship ?? "Relação não informada"}
+                      {member.client ? ` · ${member.client.wealth_goals.length} meta(s)` : ""}
+                      <button
+                        type="button"
+                        aria-label="Editar relação"
+                        onClick={() => {
+                          setEditingId(member.id);
+                          setRelationshipDraft(member.relationship ?? "");
+                        }}
+                        className="text-card-beige-muted-foreground/70 transition-colors hover:text-accent"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </button>
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-foreground">

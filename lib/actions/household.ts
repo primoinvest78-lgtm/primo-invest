@@ -65,6 +65,24 @@ export async function addHouseholdMember(
   revalidatePath(`/clientes/${clientId}`);
 }
 
+export async function updateHouseholdMemberRelationship(
+  householdMemberId: string,
+  viewingClientId: string,
+  relationship: string,
+) {
+  await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("household_members")
+    .update({ relationship })
+    .eq("id", householdMemberId);
+
+  if (error) throw error;
+
+  revalidatePath(`/clientes/${viewingClientId}`);
+}
+
 /**
  * Remove o vínculo do membro com o núcleo familiar (household_members).
  * Não apaga o registro de cliente do membro — só desfaz o vínculo
