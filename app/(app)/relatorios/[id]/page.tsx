@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 
 import { ReportDocument } from "@/components/reports/document/report-document";
 import { ReportActions } from "@/components/reports/viewer/report-actions";
+import { ReportTraceability } from "@/components/reports/viewer/report-traceability";
+import { ReportViewTracker } from "@/components/reports/viewer/report-view-tracker";
 import { BackLink } from "@/components/ui/back-link";
 import { getReport } from "@/lib/data/reports";
 import { canDeleteReport } from "@/lib/reports/permissions";
@@ -68,11 +70,14 @@ export default async function RelatorioPage({ params }: { params: Promise<{ id: 
       />
 
       {report.payload && report.payload.sections?.length ? (
-        <ReportDocument
-          payload={report.payload}
-          version={report.version}
-          authorName={report.createdByName}
-        />
+        <>
+          <ReportViewTracker reportId={report.id} currentCount={report.viewCount} />
+          <ReportDocument
+            payload={report.payload}
+            version={report.version}
+            authorName={report.createdByName}
+          />
+        </>
       ) : (
         <section className="card-premium rounded-2xl p-8 text-center">
           <p className="text-body text-card-beige-muted-foreground">
@@ -80,6 +85,8 @@ export default async function RelatorioPage({ params }: { params: Promise<{ id: 
           </p>
         </section>
       )}
+
+      <ReportTraceability report={report} />
     </div>
   );
 }
