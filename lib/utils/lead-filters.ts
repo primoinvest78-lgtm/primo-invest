@@ -1,5 +1,13 @@
 import type { LeadListItem } from "@/lib/data/leads";
-import { computeLeadScore, type LeadScoreTier } from "@/lib/utils/lead-score";
+import { computeLeadScore, daysSince, type LeadScoreTier } from "@/lib/utils/lead-score";
+
+/**
+ * "noContact"/"stalled" espelham exatamente os grupos calculados em
+ * computeTodayPriorities — usado pra linkar cards do Dashboard/Hub CRM
+ * direto pra essa mesma lista filtrada, sem duplicar a regra em dois
+ * lugares com risco de divergir.
+ */
+export type LeadSignalFilter = "all" | "noContact" | "stalled";
 
 export type LeadFilters = {
   stage: string;
@@ -7,6 +15,7 @@ export type LeadFilters = {
   advisorId: string;
   source: string;
   scoreTier: "all" | LeadScoreTier;
+  signal: LeadSignalFilter;
   interest: string;
   netWorthMin: string;
   netWorthMax: string;
@@ -20,6 +29,7 @@ export const DEFAULT_LEAD_FILTERS: LeadFilters = {
   advisorId: "all",
   source: "all",
   scoreTier: "all",
+  signal: "all",
   interest: "all",
   netWorthMin: "",
   netWorthMax: "",
@@ -66,6 +76,15 @@ export function applyLeadFilters(leads: LeadListItem[], filters: LeadFilters): L
 
     if (filters.scoreTier !== "all" && computeLeadScore(lead).tier !== filters.scoreTier) {
       return false;
+    }
+
+    if (filters.signal !== "all") {
+      const isOpen = lead.status !== "Convertido" && lead.status !== "Perdido";
+      if (!isOpen) return false;
+      if (filters.signal === "noContact" && lead.interactionsCount !== 0) return false;
+      if (filters.signal === "stalled" && daysSince(lead.lastInteractionAt ?? lead.createdAt) <= 14) {
+        return false;
+      }
     }
 
     if (filters.netWorthMin !== "") {

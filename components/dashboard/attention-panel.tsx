@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
+
 import type { AttentionItem } from "@/lib/mock/dashboard";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
-export function AttentionPanel({ items }: { items: AttentionItem[] }) {
+export function AttentionPanel({ items }: { items: (AttentionItem & { href: string })[] }) {
   if (items.length === 0) {
     return (
       <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
@@ -35,8 +37,9 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
           const accent = CHART_SEQUENCE[index % CHART_SEQUENCE.length];
 
           return (
-            <article
+            <Link
               key={item.description}
+              href={item.href}
               className="group flex items-start gap-3 rounded-xl border border-border bg-muted/60 p-3.5 transition-all duration-150 hover:border-primary/40 hover:bg-muted"
             >
               <div
@@ -61,7 +64,7 @@ export function AttentionPanel({ items }: { items: AttentionItem[] }) {
                   </span>
                 </div>
               </div>
-            </article>
+            </Link>
           );
         })}
       </div>

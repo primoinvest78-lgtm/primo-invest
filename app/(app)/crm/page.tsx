@@ -5,6 +5,7 @@ import { AttentionFeed } from "@/components/crm/attention-feed";
 import { CrmInsightSlot } from "@/components/crm/crm-insight-slot";
 import { HubCharts } from "@/components/crm/hub-charts";
 import { HubKpis } from "@/components/crm/hub-kpis";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { getCrmActivityTrend, getCrmHubData } from "@/lib/data/crm";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -30,7 +31,9 @@ export default async function CrmHubPage() {
 
       <HubKpis kpis={kpis} />
 
-      <AttentionFeed signals={bundle.signals} />
+      <div id="atencao">
+        <AttentionFeed signals={bundle.signals} />
+      </div>
 
       <HubCharts bundle={bundle} activity={activity} />
 
@@ -43,6 +46,7 @@ function Header() {
   return (
     <section className="flex flex-col gap-4 block-navy-3d rounded-2xl p-5 md:flex-row md:items-end md:justify-between md:p-6">
       <div className="min-w-0">
+        <BackButton className="mb-2 inline-flex items-center gap-1.5 text-xs font-semibold text-secondary-foreground/60 transition-colors hover:text-primary" />
         <p className="text-label font-bold uppercase text-primary">CRM</p>
         <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">Hub CRM</h1>
         <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">

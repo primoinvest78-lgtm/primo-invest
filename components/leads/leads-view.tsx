@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid, List } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { LeadsBoard } from "@/components/leads/leads-board";
@@ -12,9 +13,32 @@ import { LeadsTable } from "@/components/leads/leads-table";
 import type { LeadListItem } from "@/lib/data/leads";
 import { applyLeadFilters, DEFAULT_LEAD_FILTERS, type LeadFilters } from "@/lib/utils/lead-filters";
 
+/** Lê os filtros iniciais da URL (?scoreTier=Quente&signal=stalled...) —
+ * é assim que cards do Dashboard/Hub CRM chegam aqui já filtrados. */
+function filtersFromSearchParams(params: URLSearchParams): LeadFilters {
+  const scoreTier = params.get("scoreTier");
+  const signal = params.get("signal");
+  const status = params.get("status");
+  const stage = params.get("stage");
+  return {
+    ...DEFAULT_LEAD_FILTERS,
+    stage: stage ?? DEFAULT_LEAD_FILTERS.stage,
+    status: (["aberto", "Convertido", "Perdido"].includes(status ?? "")
+      ? status
+      : DEFAULT_LEAD_FILTERS.status) as LeadFilters["status"],
+    scoreTier: (["Quente", "Morno", "Frio"].includes(scoreTier ?? "")
+      ? scoreTier
+      : DEFAULT_LEAD_FILTERS.scoreTier) as LeadFilters["scoreTier"],
+    signal: (["noContact", "stalled"].includes(signal ?? "")
+      ? signal
+      : DEFAULT_LEAD_FILTERS.signal) as LeadFilters["signal"],
+  };
+}
+
 export function LeadsView({ leads }: { leads: LeadListItem[] }) {
+  const searchParams = useSearchParams();
   const [view, setView] = useState<"kanban" | "list">("kanban");
-  const [filters, setFilters] = useState<LeadFilters>(DEFAULT_LEAD_FILTERS);
+  const [filters, setFilters] = useState<LeadFilters>(() => filtersFromSearchParams(searchParams));
 
   const filteredLeads = useMemo(() => applyLeadFilters(leads, filters), [leads, filters]);
 

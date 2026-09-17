@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutGrid, List } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { OpportunitiesBoard } from "@/components/opportunities/opportunities-board";
@@ -16,9 +17,26 @@ import {
   type OpportunityFilters,
 } from "@/lib/utils/opportunity-filters";
 
+/** Lê os filtros iniciais da URL (?status=open&stageId=...&signal=stalled) —
+ * é assim que cards do Dashboard/Hub CRM chegam aqui já filtrados. */
+function filtersFromSearchParams(params: URLSearchParams): OpportunityFilters {
+  const status = params.get("status");
+  const stageId = params.get("stageId");
+  const signal = params.get("signal");
+  return {
+    ...DEFAULT_OPPORTUNITY_FILTERS,
+    status: (["open", "won", "lost"].includes(status ?? "")
+      ? status
+      : DEFAULT_OPPORTUNITY_FILTERS.status) as OpportunityFilters["status"],
+    stageId: stageId ?? DEFAULT_OPPORTUNITY_FILTERS.stageId,
+    signal: (signal === "stalled" ? "stalled" : DEFAULT_OPPORTUNITY_FILTERS.signal) as OpportunityFilters["signal"],
+  };
+}
+
 export function OpportunitiesView({ stages }: { stages: StageColumn[] }) {
+  const searchParams = useSearchParams();
   const [view, setView] = useState<"kanban" | "list">("kanban");
-  const [filters, setFilters] = useState<OpportunityFilters>(DEFAULT_OPPORTUNITY_FILTERS);
+  const [filters, setFilters] = useState<OpportunityFilters>(() => filtersFromSearchParams(searchParams));
 
   const allOpportunities = useMemo(() => stages.flatMap((s) => s.opportunities), [stages]);
 

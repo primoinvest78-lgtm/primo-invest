@@ -32,6 +32,7 @@ export type DashboardKpi = {
   change: string | null;
   delta: number | null;
   icon: DashboardIconKey;
+  href: string;
 };
 
 export type DashboardAttentionItem = {
@@ -39,6 +40,7 @@ export type DashboardAttentionItem = {
   priority: "Alta" | "Média" | "Baixa";
   quantity: number;
   icon: DashboardIconKey;
+  href: string;
 };
 
 export type DashboardData = {
@@ -47,10 +49,10 @@ export type DashboardData = {
   wealthTrend: WealthHistoryPoint[];
   allocationData: { name: string; value: number }[];
   attentionItems: DashboardAttentionItem[];
-  relationshipSummary: { label: string; value: string }[];
-  pipelineStages: { name: string; value: string }[];
+  relationshipSummary: { label: string; value: string; href: string }[];
+  pipelineStages: { name: string; value: string; href: string }[];
   goals: { id: string; label: string; value: string; target: string; progress: number }[];
-  recentActivities: { title: string; time: string }[];
+  recentActivities: { title: string; time: string; href: string | null }[];
 };
 
 export async function getDashboardData(
@@ -73,7 +75,7 @@ export async function getDashboardData(
       .from("interactions")
       .select(
         `interaction_type, subject, occurred_at,
-         client:clients(full_name), lead:leads(name), opportunity:opportunities(title)`,
+         client:clients(id, full_name), lead:leads(id, name), opportunity:opportunities(id, title)`,
       )
       .eq("organization_id", organizationId)
       .order("occurred_at", { ascending: false })
@@ -102,6 +104,7 @@ export async function getDashboardData(
       change: wealthDelta?.change ?? null,
       delta: wealthDelta?.delta ?? null,
       icon: "landmark",
+      href: "/patrimonio",
     },
     {
       title: "Investimentos sob gestão",
@@ -109,6 +112,7 @@ export async function getDashboardData(
       change: null,
       delta: null,
       icon: "briefcase",
+      href: "/patrimonio/investimentos",
     },
     {
       title: "Clientes",
@@ -116,6 +120,7 @@ export async function getDashboardData(
       change: null,
       delta: null,
       icon: "users",
+      href: "/clientes",
     },
     {
       title: "Pipeline de oportunidades",
@@ -123,6 +128,7 @@ export async function getDashboardData(
       change: null,
       delta: null,
       icon: "trending-up",
+      href: "/oportunidades?status=open",
     },
   ];
 
@@ -148,6 +154,7 @@ export async function getDashboardData(
           priority: "Alta" as const,
           quantity: overdueTasks,
           icon: "folder-kanban",
+          href: "/tarefas?dueBucket=overdue",
         }
       : null,
     leadPriorities.noContact.length > 0
@@ -156,6 +163,7 @@ export async function getDashboardData(
           priority: "Alta" as const,
           quantity: leadPriorities.noContact.length,
           icon: "user-x",
+          href: "/leads?signal=noContact",
         }
       : null,
     opportunityPriorities.stalled.length > 0
@@ -164,6 +172,7 @@ export async function getDashboardData(
           priority: "Média" as const,
           quantity: opportunityPriorities.stalled.length,
           icon: "trending-up",
+          href: "/oportunidades?signal=stalled",
         }
       : null,
     leadPriorities.stalled.length > 0
@@ -172,20 +181,22 @@ export async function getDashboardData(
           priority: "Baixa" as const,
           quantity: leadPriorities.stalled.length,
           icon: "alarm-clock",
+          href: "/leads?signal=stalled",
         }
       : null,
   ].filter((item): item is DashboardAttentionItem => item !== null);
 
   const relationshipSummary = [
-    { label: "Clientes ativos", value: String(clientsCount) },
-    { label: "Leads em qualificação", value: String(qualificationLeads) },
-    { label: "Oportunidades abertas", value: String(openOpportunities.length) },
-    { label: "Reuniões hoje", value: String(meetingsToday) },
+    { label: "Clientes ativos", value: String(clientsCount), href: "/clientes" },
+    { label: "Leads em qualificação", value: String(qualificationLeads), href: "/leads?stage=Qualificação" },
+    { label: "Oportunidades abertas", value: String(openOpportunities.length), href: "/oportunidades?status=open" },
+    { label: "Reuniões hoje", value: String(meetingsToday), href: "/tarefas?dueBucket=today&category=reuniao" },
   ];
 
   const pipelineStages = stages.map((stage) => ({
     name: stage.name,
     value: formatCurrencyBRL(stage.opportunities.reduce((sum, o) => sum + Number(o.estimatedValue ?? 0), 0)),
+    href: `/oportunidades?status=open&stageId=${stage.id}`,
   }));
 
   const goals = overview.goals.slice(0, 4).map((goal) => ({
@@ -201,17 +212,25 @@ export async function getDashboardData(
     interaction_type: string;
     subject: string | null;
     occurred_at: string;
-    client: { full_name: string } | null;
-    lead: { name: string } | null;
-    opportunity: { title: string } | null;
+    client: { id: string; full_name: string } | null;
+    lead: { id: string; name: string } | null;
+    opportunity: { id: string; title: string } | null;
   };
   const activityRows = (activitiesRes.data ?? []) as unknown as ActivityRow[];
   const recentActivities = activityRows.map((row) => {
     const target = row.client?.full_name ?? row.lead?.name ?? row.opportunity?.title;
     const label = ACTIVITY_LABEL[row.interaction_type] ?? row.interaction_type;
+    const href = row.client
+      ? `/clientes/${row.client.id}`
+      : row.lead
+        ? `/leads/${row.lead.id}`
+        : row.opportunity
+          ? `/oportunidades/${row.opportunity.id}`
+          : null;
     return {
       title: target ? `${label}${row.subject ? ` — ${row.subject}` : ""} · ${target}` : `${label}${row.subject ? ` — ${row.subject}` : ""}`,
       time: formatRelativeTime(row.occurred_at),
+      href,
     };
   });
 

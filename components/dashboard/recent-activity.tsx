@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
+
 import type { RecentActivityItem } from "@/lib/mock/dashboard";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
-export function RecentActivity({ items }: { items: RecentActivityItem[] }) {
+export function RecentActivity({ items }: { items: (RecentActivityItem & { href: string | null })[] }) {
   if (items.length === 0) {
     return (
       <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
@@ -26,12 +28,11 @@ export function RecentActivity({ items }: { items: RecentActivityItem[] }) {
       <div className="space-y-1">
         {items.map((item, index) => {
           const accent = CHART_SEQUENCE[index % CHART_SEQUENCE.length];
+          const rowClassName =
+            "flex items-start gap-3 rounded-xl px-2.5 py-3 transition-colors duration-150 hover:bg-muted/70";
 
-          return (
-            <div
-              key={item.title}
-              className="flex items-start gap-3 rounded-xl px-2.5 py-3 transition-colors duration-150 hover:bg-muted/70"
-            >
+          const content = (
+            <>
               <div className="relative mt-1 flex h-5 w-5 shrink-0 items-center justify-center">
                 <span className="absolute h-5 w-5 rounded-full bg-muted" />
                 <span
@@ -44,6 +45,16 @@ export function RecentActivity({ items }: { items: RecentActivityItem[] }) {
                 <p className="text-sm font-semibold leading-5 text-foreground">{item.title}</p>
                 <p className="mt-1 text-xs font-medium text-card-beige-muted-foreground">{item.time}</p>
               </div>
+            </>
+          );
+
+          return item.href ? (
+            <Link key={item.title} href={item.href} className={rowClassName}>
+              {content}
+            </Link>
+          ) : (
+            <div key={item.title} className={rowClassName}>
+              {content}
             </div>
           );
         })}

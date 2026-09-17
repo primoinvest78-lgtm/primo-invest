@@ -123,6 +123,7 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
               change={kpi.change}
               delta={kpi.delta}
               icon={DASHBOARD_ICONS[kpi.icon]}
+              href={kpi.href}
               animateValueWithGsap
             />
           </div>

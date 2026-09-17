@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
+
 import type { PipelineStage } from "@/lib/mock/dashboard";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
-export function PipelineSummary({ stages }: { stages: PipelineStage[] }) {
+export function PipelineSummary({ stages }: { stages: (PipelineStage & { href: string })[] }) {
   return (
     <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
       <div className="mb-5">
@@ -27,14 +29,17 @@ export function PipelineSummary({ stages }: { stages: PipelineStage[] }) {
                 </span>
               </div>
 
-              <div className="rounded-xl border border-border bg-muted/60 p-3.5 transition-colors duration-150 hover:border-primary/40 hover:bg-muted">
+              <Link
+                href={stage.href}
+                className="block rounded-xl border border-border bg-muted/60 p-3.5 transition-colors duration-150 hover:border-primary/40 hover:bg-muted"
+              >
                 <div className="text-label font-bold uppercase text-muted-foreground">
                   Valor
                 </div>
                 <div className="mt-2 truncate text-sm font-bold text-foreground">
                   {stage.value}
                 </div>
-              </div>
+              </Link>
 
               {index < stages.length - 1 && (
                 <div className="mt-3 flex items-center px-1">

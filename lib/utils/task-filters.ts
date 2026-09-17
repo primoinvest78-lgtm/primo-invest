@@ -1,4 +1,5 @@
 import type { TaskItem } from "@/lib/data/tasks";
+import { classifyTaskBucket, type TaskBucket } from "@/lib/utils/task-helpers";
 
 export type TaskFilters = {
   advisorId: string;
@@ -6,6 +7,10 @@ export type TaskFilters = {
   priority: string;
   status: string;
   category: string;
+  /** Espelha classifyTaskBucket() — usado pra linkar cards do
+   * Dashboard/Hub CRM ("tarefas atrasadas", "reuniões hoje") direto
+   * pra essa mesma lista filtrada. */
+  dueBucket: "all" | TaskBucket;
   dueFrom: string;
   dueTo: string;
 };
@@ -16,6 +21,7 @@ export const DEFAULT_TASK_FILTERS: TaskFilters = {
   priority: "all",
   status: "all",
   category: "all",
+  dueBucket: "all",
   dueFrom: "",
   dueTo: "",
 };
@@ -44,6 +50,8 @@ export function applyTaskFilters(tasks: TaskItem[], filters: TaskFilters): TaskI
         return false;
       }
     }
+
+    if (filters.dueBucket !== "all" && classifyTaskBucket(task) !== filters.dueBucket) return false;
 
     if (filters.dueFrom !== "" && (!task.dueAt || task.dueAt.slice(0, 10) < filters.dueFrom)) return false;
     if (filters.dueTo !== "" && (!task.dueAt || task.dueAt.slice(0, 10) > filters.dueTo)) return false;

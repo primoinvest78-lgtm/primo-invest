@@ -27,7 +27,7 @@ export const PRIORITY_BADGE_CLASS: Record<string, string> = {
 
 const DAY_MS = 1000 * 60 * 60 * 24;
 
-function daysSince(iso: string): number {
+export function daysSince(iso: string): number {
   return (Date.now() - new Date(iso).getTime()) / DAY_MS;
 }
 

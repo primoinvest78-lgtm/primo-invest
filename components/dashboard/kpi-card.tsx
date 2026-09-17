@@ -3,6 +3,7 @@
 import { gsap } from "gsap";
 import { ArrowUpRight, type LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 export type KpiCardProps = {
@@ -13,6 +14,8 @@ export type KpiCardProps = {
   icon: LucideIcon;
   /** Anima o valor em contagem crescente (0 até o valor real) via GSAP. */
   animateValueWithGsap?: boolean;
+  /** Quando informado, o card inteiro vira um link pro destino de origem do dado. */
+  href?: string;
 };
 
 export function KpiCard({
@@ -22,6 +25,7 @@ export function KpiCard({
   delta,
   icon: Icon,
   animateValueWithGsap = false,
+  href,
 }: KpiCardProps) {
   const formattedDelta =
     delta === undefined || delta === null
@@ -55,7 +59,7 @@ export function KpiCard({
     };
   }, [animateValueWithGsap, value]);
 
-  return (
+  const content = (
     <motion.article
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -102,5 +106,13 @@ export function KpiCard({
         </div>
       ) : null}
     </motion.article>
+  );
+
+  return href ? (
+    <Link href={href} className="block">
+      {content}
+    </Link>
+  ) : (
+    content
   );
 }

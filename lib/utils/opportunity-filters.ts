@@ -1,4 +1,9 @@
 import type { OpportunityCard } from "@/lib/data/opportunities";
+import { daysSince, isOpenOpportunity } from "@/lib/utils/opportunity-helpers";
+
+/** Espelha computeOpportunityPriorities().stalled — usado pra linkar
+ * cards do Dashboard/Hub CRM direto pra essa mesma lista filtrada. */
+export type OpportunitySignalFilter = "all" | "stalled";
 
 export type OpportunityFilters = {
   stageId: string;
@@ -7,6 +12,7 @@ export type OpportunityFilters = {
   source: string;
   opportunityType: string;
   priority: string;
+  signal: OpportunitySignalFilter;
   valueMin: string;
   valueMax: string;
   createdFrom: string;
@@ -20,6 +26,7 @@ export const DEFAULT_OPPORTUNITY_FILTERS: OpportunityFilters = {
   source: "all",
   opportunityType: "all",
   priority: "all",
+  signal: "all",
   valueMin: "",
   valueMax: "",
   createdFrom: "",
@@ -60,6 +67,11 @@ export function applyOpportunityFilters(
     }
 
     if (filters.priority !== "all" && opp.priority !== filters.priority) return false;
+
+    if (filters.signal === "stalled") {
+      if (!isOpenOpportunity(opp.status)) return false;
+      if (daysSince(opp.lastActivityAt ?? opp.createdAt) <= 20) return false;
+    }
 
     if (filters.valueMin !== "") {
       const min = Number(filters.valueMin);
