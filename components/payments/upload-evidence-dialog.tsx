@@ -132,7 +132,7 @@ export function UploadEvidenceDialog({ organizationId, clientNames }: { organiza
               required
               accept="image/*,application/pdf"
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
             />
 
             <div className="grid grid-cols-2 gap-3">

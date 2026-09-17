@@ -113,7 +113,7 @@ export function CalendarFeedSection({
                 readOnly
                 value={urls.httpsUrl}
                 onFocus={(e) => e.currentTarget.select()}
-                className="w-full min-w-0 truncate rounded-lg border border-border bg-muted/40 px-3 py-2 text-body-sm text-foreground"
+                className="w-full min-w-0 truncate rounded-lg border border-input bg-card px-3 py-2 text-body-sm text-foreground"
               />
               <CopyButton value={urls.httpsUrl} />
             </div>
@@ -128,7 +128,7 @@ export function CalendarFeedSection({
                 readOnly
                 value={urls.webcalUrl}
                 onFocus={(e) => e.currentTarget.select()}
-                className="w-full min-w-0 truncate rounded-lg border border-border bg-muted/40 px-3 py-2 text-body-sm text-foreground"
+                className="w-full min-w-0 truncate rounded-lg border border-input bg-card px-3 py-2 text-body-sm text-foreground"
               />
               <CopyButton value={urls.webcalUrl} />
             </div>

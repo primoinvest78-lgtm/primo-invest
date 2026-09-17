@@ -108,7 +108,7 @@ export function VaultUploadDialog({
             type="file"
             required
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+            className="w-full rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
           />
           <Input name="name" placeholder="Nome do documento (opcional)" defaultValue={file?.name ?? ""} />
 
