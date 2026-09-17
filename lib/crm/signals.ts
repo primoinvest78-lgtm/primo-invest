@@ -31,6 +31,9 @@ export type CrmSignal = {
   reason: string;
   href: string;
   ownerName: string | null;
+  /** Cliente relacionado, quando existe (leads ainda não são cliente — sempre null nesse caso). */
+  clientId: string | null;
+  clientName: string | null;
   /** Data usada só pra ordenação (prazo, última atividade etc.) — nunca exibida sozinha sem contexto. */
   sortKey: string;
 };
@@ -66,6 +69,8 @@ export function buildCrmSignals(input: {
       reason: lead.nextTask ? `Tarefa "${lead.nextTask.title}" vence hoje ou já venceu.` : "Ação pendente.",
       href: `/leads/${lead.id}`,
       ownerName: lead.assignedAdvisorName,
+      clientId: null,
+      clientName: null,
       sortKey: lead.nextTask?.dueAt ?? lead.createdAt,
     });
   }
@@ -80,6 +85,8 @@ export function buildCrmSignals(input: {
       reason: "Lead quente sem tarefa de próximo passo agendada.",
       href: `/leads/${lead.id}`,
       ownerName: lead.assignedAdvisorName,
+      clientId: null,
+      clientName: null,
       sortKey: lead.lastInteractionAt ?? lead.createdAt,
     });
   }
@@ -93,6 +100,8 @@ export function buildCrmSignals(input: {
       reason: `${daysSince(lead.lastInteractionAt ?? lead.createdAt)} dias sem contato registrado.`,
       href: `/leads/${lead.id}`,
       ownerName: lead.assignedAdvisorName,
+      clientId: null,
+      clientName: null,
       sortKey: lead.lastInteractionAt ?? lead.createdAt,
     });
   }
@@ -109,6 +118,8 @@ export function buildCrmSignals(input: {
       reason: opp.expectedCloseDate ? `Previsão de fechamento em breve (${opp.expectedCloseDate}).` : "Fechamento próximo.",
       href: `/oportunidades/${opp.id}`,
       ownerName: opp.assignedAdvisorName,
+      clientId: opp.clientId,
+      clientName: opp.clientName,
       sortKey: opp.expectedCloseDate ?? opp.createdAt,
     });
   }
@@ -122,6 +133,8 @@ export function buildCrmSignals(input: {
       reason: `${daysSince(opp.lastActivityAt ?? opp.createdAt)} dias sem atividade registrada.`,
       href: `/oportunidades/${opp.id}`,
       ownerName: opp.assignedAdvisorName,
+      clientId: opp.clientId,
+      clientName: opp.clientName,
       sortKey: opp.lastActivityAt ?? opp.createdAt,
     });
   }
@@ -142,6 +155,8 @@ export function buildCrmSignals(input: {
         : "Vence hoje.",
       href: task.clientId ? `/clientes/${task.clientId}` : "/tarefas",
       ownerName: task.assignedToName,
+      clientId: task.clientId,
+      clientName: task.clientName,
       sortKey: task.dueAt ?? task.createdAt,
     });
   }
@@ -159,6 +174,8 @@ export function buildCrmSignals(input: {
       reason: client.riskProfile === "vencido" ? "Perfil de risco vencido." : "Sem perfil de risco cadastrado.",
       href: `/clientes/${client.id}`,
       ownerName: client.assignedAdvisorName,
+      clientId: client.id,
+      clientName: client.fullName,
       sortKey: new Date().toISOString(),
     });
   }
