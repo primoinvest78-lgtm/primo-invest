@@ -207,7 +207,7 @@ export function UploadEvidenceDialog({ organizationId, clientNames }: { organiza
             <DialogFooter>
               <Button type="submit" disabled={loading}>
                 {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
-                Enviar e processar
+                {loading ? "Enviando comprovante..." : "Enviar e processar"}
               </Button>
             </DialogFooter>
           </form>

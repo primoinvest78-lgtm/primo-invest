@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, Download, Eye, FileText, Share2, Upload } from "lucide-react";
+import { Archive, Download, Eye, FileText, Loader2, Share2, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -96,6 +96,8 @@ function DocumentDetailBody({ documentId }: { documentId: string }) {
   const [loadError, setLoadError] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [uploadingVersion, setUploadingVersion] = useState(false);
+  const [viewing, setViewing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -119,16 +121,26 @@ function DocumentDetailBody({ documentId }: { documentId: string }) {
 
   async function handleView() {
     if (!detail) return;
-    const { url } = await getDocumentSignedUrl(detail.versions[0]?.storagePath ?? "", false);
-    await logDocumentAccess(detail.id, "view");
-    window.open(url, "_blank", "noopener,noreferrer");
+    setViewing(true);
+    try {
+      const { url } = await getDocumentSignedUrl(detail.versions[0]?.storagePath ?? "", false);
+      await logDocumentAccess(detail.id, "view");
+      window.open(url, "_blank", "noopener,noreferrer");
+    } finally {
+      setViewing(false);
+    }
   }
 
   async function handleDownload() {
     if (!detail) return;
-    const { url } = await getDocumentSignedUrl(detail.versions[0]?.storagePath ?? "", true);
-    await logDocumentAccess(detail.id, "download");
-    window.open(url, "_blank", "noopener,noreferrer");
+    setDownloading(true);
+    try {
+      const { url } = await getDocumentSignedUrl(detail.versions[0]?.storagePath ?? "", true);
+      await logDocumentAccess(detail.id, "download");
+      window.open(url, "_blank", "noopener,noreferrer");
+    } finally {
+      setDownloading(false);
+    }
   }
 
   async function handleArchiveToggle() {
@@ -200,13 +212,13 @@ function DocumentDetailBody({ documentId }: { documentId: string }) {
             </DialogHeader>
 
             <div className="flex flex-wrap gap-2">
-              <Button type="button" size="sm" variant="outline" onClick={handleView}>
-                <Eye className="h-3.5 w-3.5" />
-                Visualizar
+              <Button type="button" size="sm" variant="outline" onClick={handleView} disabled={viewing}>
+                {viewing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Eye className="h-3.5 w-3.5" />}
+                {viewing ? "Abrindo..." : "Visualizar"}
               </Button>
-              <Button type="button" size="sm" variant="outline" onClick={handleDownload}>
-                <Download className="h-3.5 w-3.5" />
-                Baixar
+              <Button type="button" size="sm" variant="outline" onClick={handleDownload} disabled={downloading}>
+                {downloading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                {downloading ? "Baixando..." : "Baixar"}
               </Button>
               <Button type="button" size="sm" variant="outline" onClick={() => setSharing((s) => !s)}>
                 <Share2 className="h-3.5 w-3.5" />
