@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { BackLink } from "@/components/ui/back-link";
 import { LiabilitiesView } from "@/components/wealth/liabilities-view";
 import { listClients } from "@/lib/data/clients";
@@ -26,7 +27,10 @@ export default async function PassivosPage() {
           </p>
         </div>
 
-        <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="patrimonial" label="Relatório patrimonial" />
+          <BackLink href="/patrimonio" label="Voltar a Patrimônio" />
+        </div>
       </section>
 
       {liabilities.length === 0 ? (

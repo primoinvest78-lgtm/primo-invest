@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 
 import type { DashboardData, DashboardIconKey } from "@/lib/data/dashboard";
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { formatMonthLabel } from "@/lib/utils/format";
 
 /**
@@ -85,6 +86,7 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
               </button>
             );
           })}
+          <ReportShortcutButton type="executivo" label="Relatório executivo" />
         </div>
       </section>
 

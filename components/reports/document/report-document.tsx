@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "motion/react";
 
+import { ExecutiveSummarySlot } from "@/components/reports/document/executive-summary-slot";
 import { ReportChartView } from "@/components/reports/document/report-chart";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { formatDateLong } from "@/lib/reports/period";
@@ -244,6 +245,8 @@ export function ReportDocument({
           </dl>
         </div>
       </header>
+
+      <ExecutiveSummarySlot payload={payload} />
 
       {payload.sections.map((section, index) => (
         <Section key={section.id} section={section} index={index} />

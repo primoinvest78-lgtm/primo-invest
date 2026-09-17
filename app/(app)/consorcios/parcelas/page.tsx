@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { BackLink } from "@/components/ui/back-link";
 import { ParcelasView } from "@/components/consortiums/parcelas/parcelas-view";
 import {
@@ -28,7 +29,10 @@ export default async function ParcelasPage() {
             {installments.length === 1 ? "parcela detalhada" : "parcelas detalhadas"}.
           </p>
         </div>
-        <BackLink href="/consorcios" label="Voltar a Consórcios" />
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="consorcios" label="Relatório de consórcios" />
+          <BackLink href="/consorcios" label="Voltar a Consórcios" />
+        </div>
       </section>
 
       {installments.length === 0 ? (

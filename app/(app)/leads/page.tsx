@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { LeadsView } from "@/components/leads/leads-view";
 import { listLeads } from "@/lib/data/leads";
 import { requireActiveMembership } from "@/lib/supabase/session";
@@ -17,6 +18,10 @@ export default async function LeadsPage() {
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
             Esteira de captação — {leads.length} {leads.length === 1 ? "lead" : "leads"}.
           </p>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <ReportShortcutButton type="operacional" label="Relatório operacional" />
         </div>
       </section>
 

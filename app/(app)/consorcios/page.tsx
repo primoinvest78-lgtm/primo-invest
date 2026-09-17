@@ -1,3 +1,4 @@
+import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import Link from "next/link";
 
 import { AnimatedNumber } from "@/components/ui/animated-number";
@@ -26,6 +27,11 @@ export default async function ConsorciosPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <ReportShortcutButton
+            type="consorcios"
+            label="Relatório de consórcios"
+            variant="secondary"
+          />
           <Link
             href="/consorcios/contratos"
             className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
