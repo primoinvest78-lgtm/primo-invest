@@ -51,7 +51,7 @@ export function DashboardHeader({
           </p>
 
           <h2 className="mt-1 text-[15px] font-semibold text-white/80">
-            Dashboard Executivo
+            Dashboard&nbsp;&nbsp;Executivo
           </h2>
         </div>
 
