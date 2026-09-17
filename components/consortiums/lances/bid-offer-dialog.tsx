@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -164,7 +165,14 @@ export function BidOfferDialog({ contracts }: { contracts: ConsortiumContract[] 
         {step === "offer" && contract ? (
           <div className="space-y-4">
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] font-bold uppercase text-card-beige-muted-foreground">Modalidade</label>
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-card-beige-muted-foreground">
+                Modalidade
+                <InfoTooltip>
+                  Livre: percentual definido por você, sem limite de embutido. Fixo: percentual travado
+                  pela administradora. Embutido: usa parte do crédito para pagar o próprio lance. Misto:
+                  combina recurso próprio com embutido. As opções disponíveis dependem das regras do grupo.
+                </InfoTooltip>
+              </label>
               <Select value={modality} onValueChange={(v) => setModality(v ?? "livre")}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Modalidade" />
@@ -179,13 +187,23 @@ export function BidOfferDialog({ contracts }: { contracts: ConsortiumContract[] 
               </Select>
             </div>
 
-            <Input
-              type="number"
-              step="0.1"
-              placeholder="Percentual do lance"
-              value={percentage}
-              onChange={(e) => setPercentage(e.target.value)}
-            />
+            <div className="flex flex-col gap-1">
+              <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-card-beige-muted-foreground">
+                Percentual do lance
+                <InfoTooltip>
+                  Percentual sobre o valor do crédito que você está dispondo a antecipar/ofertar na
+                  assembleia. Quanto maior, mais chance de contemplação — mas confira o mínimo e máximo
+                  permitidos nas regras do grupo acima.
+                </InfoTooltip>
+              </label>
+              <Input
+                type="number"
+                step="0.1"
+                placeholder="Ex.: 25"
+                value={percentage}
+                onChange={(e) => setPercentage(e.target.value)}
+              />
+            </div>
             <Input type="date" value={bidDate} onChange={(e) => setBidDate(e.target.value)} />
 
             {simulation ? (

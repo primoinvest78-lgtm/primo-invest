@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -111,8 +112,12 @@ function AddMappingDialog({ integrationId }: { integrationId: string }) {
           </div>
 
           <div>
-            <label className="mb-1 block text-label font-bold uppercase text-card-beige-muted-foreground">
+            <label className="mb-1 flex items-center gap-1.5 text-label font-bold uppercase text-card-beige-muted-foreground">
               Status
+              <InfoTooltip>
+                Mapeado: a correspondência já foi conferida e está em uso. Pendente: cadastrada mas ainda
+                não validada. Conflito: os dois lados divergem (ex.: tipos incompatíveis) e precisa de ajuste.
+              </InfoTooltip>
             </label>
             <Select value={status} onValueChange={(v) => setStatus((v as FieldMappingStatus) ?? "pending")}>
               <SelectTrigger className="w-full">

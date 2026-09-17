@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { BidRulesEditDialog } from "@/components/consortiums/lances/bid-rules-edit-dialog";
 import type { ConsortiumBid, ConsortiumContract } from "@/lib/data/consortiums";
 import {
@@ -101,7 +102,13 @@ export function BidSimulator({
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] font-bold uppercase text-secondary-foreground/60">Modalidade</label>
+            <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-secondary-foreground/60">
+              Modalidade
+              <InfoTooltip iconClassName="h-3.5 w-3.5 text-secondary-foreground/50 transition-colors hover:text-primary">
+                Livre: percentual definido por você. Fixo: travado pela administradora. Embutido: usa parte
+                do próprio crédito para cobrir o lance. Misto: combina recurso próprio com embutido.
+              </InfoTooltip>
+            </label>
             <Select value={modality} onValueChange={(v) => setModality(v ?? "livre")}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Modalidade" />
@@ -219,14 +226,24 @@ export function BidSimulator({
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3">
-                  <p className="text-[10px] font-bold uppercase text-secondary-foreground/60">Impacto no saldo</p>
+                  <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-secondary-foreground/60">
+                    Impacto no saldo
+                    <InfoTooltip iconClassName="h-3 w-3 text-secondary-foreground/50 transition-colors hover:text-primary">
+                      Quanto do recurso próprio informado sai do seu caixa nesta oferta, somado ao valor
+                      embutido (se houver). Não considera taxas administrativas.
+                    </InfoTooltip>
+                  </p>
                   <p className="mt-1 text-sm font-semibold text-secondary-foreground">
                     {formatCurrencyBRL(result.balanceImpact)}
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3">
-                  <p className="text-[10px] font-bold uppercase text-secondary-foreground/60">
+                  <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-secondary-foreground/60">
                     Parcelas antecipadas (est.)
+                    <InfoTooltip iconClassName="h-3 w-3 text-secondary-foreground/50 transition-colors hover:text-primary">
+                      Estimativa de quantas parcelas futuras este lance equivale, dividindo o valor ofertado
+                      pelo valor médio das parcelas do contrato.
+                    </InfoTooltip>
                   </p>
                   <p className="mt-1 text-sm font-semibold text-secondary-foreground">
                     {result.estimatedAnticipatedInstallments !== null
