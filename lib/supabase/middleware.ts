@@ -5,6 +5,11 @@ import { isAuthBypassEnabled } from "@/lib/dev/auth-bypass";
 
 const PUBLIC_PATHS = [
   "/login",
+  "/recuperar-senha",
+  // Troca o `code` do Supabase por sessão (login com Google e
+  // recuperação de senha) — precisa ser público porque roda ANTES de
+  // existir sessão; ver app/auth/callback/route.ts.
+  "/auth/callback",
   // Feed de calendário (.ics) — consultado por Google/Outlook/Apple
   // Calendar sem sessão de usuário nenhuma (não é o navegador que
   // acessa, é o serviço de calendário do usuário fazendo polling). A

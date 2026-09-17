@@ -1,18 +1,46 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type FormEvent, Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-4 w-4" aria-hidden="true">
+      <path
+        fill="#EA4335"
+        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+      />
+      <path
+        fill="#4285F4"
+        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.9-2.26 5.36-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24 24 0 0 0 0 21.56l7.98-6.19z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.9l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+      />
+    </svg>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    searchParams.get("erro") === "auth" ? "Não foi possível concluir o login. Tente novamente." : null,
+  );
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,17 +63,34 @@ export default function LoginPage() {
     router.refresh();
   }
 
+  async function handleGoogleSignIn() {
+    setError(null);
+    setGoogleLoading(true);
+
+    const supabase = createClient();
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+
+    if (oauthError) {
+      setError("Não foi possível iniciar o login com Google.");
+      setGoogleLoading(false);
+    }
+    // Sucesso redireciona o navegador pro Google — nada mais a fazer aqui.
+  }
+
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary px-4">
       <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-border">
+          <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
               src="/primo-invest-logo.png"
               alt="Primo Invest"
-              width={56}
-              height={56}
-              className="object-contain"
+              width={80}
+              height={80}
+              className="object-cover"
               priority
             />
           </div>
@@ -76,12 +121,20 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
-            >
-              Senha
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-label font-bold uppercase text-muted-foreground"
+              >
+                Senha
+              </label>
+              <Link
+                href="/recuperar-senha"
+                className="text-label font-bold text-accent hover:underline"
+              >
+                Esqueci minha senha
+              </Link>
+            </div>
             <input
               id="password"
               type="password"
@@ -101,7 +154,32 @@ export default function LoginPage() {
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-label font-bold uppercase text-muted-foreground">ou</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          disabled={googleLoading}
+          onClick={handleGoogleSignIn}
+          className="h-11 w-full justify-center gap-2.5"
+        >
+          <GoogleIcon />
+          {googleLoading ? "Redirecionando..." : "Entrar com Google"}
+        </Button>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen w-full bg-secondary" />}>
+      <LoginForm />
+    </Suspense>
   );
 }
