@@ -18,6 +18,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Primo Invest | Dashboard",
   description: "Dashboard institucional da PRIMO INVEST",
+  icons: { icon: "/primo-invest-logo.png" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
