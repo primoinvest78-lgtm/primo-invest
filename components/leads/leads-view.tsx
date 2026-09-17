@@ -44,7 +44,10 @@ export function LeadsView({ leads }: { leads: LeadListItem[] }) {
 
   return (
     <div className="space-y-5">
-      <LeadsKpis leads={filteredLeads} />
+      <LeadsKpis
+        leads={filteredLeads}
+        onApplyFilters={(patch) => setFilters((f) => ({ ...f, ...patch }))}
+      />
 
       <LeadsPriorityPanel leads={filteredLeads} />
 

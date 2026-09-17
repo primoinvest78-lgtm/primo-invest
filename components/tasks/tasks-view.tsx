@@ -33,7 +33,10 @@ export function TasksView({ tasks, options }: { tasks: TaskItem[]; options: Task
 
   return (
     <div className="space-y-5">
-      <TasksKpis tasks={filteredTasks} />
+      <TasksKpis
+        tasks={filteredTasks}
+        onSelectBucket={(bucket) => setFilters((f) => ({ ...f, dueBucket: bucket }))}
+      />
 
       <TasksPriorityPanel tasks={filteredTasks} />
 

@@ -61,7 +61,11 @@ export function OpportunitiesView({ stages }: { stages: StageColumn[] }) {
 
   return (
     <div className="space-y-5">
-      <OpportunitiesKpis opportunities={filteredOpportunities} stageProbabilityById={stageProbabilityById} />
+      <OpportunitiesKpis
+        opportunities={filteredOpportunities}
+        stageProbabilityById={stageProbabilityById}
+        onApplyFilters={(patch) => setFilters((f) => ({ ...f, ...patch }))}
+      />
 
       <OpportunitiesPriorityPanel opportunities={filteredOpportunities} />
 
