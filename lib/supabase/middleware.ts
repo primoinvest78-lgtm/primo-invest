@@ -3,7 +3,16 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { isAuthBypassEnabled } from "@/lib/dev/auth-bypass";
 
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = [
+  "/login",
+  // Feed de calendário (.ics) — consultado por Google/Outlook/Apple
+  // Calendar sem sessão de usuário nenhuma (não é o navegador que
+  // acessa, é o serviço de calendário do usuário fazendo polling). A
+  // autorização vem do token na própria URL, validado dentro da rota
+  // via função SECURITY DEFINER — não por sessão. Ver
+  // supabase/migrations/20260917010000_calendar_feed.sql.
+  "/api/integracoes/calendario",
+];
 
 export async function updateSession(request: NextRequest) {
   // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var

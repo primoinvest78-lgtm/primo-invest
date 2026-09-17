@@ -111,8 +111,8 @@ export const INTEGRATION_CATALOG: IntegrationCatalogEntry[] = [
     providerKey: "calendario",
     category: "calendario",
     name: "Calendário",
-    description: "Sincronização de reuniões, tarefas e compromissos.",
-    available: false,
+    description: "Assinatura de agenda (.ics) com as tarefas do usuário — compatível com Google Calendar, Outlook e Apple Calendar.",
+    available: true,
   },
   {
     providerKey: "whatsapp",
