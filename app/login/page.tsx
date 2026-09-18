@@ -6,7 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PasswordField } from "@/components/ui/password-field";
 import { createClient } from "@/lib/supabase/client";
+import { AUTH_INPUT_CLASS } from "@/lib/utils/auth-ui";
 
 function GoogleIcon() {
   return (
@@ -88,7 +90,7 @@ function LoginForm() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
+      <div className="card-premium w-full max-w-[400px] rounded-2xl p-8">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
@@ -117,7 +119,7 @@ function LoginForm() {
           <div>
             <label
               htmlFor="email"
-              className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
+              className="mb-1.5 block text-label font-bold uppercase text-card-beige-muted-foreground"
             >
               E-mail
             </label>
@@ -128,35 +130,25 @@ function LoginForm() {
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
+              className={AUTH_INPUT_CLASS}
             />
           </div>
 
-          <div>
-            <div className="mb-1.5 flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-label font-bold uppercase text-muted-foreground"
-              >
-                Senha
-              </label>
+          <PasswordField
+            id="password"
+            label="Senha"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            labelExtra={
               <Link
                 href="/recuperar-senha"
                 className="text-label font-bold text-accent hover:underline"
               >
                 Esqueci minha senha
               </Link>
-            </div>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
-            />
-          </div>
+            }
+          />
 
           {error ? (
             <p className="text-body-sm font-medium text-destructive">{error}</p>
@@ -168,9 +160,9 @@ function LoginForm() {
         </form>
 
         <div className="my-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-label font-bold uppercase text-muted-foreground">ou</span>
-          <div className="h-px flex-1 bg-border" />
+          <div className="h-px flex-1 bg-black/10" />
+          <span className="text-label font-bold uppercase text-card-beige-muted-foreground">ou</span>
+          <div className="h-px flex-1 bg-black/10" />
         </div>
 
         <Button
@@ -178,7 +170,7 @@ function LoginForm() {
           variant="outline"
           disabled={googleLoading}
           onClick={handleGoogleSignIn}
-          className="h-11 w-full justify-center gap-2.5"
+          className="h-11 w-full justify-center gap-2.5 bg-card"
         >
           <GoogleIcon />
           {googleLoading ? "Redirecionando..." : "Entrar com Google"}

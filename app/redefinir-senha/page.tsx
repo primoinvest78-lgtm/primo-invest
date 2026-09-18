@@ -2,58 +2,12 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PasswordField } from "@/components/ui/password-field";
 import { createClient } from "@/lib/supabase/client";
-
-function PasswordField({
-  id,
-  label,
-  value,
-  onChange,
-  autoFocus,
-}: {
-  id: string;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  autoFocus?: boolean;
-}) {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          id={id}
-          type={visible ? "text" : "password"}
-          required
-          autoComplete="new-password"
-          autoFocus={autoFocus}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="h-11 w-full rounded-xl border border-border bg-background px-4 pr-11 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
-        />
-        <button
-          type="button"
-          onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
-          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-        </button>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Chegada aqui só acontece com uma sessão de recuperação já ativa
@@ -105,7 +59,7 @@ export default function RedefinirSenhaPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
+      <div className="card-premium w-full max-w-[400px] rounded-2xl p-8">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
@@ -122,14 +76,21 @@ export default function RedefinirSenhaPage() {
           <h1 className="mt-1 text-h2 font-heading font-bold text-foreground">
             Criar nova senha
           </h1>
-          <p className="mt-2 text-body-sm text-muted-foreground">
+          <p className="mt-2 text-body-sm text-card-beige-muted-foreground">
             Escolha uma senha nova para sua conta. Depois de salvar, você vai precisar entrar de
             novo com ela.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <PasswordField id="password" label="Nova senha" value={password} onChange={setPassword} autoFocus />
+          <PasswordField
+            id="password"
+            label="Nova senha"
+            value={password}
+            onChange={setPassword}
+            autoComplete="new-password"
+            autoFocus
+          />
 
           <div>
             <PasswordField
@@ -137,6 +98,7 @@ export default function RedefinirSenhaPage() {
               label="Confirmar nova senha"
               value={confirmPassword}
               onChange={setConfirmPassword}
+              autoComplete="new-password"
             />
             {passwordsMatch ? (
               <p className="mt-1.5 flex items-center gap-1.5 text-caption font-semibold text-primary">
@@ -150,7 +112,7 @@ export default function RedefinirSenhaPage() {
             ) : null}
           </div>
 
-          <div className="flex items-start gap-2 rounded-xl border border-border bg-muted px-3.5 py-2.5 text-caption text-muted-foreground">
+          <div className="flex items-start gap-2 rounded-xl border border-black/10 bg-black/5 px-3.5 py-2.5 text-caption text-card-beige-muted-foreground">
             <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
             Use pelo menos 8 caracteres. Use o ícone do olho pra conferir o que você digitou antes
             de salvar.

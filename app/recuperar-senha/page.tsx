@@ -7,6 +7,7 @@ import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { AUTH_INPUT_CLASS } from "@/lib/utils/auth-ui";
 
 export default function RecuperarSenhaPage() {
   const [email, setEmail] = useState("");
@@ -31,7 +32,7 @@ export default function RecuperarSenhaPage() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-secondary px-4">
-      <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card p-8 shadow-card">
+      <div className="card-premium w-full max-w-[400px] rounded-2xl p-8">
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
@@ -52,7 +53,7 @@ export default function RecuperarSenhaPage() {
 
         {sent ? (
           <div className="space-y-4 text-center">
-            <p className="text-body-sm text-muted-foreground">
+            <p className="text-body-sm text-card-beige-muted-foreground">
               Se <strong className="text-foreground">{email}</strong> tiver uma conta na
               plataforma, um link para redefinir a senha foi enviado. Confira também a caixa de
               spam.
@@ -67,14 +68,14 @@ export default function RecuperarSenhaPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-body-sm text-muted-foreground">
+            <p className="text-body-sm text-card-beige-muted-foreground">
               Informe o e-mail da sua conta. Enviaremos um link para você criar uma nova senha.
             </p>
 
             <div>
               <label
                 htmlFor="email"
-                className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
+                className="mb-1.5 block text-label font-bold uppercase text-card-beige-muted-foreground"
               >
                 E-mail
               </label>
@@ -86,7 +87,7 @@ export default function RecuperarSenhaPage() {
                 autoFocus
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
+                className={AUTH_INPUT_CLASS}
               />
             </div>
 
