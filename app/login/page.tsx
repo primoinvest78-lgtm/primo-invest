@@ -39,6 +39,11 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(
     searchParams.get("erro") === "auth" ? "Não foi possível concluir o login. Tente novamente." : null,
   );
+  const [success] = useState<string | null>(
+    searchParams.get("sucesso") === "senha-redefinida"
+      ? "Senha redefinida com sucesso! Entre com sua nova senha."
+      : null,
+  );
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -100,6 +105,12 @@ function LoginForm() {
             Entrar na plataforma
           </h1>
         </div>
+
+        {success ? (
+          <p className="mb-4 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2.5 text-body-sm font-medium text-primary">
+            {success}
+          </p>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

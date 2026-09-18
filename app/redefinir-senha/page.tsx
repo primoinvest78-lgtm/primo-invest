@@ -2,10 +2,58 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+
+function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  autoFocus,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  autoFocus?: boolean;
+}) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
+      >
+        {label}
+      </label>
+      <div className="relative">
+        <input
+          id={id}
+          type={visible ? "text" : "password"}
+          required
+          autoComplete="new-password"
+          autoFocus={autoFocus}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-11 w-full rounded-xl border border-border bg-background px-4 pr-11 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
+          className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Chegada aqui só acontece com uma sessão de recuperação já ativa
@@ -20,6 +68,9 @@ export default function RedefinirSenhaPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const passwordsMatch = confirmPassword.length > 0 && password === confirmPassword;
+  const passwordsMismatch = confirmPassword.length > 0 && password !== confirmPassword;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,7 +95,11 @@ export default function RedefinirSenhaPage() {
       return;
     }
 
-    router.push("/dashboard");
+    // Encerra a sessão de recuperação de propósito — a troca de senha
+    // não deve logar o usuário automaticamente. Ele confirma a senha
+    // nova fazendo login com ela, não ficando "logado por tabela".
+    await supabase.auth.signOut();
+    router.push("/login?sucesso=senha-redefinida");
     router.refresh();
   }
 
@@ -67,51 +122,49 @@ export default function RedefinirSenhaPage() {
           <h1 className="mt-1 text-h2 font-heading font-bold text-foreground">
             Criar nova senha
           </h1>
+          <p className="mt-2 text-body-sm text-muted-foreground">
+            Escolha uma senha nova para sua conta. Depois de salvar, você vai precisar entrar de
+            novo com ela.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
-            >
-              Nova senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              autoComplete="new-password"
-              autoFocus
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
-            />
-          </div>
+          <PasswordField id="password" label="Nova senha" value={password} onChange={setPassword} autoFocus />
 
           <div>
-            <label
-              htmlFor="confirmPassword"
-              className="mb-1.5 block text-label font-bold uppercase text-muted-foreground"
-            >
-              Confirmar nova senha
-            </label>
-            <input
+            <PasswordField
               id="confirmPassword"
-              type="password"
-              required
-              autoComplete="new-password"
+              label="Confirmar nova senha"
               value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm font-medium text-foreground outline-none transition-shadow focus:ring-4 focus:ring-ring/20"
+              onChange={setConfirmPassword}
             />
+            {passwordsMatch ? (
+              <p className="mt-1.5 flex items-center gap-1.5 text-caption font-semibold text-primary">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                As senhas coincidem
+              </p>
+            ) : passwordsMismatch ? (
+              <p className="mt-1.5 text-caption font-semibold text-destructive">
+                As senhas ainda não coincidem
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex items-start gap-2 rounded-xl border border-border bg-muted px-3.5 py-2.5 text-caption text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+            Use pelo menos 8 caracteres. Use o ícone do olho pra conferir o que você digitou antes
+            de salvar.
           </div>
 
           {error ? (
             <p className="text-body-sm font-medium text-destructive">{error}</p>
           ) : null}
 
-          <Button type="submit" disabled={loading} className="h-11 w-full justify-center">
+          <Button
+            type="submit"
+            disabled={loading || passwordsMismatch}
+            className="h-11 w-full justify-center"
+          >
             {loading ? "Salvando..." : "Salvar nova senha"}
           </Button>
         </form>

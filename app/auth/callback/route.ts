@@ -15,13 +15,21 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/dashboard";
 
+  const supabase = await createClient();
+
   if (code) {
-    const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
+
+  // Troca falhou (código expirado/já usado, etc.) — encerra qualquer
+  // sessão que ainda esteja nos cookies antes de mandar pro /login.
+  // Sem isso, se o navegador já tivesse uma sessão válida de antes
+  // (ex.: login Google recente), o middleware via "logado + rota
+  // pública" e mandava direto pro /dashboard, escondendo o erro real.
+  await supabase.auth.signOut();
 
   const url = new URL("/login", origin);
   url.searchParams.set("erro", "auth");

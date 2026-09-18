@@ -3,6 +3,8 @@ import { Inter, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 
+import { CookieConsent } from "@/components/ui/cookie-consent";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -27,7 +29,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="pt-BR"
       className={`${inter.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }
