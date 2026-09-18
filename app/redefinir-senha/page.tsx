@@ -7,6 +7,7 @@ import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { PasswordField } from "@/components/ui/password-field";
+import { LOGO_SRC } from "@/lib/constants/brand";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -63,7 +64,7 @@ export default function RedefinirSenhaPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
-              src="/primo-invest-logo.png"
+              src={LOGO_SRC}
               alt="Primo Invest"
               width={80}
               height={80}

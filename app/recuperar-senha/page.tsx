@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { LOGO_SRC } from "@/lib/constants/brand";
 import { createClient } from "@/lib/supabase/client";
 import { AUTH_INPUT_CLASS } from "@/lib/utils/auth-ui";
 
@@ -19,13 +20,20 @@ export default function RecuperarSenhaPage() {
     setLoading(true);
 
     const supabase = createClient();
-    await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/redefinir-senha`,
     });
 
-    // Sempre mostra a mesma mensagem de sucesso, exista ou não esse
-    // e-mail na base — não dá pra um e-mail aleatório usar essa tela
-    // pra descobrir quem tem conta na plataforma.
+    // Log de verdade do motivo, se falhar (ex.: rate limit do Supabase)
+    // — sem isso, nao tem como saber por que o e-mail nao chegou.
+    if (error) {
+      console.error("[recuperar-senha] resetPasswordForEmail falhou:", error.message, error.status);
+    }
+
+    // Mesma mensagem de sucesso pra tela, exista ou não esse e-mail na
+    // base — não dá pra um e-mail aleatório usar essa tela pra
+    // descobrir quem tem conta na plataforma. O log acima é só pra
+    // diagnóstico nosso, nunca aparece pro usuário.
     setLoading(false);
     setSent(true);
   }
@@ -36,7 +44,7 @@ export default function RecuperarSenhaPage() {
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-secondary shadow-md">
             <Image
-              src="/primo-invest-logo.png"
+              src={LOGO_SRC}
               alt="Primo Invest"
               width={80}
               height={80}

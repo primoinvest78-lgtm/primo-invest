@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 
 import { ReflexGame } from "@/components/system/reflex-game";
+import { LOGO_SRC } from "@/lib/constants/brand";
 
 export function StatusPage({
   eyebrow,
@@ -24,7 +25,7 @@ export function StatusPage({
         <div className="flex flex-col items-center text-center">
           <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white ring-1 ring-white/10">
             <Image
-              src="/primo-invest-logo.png"
+              src={LOGO_SRC}
               alt="Primo Invest"
               width={56}
               height={56}

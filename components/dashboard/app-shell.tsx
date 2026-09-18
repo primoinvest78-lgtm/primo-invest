@@ -8,6 +8,7 @@ import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
+import { LOGO_SRC } from "@/lib/constants/brand";
 import { navigationGroups } from "@/lib/mock/dashboard";
 import { useTheme } from "@/lib/hooks/use-theme";
 
@@ -91,7 +92,7 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
         style={{ height: size, width: size }}
       >
         <Image
-          src="/primo-invest-logo.png"
+          src={LOGO_SRC}
           alt="Primo Invest"
           width={size}
           height={size}

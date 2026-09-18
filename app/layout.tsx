@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 import { CookieConsent } from "@/components/ui/cookie-consent";
+import { LOGO_SRC } from "@/lib/constants/brand";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,7 +21,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Primo Invest | Dashboard",
   description: "Dashboard institucional da PRIMO INVEST",
-  icons: { icon: "/primo-invest-logo.png" },
+  icons: { icon: LOGO_SRC },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
