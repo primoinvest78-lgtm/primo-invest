@@ -13,7 +13,9 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
   // Garante sessão + organização ativa antes de renderizar qualquer rota
   // autenticada (o middleware já redireciona sem sessão, isso é defesa em
   // profundidade e falha cedo se o usuário não tiver organization_member).
-  await requireActiveMembership();
+  const { fullName, email, role } = await requireActiveMembership();
 
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell user={{ fullName, email, role }}>{children}</AppShell>
+  );
 }

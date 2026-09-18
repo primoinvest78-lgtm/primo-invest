@@ -111,7 +111,19 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export type AppShellUser = {
+  fullName: string | null;
+  email: string | null;
+  role: string;
+};
+
+export function AppShell({
+  children,
+  user,
+}: {
+  children: ReactNode;
+  user: AppShellUser;
+}) {
   const { theme, mounted, toggleTheme } = useTheme();
   const [mobileMenu, setMobileMenu] = useState(false);
 
@@ -172,6 +184,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             mounted={mounted}
             onToggleTheme={toggleTheme}
             onOpenMenu={() => setMobileMenu(true)}
+            user={user}
           />
 
           <main className="min-w-0 flex-1 px-4 pb-10 pt-6 md:px-7 xl:px-9">

@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { AppShellUser } from "@/components/dashboard/app-shell";
+import { isAppRole, ROLE_LABEL } from "@/lib/admin/roles";
 import type { Theme } from "@/lib/hooks/use-theme";
 import { createClient } from "@/lib/supabase/client";
 
@@ -13,15 +15,23 @@ export function DashboardHeader({
   mounted,
   onToggleTheme,
   onOpenMenu,
+  user,
 }: {
   theme: Theme;
   mounted: boolean;
   onToggleTheme: () => void;
   onOpenMenu: () => void;
+  user: AppShellUser;
 }) {
   const isLight = theme === "light";
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Sempre o usuário de verdade — nunca um placeholder. Sem nome
+  // cadastrado, cai pro que tem: a parte antes do @ do e-mail.
+  const displayName = user.fullName?.trim() || user.email?.split("@")[0] || "Usuário";
+  const roleLabel = isAppRole(user.role) ? ROLE_LABEL[user.role] : user.role;
+  const initial = displayName.charAt(0).toUpperCase();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -113,16 +123,16 @@ export function DashboardHeader({
               className="flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-2.5 sm:px-3"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
-                A
+                {initial}
               </span>
 
               <span className="hidden text-left sm:block">
-                <span className="block text-[13px] font-semibold text-foreground">
-                  Anderson
+                <span className="block max-w-[140px] truncate text-[13px] font-semibold text-foreground">
+                  {displayName}
                 </span>
 
                 <span className="mt-0.5 block text-label font-bold uppercase text-muted-foreground">
-                  Diretor
+                  {roleLabel}
                 </span>
               </span>
 
