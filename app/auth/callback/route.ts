@@ -22,13 +22,20 @@ export async function GET(request: NextRequest) {
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+    // Log de verdade do motivo — sem isso, uma falha de troca de
+    // código (ex.: code_verifier ausente/expirado, code já usado)
+    // vira só um redirect genérico e ninguém descobre a causa real.
+    // Ver nos logs de Functions da Vercel (Runtime Logs / Observability).
+    console.error("[auth/callback] exchangeCodeForSession falhou:", error.message, error.status);
+  } else {
+    console.error("[auth/callback] chamado sem `code` na URL — nada pra trocar.");
   }
 
-  // Troca falhou (código expirado/já usado, etc.) — encerra qualquer
-  // sessão que ainda esteja nos cookies antes de mandar pro /login.
-  // Sem isso, se o navegador já tivesse uma sessão válida de antes
-  // (ex.: login Google recente), o middleware via "logado + rota
-  // pública" e mandava direto pro /dashboard, escondendo o erro real.
+  // Encerra qualquer sessão que ainda esteja nos cookies antes de
+  // mandar pro /login. Sem isso, se o navegador já tivesse uma sessão
+  // válida de antes (ex.: login Google recente), o middleware via
+  // "logado + rota pública" e mandava direto pro /dashboard,
+  // escondendo o erro real.
   await supabase.auth.signOut();
 
   const url = new URL("/login", origin);

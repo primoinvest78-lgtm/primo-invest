@@ -79,6 +79,7 @@ function LoginForm() {
     });
 
     if (oauthError) {
+      console.error("[login] signInWithOAuth falhou:", oauthError.message);
       setError("Não foi possível iniciar o login com Google.");
       setGoogleLoading(false);
     }
