@@ -4,9 +4,10 @@
  * imagem (login, recuperar/redefinir senha, sidebar, favicon, página
  * de erro).
  *
- * Nome novo combinado: public/primo-invest-logo-v2.png. Enquanto esse
- * arquivo não existir, aponta pro atual (primo-invest-logo.png) pra
- * não quebrar imagem em produção — trocar aqui assim que o arquivo
- * novo estiver em public/.
+ * public/primo-invest-logo-v2.png é um recorte quadrado (só o emblema
+ * "P" + "PRIMO INVEST", sem o cenário) da imagem completa que o
+ * usuário enviou — essa original fica preservada em
+ * public/primo-invest-banner.png, pra uso futuro em página promocional/
+ * marketing, onde a arte inteira (skyline, frase, ícones) faz sentido.
  */
-export const LOGO_SRC = "/primo-invest-logo.png";
+export const LOGO_SRC = "/primo-invest-logo-v2.png";
