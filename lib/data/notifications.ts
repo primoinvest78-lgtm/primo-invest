@@ -78,6 +78,13 @@ export function todayInBrasilia(now = new Date()): string {
  */
 export async function syncPersonalDigest(organizationId: string, userId: string): Promise<void> {
   const supabase = await createClient();
+
+  // Limpeza automática: avisos já lidos há mais de 30 dias não acumulam.
+  await supabase
+    .from("notifications")
+    .delete()
+    .eq("user_id", userId)
+    .lt("read_at", new Date(Date.now() - 30 * 86_400_000).toISOString());
   const today = todayInBrasilia();
   const startOfToday = `${today}T00:00:00-03:00`;
   const startOfTomorrow = new Date(Date.parse(startOfToday) + 86_400_000).toISOString();

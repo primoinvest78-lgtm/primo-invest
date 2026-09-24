@@ -111,12 +111,17 @@ export function NotificationBell({
               className="card-premium absolute right-0 top-[calc(100%+8px)] z-50 w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-xl shadow-card-lg"
             >
               <div className="flex items-center justify-between gap-2 border-b border-black/10 px-4 py-3">
-                <p className="text-sm font-bold text-foreground">Notificações</p>
-                {unread > 0 ? (
-                  <button type="button" onClick={readAll} className="inline-flex items-center gap-1 text-xs font-semibold text-accent hover:underline">
-                    <CheckCheck className="h-3.5 w-3.5" /> Marcar todas como lidas
-                  </button>
-                ) : null}
+                <p className="text-sm font-bold text-foreground">
+                  Notificações{unread > 0 ? <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground">{unread}</span> : null}
+                </p>
+                <button
+                  type="button"
+                  onClick={readAll}
+                  disabled={unread === 0}
+                  className="inline-flex items-center gap-1 rounded-lg border border-primary/40 px-2.5 py-1 text-xs font-semibold text-foreground transition-colors hover:bg-primary/15 disabled:cursor-default disabled:opacity-40"
+                >
+                  <CheckCheck className="h-3.5 w-3.5" /> Ler todas
+                </button>
               </div>
               <div className="max-h-[420px] overflow-y-auto">
                 {items.length === 0 ? (

@@ -3,10 +3,10 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { deleteReadNotifications, markAllNotificationsRead, markNotificationRead, markNotificationUnread } from "@/lib/actions/notifications";
+import { clearAllNotifications, deleteReadNotifications, markAllNotificationsRead, markNotificationRead, markNotificationUnread } from "@/lib/actions/notifications";
 import type { AppNotification } from "@/lib/data/notifications";
 import { formatRelativeTime } from "@/lib/utils/format";
 
@@ -19,6 +19,7 @@ const SEVERITY: Record<AppNotification["severity"], { label: string; cls: string
 export function NotificationCenter({ items, filter }: { items: AppNotification[]; filter: "todas" | "nao-lidas" }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const [confirmClear, setConfirmClear] = useState(false);
   const unread = items.filter((n) => !n.readAt).length;
   const hasRead = items.some((n) => n.readAt);
 
@@ -45,13 +46,30 @@ export function NotificationCenter({ items, filter }: { items: AppNotification[]
         </div>
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="outline" disabled={pending || unread === 0} onClick={() => act(markAllNotificationsRead)}>
-            Marcar todas como lidas
+            Ler todas
           </Button>
           <Button size="sm" variant="ghost" disabled={pending || !hasRead} onClick={() => act(deleteReadNotifications)}>
             Limpar as já lidas
           </Button>
+          <Button size="sm" variant="destructive" disabled={pending || items.length === 0} onClick={() => setConfirmClear(true)}>
+            Zerar notificações
+          </Button>
         </div>
       </div>
+
+      {confirmClear ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-destructive/40 bg-destructive/[0.06] px-4 py-3 text-sm">
+          <span>Apagar todas as suas notificações (lidas e não lidas)? Os registros dos módulos não são afetados.</span>
+          <span className="flex gap-2">
+            <Button size="sm" variant="destructive" disabled={pending} onClick={() => act(async () => { await clearAllNotifications(); setConfirmClear(false); })}>
+              Sim, zerar
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setConfirmClear(false)}>
+              Cancelar
+            </Button>
+          </span>
+        </div>
+      ) : null}
 
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-black/15 px-4 py-10 text-center text-sm text-card-beige-muted-foreground">

@@ -45,3 +45,19 @@ export async function fetchNotificationSummary() {
   const { getNotificationSummary } = await import("@/lib/data/notifications");
   return getNotificationSummary(userId);
 }
+
+/** Zerar: apaga TODAS as notificações do próprio usuário (lidas e não lidas). */
+export async function clearAllNotifications() {
+  const { userId } = await requireActiveMembership();
+  const supabase = await createClient();
+  // Resumos do dia ficam como lidos (senão seriam recriados e o contador voltaria);
+  // todo o resto é apagado.
+  const now = new Date().toISOString();
+  const { error: readError } = await supabase.from("notifications").update({ read_at: now }).eq("user_id", userId).is("read_at", null);
+  if (readError) throw readError;
+  const withoutKey = await supabase.from("notifications").delete().eq("user_id", userId).is("dedupe_key", null);
+  if (withoutKey.error) throw withoutKey.error;
+  const withKey = await supabase.from("notifications").delete().eq("user_id", userId).not("dedupe_key", "like", "resumo:%");
+  if (withKey.error) throw withKey.error;
+  revalidatePath("/notificacoes");
+}
