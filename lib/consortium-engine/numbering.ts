@@ -74,3 +74,41 @@ export function numberingBlocks(numbering: GroupNumbering, blockSize: number) {
   }
   return blocks;
 }
+
+export type NumberingIntegrity = {
+  duplicates: number[];
+  outOfRange: number[];
+  /** Números da faixa sem cota cadastrada (só relevante quando o grupo é alocado aqui). */
+  missing: number[];
+  ok: boolean;
+};
+
+/**
+ * Integridade da numeração: número duplicado, fora da faixa, atribuído
+ * duas vezes ou faltando. `expectFull` = o grupo é alocado por nós e
+ * TODA a faixa deveria ter cota.
+ */
+export function checkNumberingIntegrity(
+  numbering: GroupNumbering,
+  quotaNumbers: number[],
+  expectFull: boolean,
+): NumberingIntegrity {
+  const seen = new Set<number>();
+  const duplicates = new Set<number>();
+  const outOfRange: number[] = [];
+  for (const n of quotaNumbers) {
+    if (!isInRange(numbering, n)) outOfRange.push(n);
+    if (seen.has(n)) duplicates.add(n);
+    seen.add(n);
+  }
+  const missing: number[] = [];
+  if (expectFull) {
+    for (let n = numbering.numberStart; n <= numbering.numberEnd; n += 1) if (!seen.has(n)) missing.push(n);
+  }
+  return {
+    duplicates: [...duplicates].sort((a, b) => a - b),
+    outOfRange: outOfRange.sort((a, b) => a - b),
+    missing,
+    ok: duplicates.size === 0 && outOfRange.length === 0 && missing.length === 0,
+  };
+}

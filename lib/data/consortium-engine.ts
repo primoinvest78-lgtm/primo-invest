@@ -25,7 +25,15 @@ export type EngineGroup = {
   quotaCount: number;
   numbering: GroupNumbering;
   creditAmount: number | null;
-  status: "FORMING" | "ACTIVE" | "CLOSED" | "SUSPENDED";
+  status: "FORMING" | "ACTIVE" | "SUSPENDED" | "CLOSED" | "CANCELLED" | "ARCHIVED";
+  constitutedAt: string | null;
+  participantsCount: number | null;
+  termMonths: number | null;
+  installmentAmount: number | null;
+  adjustmentIndex: string | null;
+  adminFeePercentage: number | null;
+  reserveFundPercentage: number | null;
+  insuranceRequired: boolean;
   regulationReference: string | null;
   notes: string | null;
   createdAt: string;
@@ -45,10 +53,18 @@ type RawGroup = {
   regulation_reference: string | null;
   notes: string | null;
   created_at: string;
+  constituted_at: string | null;
+  participants_count: number | null;
+  term_months: number | null;
+  installment_amount: number | null;
+  adjustment_index: string | null;
+  admin_fee_percentage: number | null;
+  reserve_fund_percentage: number | null;
+  insurance_required: boolean;
 };
 
 const GROUP_SELECT =
-  "id, administrator_name, group_code, product_type, quota_count, number_start, number_end, display_digits, credit_amount, status, regulation_reference, notes, created_at";
+  "id, administrator_name, group_code, product_type, quota_count, number_start, number_end, display_digits, credit_amount, status, regulation_reference, notes, created_at, constituted_at, participants_count, term_months, installment_amount, adjustment_index, admin_fee_percentage, reserve_fund_percentage, insurance_required";
 
 export function mapGroup(r: RawGroup): EngineGroup {
   return {
@@ -63,6 +79,14 @@ export function mapGroup(r: RawGroup): EngineGroup {
     regulationReference: r.regulation_reference,
     notes: r.notes,
     createdAt: r.created_at,
+    constitutedAt: r.constituted_at,
+    participantsCount: r.participants_count,
+    termMonths: r.term_months,
+    installmentAmount: r.installment_amount === null ? null : Number(r.installment_amount),
+    adjustmentIndex: r.adjustment_index,
+    adminFeePercentage: r.admin_fee_percentage === null ? null : Number(r.admin_fee_percentage),
+    reserveFundPercentage: r.reserve_fund_percentage === null ? null : Number(r.reserve_fund_percentage),
+    insuranceRequired: r.insurance_required,
   };
 }
 
@@ -444,9 +468,9 @@ export type ContemplationRecord = {
   candidateRaw: string | null;
   bidId: string | null;
   creditAmount: number | null;
-  status: "PROVISIONAL" | "HOMOLOGATED" | "VOIDED";
+  status: "PENDING" | "SELECTED" | "HOMOLOGATED" | "CANCELLED" | "RETAINED" | "RETIRED";
   homologatedAt: string | null;
-  voidedReason: string | null;
+  statusReason: string | null;
 };
 
 export type RetificationRecord = {
@@ -538,7 +562,7 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
       .order("created_at"),
     supabase
       .from("consortium_contemplations")
-      .select("id, run_id, quota_id, quota_number, method, sequence, candidate_raw, bid_id, credit_amount, status, homologated_at, voided_reason")
+      .select("id, run_id, quota_id, quota_number, method, sequence, candidate_raw, bid_id, credit_amount, status, homologated_at, status_reason")
       .eq("assembly_id", assemblyId)
       .order("created_at"),
     supabase
@@ -569,7 +593,7 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
     input_hash: string; rule_hash: string; eligibility_hash: string; calculation_hash: string; result_hash: string;
     trace: TraceStep[]; result: DrawRunRecord["result"]; created_by: string | null; created_at: string;
   };
-  type RawCont = { id: string; run_id: string; quota_id: string | null; quota_number: number; method: string; sequence: number; candidate_raw: string | null; bid_id: string | null; credit_amount: number | null; status: ContemplationRecord["status"]; homologated_at: string | null; voided_reason: string | null };
+  type RawCont = { id: string; run_id: string; quota_id: string | null; quota_number: number; method: string; sequence: number; candidate_raw: string | null; bid_id: string | null; credit_amount: number | null; status: ContemplationRecord["status"]; homologated_at: string | null; status_reason: string | null };
   type RawRet = { id: string; original_run_id: string; new_run_id: string | null; original_result_hash: string; new_result_hash: string | null; reason: string; evidence_notes: string | null; status: RetificationRecord["status"]; requested_by: string | null; requested_at: string; approved_by: string | null; approved_at: string | null; decision_notes: string | null };
   type RawBid = { id: string; consortium_contract_id: string; bid_type: string; bid_amount: number | null; bid_percentage: number | null; embedded_amount: number | null; bid_date: string; result: string | null; created_at: string };
 
@@ -594,7 +618,7 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
     contemplations: ((contRes.data ?? []) as RawCont[]).map((c) => ({
       id: c.id, runId: c.run_id, quotaId: c.quota_id, quotaNumber: c.quota_number, method: c.method, sequence: c.sequence,
       candidateRaw: c.candidate_raw, bidId: c.bid_id, creditAmount: numOrNull(c.credit_amount), status: c.status,
-      homologatedAt: c.homologated_at, voidedReason: c.voided_reason,
+      homologatedAt: c.homologated_at, statusReason: c.status_reason,
     })),
     retifications: ((retRes.data ?? []) as RawRet[]).map((r) => ({
       id: r.id, originalRunId: r.original_run_id, newRunId: r.new_run_id, originalResultHash: r.original_result_hash,

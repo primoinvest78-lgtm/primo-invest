@@ -128,6 +128,14 @@ export async function createEngineGroup(input: {
   creditAmount: number | null;
   regulationReference: string;
   notes: string;
+  constitutedAt: string | null;
+  participantsCount: number | null;
+  termMonths: number | null;
+  installmentAmount: number | null;
+  adjustmentIndex: string;
+  adminFeePercentage: number | null;
+  reserveFundPercentage: number | null;
+  insuranceRequired: boolean;
 }): Promise<ActionResult<{ id: string }>> {
   return run(async () => {
     const { organizationId, userId } = await guard("operate");
@@ -149,6 +157,14 @@ export async function createEngineGroup(input: {
         credit_amount: input.creditAmount,
         regulation_reference: input.regulationReference.trim() || null,
         notes: input.notes.trim() || null,
+        constituted_at: input.constitutedAt,
+        participants_count: input.participantsCount,
+        term_months: input.termMonths,
+        installment_amount: input.installmentAmount,
+        adjustment_index: input.adjustmentIndex.trim() || null,
+        admin_fee_percentage: input.adminFeePercentage,
+        reserve_fund_percentage: input.reserveFundPercentage,
+        insurance_required: input.insuranceRequired,
         created_by: userId,
       })
       .select("id")
@@ -1134,6 +1150,18 @@ function contemplationsPayload(out: RunOutput) {
   }));
 }
 
+function numbersPayload(out: RunOutput) {
+  return out.attempts.map((n) => ({
+    attempt: n.attempt,
+    number_text: n.numberText,
+    number_type: n.numberType,
+    candidate_order: n.candidateOrder ?? "",
+    quota_number: n.quotaNumber ?? "",
+    outcome: n.outcome,
+    reason: n.reason ?? "",
+  }));
+}
+
 /** DRAW — executa o motor sobre os snapshots e grava atomicamente. */
 export async function executeAssemblyDraw(assemblyId: string): Promise<ActionResult<{ contemplated: number[] }>> {
   return run(async () => {
@@ -1164,6 +1192,7 @@ export async function executeAssemblyDraw(assemblyId: string): Promise<ActionRes
       p_assembly_id: assemblyId,
       p_run: runPayload(out, { ruleId: input.rule.id, lotteryResultId: ws.assembly.lotteryResultId, snapshotIds }),
       p_contemplations: contemplationsPayload(out),
+      p_numbers: numbersPayload(out),
       p_expected_status: "DRAW_READY",
       p_status_path: ["DRAWING", "DRAW_COMPLETED"],
     });
@@ -1500,6 +1529,7 @@ export async function applyRetification(retificationId: string, refreshEligibili
       p_assembly_id: ws.assembly.id,
       p_run: runPayload(drawOut, { ruleId: input.rule.id, lotteryResultId: ws.assembly.lotteryResultId, snapshotIds }),
       p_contemplations: contemplationsPayload(drawOut),
+      p_numbers: numbersPayload(drawOut),
       p_expected_status: "RETIFIED",
       p_status_path: null,
       p_retification_id: retificationId,

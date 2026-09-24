@@ -11,6 +11,7 @@ import { TraceBuilder } from "./trace.ts";
 import {
   ENGINE_VERSION,
   type Contemplation,
+  type DrawAttempt,
   type DrawRule,
   type EligibilitySnapshot,
   type GroupNumbering,
@@ -71,6 +72,7 @@ function finish(
   contemplations: Contemplation[],
   resources: ResourceAssessment | null,
   remaining: number,
+  attempts: DrawAttempt[] = [],
 ): RunOutput {
   const traceArr = trace.toArray();
   return {
@@ -83,6 +85,7 @@ function finish(
     resources,
     remainingResources: remaining,
     trace: traceArr,
+    attempts,
     hashes: {
       inputHash: drawInputHash(input),
       ruleHash: computeRuleHash(input.rule),
@@ -193,6 +196,7 @@ export function runDraw(input: DrawInput): RunOutput {
   );
 
   const contemplations: Contemplation[] = [];
+  const attempts: DrawAttempt[] = [];
   const selected = new Set<number>();
   let remaining = resources.available;
 
@@ -210,7 +214,7 @@ export function runDraw(input: DrawInput): RunOutput {
       continue;
     }
     t.add("POOL_START", `Sorteio de cotas ${pool === "ACTIVE" ? "ativas" : "canceladas"}: ${slots} contemplação(ões).`);
-    const picks = drawPool({ candidates, slots, pool, lookup, selected, input, t });
+    const picks = drawPool({ candidates, slots, pool, lookup, selected, input, t, attempts });
     for (const pick of picks) {
       selected.add(pick.quotaNumber);
       remaining -= resources.creditAmount;
@@ -238,7 +242,7 @@ export function runDraw(input: DrawInput): RunOutput {
     quotas: contemplations.map((c) => c.quotaNumber),
     remainingResources: remaining,
   });
-  return finish(input, t, "COMPLETED", [], contemplations, resources, remaining);
+  return finish(input, t, "COMPLETED", [], contemplations, resources, remaining, attempts);
 }
 
 type Pick = { quotaNumber: number; candidateRaw: string | null; via: Via };
@@ -251,16 +255,24 @@ function drawPool(args: {
   selected: Set<number>;
   input: DrawInput;
   t: TraceBuilder;
+  attempts: DrawAttempt[];
 }): Pick[] {
-  const { candidates, slots, pool, lookup, selected, input, t } = args;
+  const { candidates, slots, pool, lookup, selected, input, t, attempts } = args;
   const { numbering } = input.group;
   const cfg = input.rule.config;
   const label = (n: number) => formatQuotaNumber(n, numbering.displayDigits);
   const picks: Pick[] = [];
   const taken = new Set(selected);
 
-  const tryQuota = (quota: number, context: string): boolean => {
+  const record = (a: Omit<DrawAttempt, "attempt">) => attempts.push({ attempt: attempts.length + 1, ...a });
+
+  const tryQuota = (
+    quota: number,
+    context: string,
+    meta: { numberText: string; numberType: DrawAttempt["numberType"]; candidateOrder: number | null },
+  ): boolean => {
     if (taken.has(quota)) {
+      record({ ...meta, quotaNumber: quota, outcome: "INELIGIBLE", reason: "ALREADY_SELECTED" });
       t.add("QUOTA_INELIGIBLE", `${context}: cota ${label(quota)} — ${INELIGIBILITY_LABEL.ALREADY_SELECTED}.`, {
         quotaNumber: quota,
         reason: "ALREADY_SELECTED",
@@ -269,12 +281,14 @@ function drawPool(args: {
     }
     const r = lookup.check(quota, pool);
     if (!r.eligible) {
+      record({ ...meta, quotaNumber: quota, outcome: "INELIGIBLE", reason: r.reason });
       t.add("QUOTA_INELIGIBLE", `${context}: cota ${label(quota)} INAPTA — ${INELIGIBILITY_LABEL[r.reason ?? "UNKNOWN"]}.`, {
         quotaNumber: quota,
         reason: r.reason,
       });
       return false;
     }
+    record({ ...meta, quotaNumber: quota, outcome: "SELECTED", reason: r.presumed ? "PRESUMED" : null });
     t.add("QUOTA_ELIGIBLE", `${context}: cota ${label(quota)} APTA${r.presumed ? " (presumida)" : ""}.`, {
       quotaNumber: quota,
       presumed: r.presumed,
@@ -296,10 +310,19 @@ function drawPool(args: {
       { order: c.order, raw: c.raw },
     );
     t.add(`EQUIVALENCE_${eq.kind}`, eq.explanation, { raw: c.raw, quotaNumber: eq.quotaNumber });
-    if (eq.quotaNumber === null) continue;
+    if (eq.quotaNumber === null) {
+      record({ numberText: c.raw, numberType: "CANDIDATE", candidateOrder: c.order, quotaNumber: null, outcome: "ELIMINATED", reason: "OUT_OF_RANGE" });
+      continue;
+    }
     if (fallbackBase === null) fallbackBase = eq.quotaNumber;
 
-    if (tryQuota(eq.quotaNumber, `Candidato ${c.order}`)) {
+    if (
+      tryQuota(eq.quotaNumber, `Candidato ${c.order}`, {
+        numberText: c.raw,
+        numberType: eq.kind === "EQUIVALENT_NUMBER" ? "EQUIVALENT_NUMBER" : "CANDIDATE",
+        candidateOrder: c.order,
+      })
+    ) {
       picks.push({ quotaNumber: eq.quotaNumber, candidateRaw: c.raw, via: eq.kind === "EQUIVALENT_NUMBER" ? "EQUIVALENCE" : "DIRECT" });
       taken.add(eq.quotaNumber);
       continue;
@@ -314,7 +337,13 @@ function drawPool(args: {
         cfg.approximation.maxSteps,
       );
       for (const n of neighbors) {
-        if (tryQuota(n, `Aproximação a partir de ${label(eq.quotaNumber)}`)) {
+        if (
+          tryQuota(n, `Aproximação a partir de ${label(eq.quotaNumber)}`, {
+            numberText: label(n),
+            numberType: "APPROXIMATION",
+            candidateOrder: c.order,
+          })
+        ) {
           picks.push({ quotaNumber: n, candidateRaw: c.raw, via: "APPROXIMATION" });
           taken.add(n);
           break;
@@ -336,7 +365,7 @@ function drawPool(args: {
     );
     for (const n of fallbackSequence(base, cfg.fallback, numbering)) {
       if (picks.length >= slots) break;
-      if (tryQuota(n, "Fallback")) {
+      if (tryQuota(n, "Fallback", { numberText: label(n), numberType: "FALLBACK", candidateOrder: null })) {
         picks.push({ quotaNumber: n, candidateRaw: null, via: "FALLBACK" });
         taken.add(n);
       }

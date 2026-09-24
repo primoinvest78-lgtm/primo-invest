@@ -13,6 +13,8 @@
  *   AUDIT    hash.ts/trace.ts prova do cálculo + hashes
  *   STATE    state-machine.ts ciclo da assembleia
  *   RETIFY   retification.ts  retificação e reprodução
+ *   CREDIT   credit.ts        direito ao crédito, líquido, documentação, uso
+ *   SETTLE   settlement.ts    posição financeira, amortização, quitação
  *
  * Tudo puro — ver comentário em types.ts.
  */
@@ -31,3 +33,5 @@ export * from "./draw.ts";
 export * from "./bids.ts";
 export * from "./state-machine.ts";
 export * from "./retification.ts";
+export * from "./credit.ts";
+export * from "./settlement.ts";

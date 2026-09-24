@@ -222,7 +222,19 @@ export type TraceStep = {
   data?: Record<string, unknown>;
 };
 
-export type ContemplationMethod = "DRAW" | "DRAW_CANCELLED" | "BID_FREE" | "BID_FIXED" | "BID_EMBEDDED";
+export type ContemplationMethod = "DRAW" | "DRAW_CANCELLED" | "FREE_BID" | "FIXED_BID" | "EMBEDDED_BID";
+
+/** Registro de cada número testado (NUMBER, QUOTA, TYPE) — projeção do trace. */
+export type DrawAttempt = {
+  attempt: number;
+  numberText: string;
+  numberType: "CANDIDATE" | "EQUIVALENT_NUMBER" | "APPROXIMATION" | "FALLBACK";
+  candidateOrder: number | null;
+  /** Cota PRIMÁRIA testada — nunca o número equivalente. */
+  quotaNumber: number | null;
+  outcome: "ELIGIBLE" | "INELIGIBLE" | "ELIMINATED" | "SELECTED";
+  reason: string | null;
+};
 
 export type Contemplation = {
   sequence: number;
@@ -256,5 +268,7 @@ export type RunOutput = {
   resources: ResourceAssessment | null;
   remainingResources: number;
   trace: TraceStep[];
+  /** Tentativas do sorteio (vazio na fase de lances). */
+  attempts: DrawAttempt[];
   hashes: RunHashes;
 };

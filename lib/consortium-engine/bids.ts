@@ -37,9 +37,9 @@ export type BidsInput = {
 };
 
 const BID_METHOD: Record<BidType, Contemplation["method"]> = {
-  FREE_BID: "BID_FREE",
-  FIXED_BID: "BID_FIXED",
-  EMBEDDED_BID: "BID_EMBEDDED",
+  FREE_BID: "FREE_BID",
+  FIXED_BID: "FIXED_BID",
+  EMBEDDED_BID: "EMBEDDED_BID",
 };
 
 const BID_LABEL: Record<BidType, string> = {
@@ -87,6 +87,7 @@ export function runBids(input: BidsInput): RunOutput {
       resources: null,
       remainingResources: remaining,
       trace,
+      attempts: [],
       hashes: {
         inputHash: bidsInputHash(input),
         ruleHash: computeRuleHash(input.rule),
