@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test \"lib/consortium-engine/__tests__/*.test.ts\""
+    "test": "node --test \"lib/consortium-engine/__tests__/*.test.ts\" \"lib/consortium-intelligence/__tests__/*.test.ts\""
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
