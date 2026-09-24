@@ -208,3 +208,19 @@ describe("Document Intelligence (extração → rascunho)", () => {
     assert.equal(x.warnings.some((w) => w.includes("fala em")), false);
   });
 });
+
+describe("Fonte oficial — normalização da coleta", () => {
+  it("remove só zero à esquerda e registra; nunca descarta dígito significativo", async () => {
+    const { normalizeFederalPayload } = await import("../lottery-source.ts");
+    const ok = normalizeFederalPayload(
+      { tipoJogo: "LOTERIA_FEDERAL", numero: 6102, dataApuracao: "20/09/2026", listaDezenas: ["083520", "071643", "038941", "044502", "080911"] },
+      5,
+    );
+    assert.deepEqual(ok.result, { source: "FEDERAL_LOTTERY", contestNumber: "6102", drawDate: "2026-09-20", prizes: ["83520", "71643", "38941", "44502", "80911"] });
+    assert.equal(ok.notes.length, 5);
+    const bad = normalizeFederalPayload({ numero: 1, dataApuracao: "01/01/2026", listaDezenas: ["123456"] }, 5);
+    assert.equal(bad.result, null);
+    const wrongGame = normalizeFederalPayload({ tipoJogo: "MEGA_SENA", numero: 1, dataApuracao: "01/01/2026", listaDezenas: ["01"] }, 5);
+    assert.equal(wrongGame.result, null);
+  });
+});

@@ -70,7 +70,7 @@ export async function fetchFederalResult(contest?: string, timeoutMs = 12_000): 
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
-      headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (PRIMO INVEST — conferência de resultado oficial)" },
+      headers: { Accept: "application/json", "User-Agent": "Mozilla/5.0 (PRIMO INVEST - conferencia de resultado oficial)" },
       signal: controller.signal,
       cache: "no-store",
     });
