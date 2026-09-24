@@ -1,10 +1,11 @@
 import { Bell } from "lucide-react";
+import Link from "next/link";
 
 /**
- * A tabela `notifications` existe no banco (preparada pra guardar
- * notificações por usuário), mas está vazia hoje — nada na plataforma
- * ainda grava ou envia notificação nenhuma. Mostrar isso honestamente
- * em vez de simular canais/preferências que não têm efeito nenhum.
+ * Notificações internas ativas: geradas por gatilhos no banco (tarefas,
+ * leads e oportunidades atribuídos; documentos; pagamentos em revisão;
+ * etapas de consórcio que aguardam governança) e pelo resumo pessoal
+ * do dia. Canais externos (e-mail, push) ainda não existem.
  */
 export function NotificationsOverview({ totalNotifications }: { totalNotifications: number }) {
   return (
@@ -18,12 +19,21 @@ export function NotificationsOverview({ totalNotifications }: { totalNotificatio
       </div>
 
       <p className="mt-3 text-body-sm text-card-beige-muted-foreground">
-        A estrutura para notificações por usuário já existe no banco, mas nenhum módulo envia
-        notificações ainda — {totalNotifications === 0 ? "por isso o total registrado é zero." : `${totalNotifications} registradas até agora.`}
+        Notificações internas ativas — {totalNotifications} para você até agora. Cada pessoa recebe no sino
+        do cabeçalho os avisos do que depende dela, em tempo real.
       </p>
+      <ul className="mt-2 list-disc space-y-0.5 pl-5 text-caption text-card-beige-muted-foreground">
+        <li>Tarefa, lead ou oportunidade atribuído a você.</li>
+        <li>Documento solicitado recebido, aprovado ou reprovado; documento sob sua responsabilidade.</li>
+        <li>Pagamento aguardando revisão ou com exceção (financeiro e operações).</li>
+        <li>Consórcios: regra aguardando aprovação, resultado oficial a verificar, assembleia a homologar, retificação, crédito em análise e anomalias críticas (governança).</li>
+        <li>Resumo do dia: suas tarefas atrasadas e as que vencem hoje.</li>
+      </ul>
       <p className="mt-2 text-caption text-card-beige-muted-foreground">
-        Preferências de canal (e-mail, push, dentro do app) ficam disponíveis aqui assim que houver um
-        módulo real gerando notificações.
+        Envio por e-mail ainda não está disponível.{" "}
+        <Link href="/notificacoes" className="font-semibold text-accent hover:underline">
+          Abrir minhas notificações
+        </Link>
       </p>
     </section>
   );

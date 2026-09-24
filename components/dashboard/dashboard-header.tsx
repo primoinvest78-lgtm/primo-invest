@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, ChevronDown, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import type { AppShellUser } from "@/components/dashboard/app-shell";
 import { isAppRole, ROLE_LABEL } from "@/lib/admin/roles";
 import type { Theme } from "@/lib/hooks/use-theme";
 import { createClient } from "@/lib/supabase/client";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import type { AppNotification } from "@/lib/data/notifications";
 
 export function DashboardHeader({
   theme,
@@ -16,12 +18,14 @@ export function DashboardHeader({
   onToggleTheme,
   onOpenMenu,
   user,
+  notifications,
 }: {
   theme: Theme;
   mounted: boolean;
   onToggleTheme: () => void;
   onOpenMenu: () => void;
   user: AppShellUser;
+  notifications: { items: AppNotification[]; unread: number };
 }) {
   const isLight = theme === "light";
   const router = useRouter();
@@ -102,17 +106,7 @@ export function DashboardHeader({
             <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </div>
 
-          <button
-            type="button"
-            aria-label="Notificações"
-            className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground"
-          >
-            <Bell className="h-[18px] w-[18px]" />
-
-            <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[8px] font-bold text-primary-foreground">
-              3
-            </span>
-          </button>
+          <NotificationBell userId={user.userId} initial={notifications} />
 
           <div className="relative">
             <button

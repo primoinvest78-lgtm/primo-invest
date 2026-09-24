@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/dashboard/app-shell";
+import { getNotificationSummary, syncPersonalDigest, type AppNotification } from "@/lib/data/notifications";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
 // Rotas autenticadas dependem de sessão/cookies por requisição e nunca devem
@@ -13,9 +14,19 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
   // Garante sessão + organização ativa antes de renderizar qualquer rota
   // autenticada (o middleware já redireciona sem sessão, isso é defesa em
   // profundidade e falha cedo se o usuário não tiver organization_member).
-  const { fullName, email, role } = await requireActiveMembership();
+  const { fullName, email, role, userId, organizationId } = await requireActiveMembership();
+
+  // Notificações internas: resumo pessoal do dia + contagem real pro sino.
+  // Falha aqui nunca derruba a navegação — o sino só aparece vazio.
+  let notifications: { items: AppNotification[]; unread: number } = { items: [], unread: 0 };
+  try {
+    await syncPersonalDigest(organizationId, userId);
+    notifications = await getNotificationSummary(userId);
+  } catch {
+    notifications = { items: [], unread: 0 };
+  }
 
   return (
-    <AppShell user={{ fullName, email, role }}>{children}</AppShell>
+    <AppShell user={{ fullName, email, role, userId }} notifications={notifications}>{children}</AppShell>
   );
 }

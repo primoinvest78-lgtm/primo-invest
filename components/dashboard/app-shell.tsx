@@ -12,6 +12,8 @@ import { LOGO_SRC } from "@/lib/constants/brand";
 import { navigationGroups } from "@/lib/mock/dashboard";
 import { useTheme } from "@/lib/hooks/use-theme";
 
+import type { AppNotification } from "@/lib/data/notifications";
+
 import { DashboardHeader } from "./dashboard-header";
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -116,14 +118,17 @@ export type AppShellUser = {
   fullName: string | null;
   email: string | null;
   role: string;
+  userId: string;
 };
 
 export function AppShell({
   children,
   user,
+  notifications,
 }: {
   children: ReactNode;
   user: AppShellUser;
+  notifications: { items: AppNotification[]; unread: number };
 }) {
   const { theme, mounted, toggleTheme } = useTheme();
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -186,6 +191,7 @@ export function AppShell({
             onToggleTheme={toggleTheme}
             onOpenMenu={() => setMobileMenu(true)}
             user={user}
+            notifications={notifications}
           />
 
           <main className="min-w-0 flex-1 px-4 pb-10 pt-6 md:px-7 xl:px-9">
