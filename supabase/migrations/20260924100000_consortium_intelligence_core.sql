@@ -63,6 +63,8 @@ create table public.consortium_groups (
   quota_count integer not null check (quota_count > 0),
   number_start integer not null default 1 check (number_start >= 0),
   number_end integer not null,
+  -- Largura MÍNIMA de exibição (zeros à esquerda): grupo 001→1000 usa 3,
+  -- e a cota 1000 aparece como "1000" sem truncar.
   display_digits integer not null check (display_digits between 1 and 8),
   credit_amount numeric check (credit_amount is null or credit_amount >= 0),
   status text not null default 'ACTIVE' check (status = ANY (ARRAY['FORMING','ACTIVE','CLOSED','SUSPENDED'])),
@@ -74,8 +76,7 @@ create table public.consortium_groups (
   updated_at timestamptz not null default now(),
   unique (organization_id, administrator_name, group_code),
   check (number_end >= number_start),
-  check (quota_count = number_end - number_start + 1),
-  check (length(number_end::text) <= display_digits)
+  check (quota_count = number_end - number_start + 1)
 );
 
 create index idx_consortium_groups_org on public.consortium_groups (organization_id, status);
