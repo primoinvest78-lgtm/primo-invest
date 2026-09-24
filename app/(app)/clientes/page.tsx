@@ -1,6 +1,7 @@
 import { BackButton } from "@/components/ui/back-button";
 import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { ClientsTable } from "@/components/clients/clients-table";
+import { NewClientWizard } from "@/components/clients/new-client/new-client-wizard";
 import { listClients } from "@/lib/data/clients";
 import { requireActiveMembership } from "@/lib/supabase/session";
 
@@ -25,6 +26,7 @@ export default async function ClientesPage() {
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
           <ReportShortcutButton type="executivo" label="Relatório executivo" />
+          <NewClientWizard organizationId={organizationId} />
         </div>
       </section>
 
