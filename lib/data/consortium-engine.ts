@@ -685,3 +685,65 @@ export function latestSnapshot(snapshots: AssemblySnapshot[], kind: AssemblySnap
 }
 
 export type { EligibilitySnapshot };
+
+export type DrawNumberRecord = {
+  runId: string;
+  attempt: number;
+  numberText: string;
+  numberType: string;
+  candidateOrder: number | null;
+  quotaNumber: number | null;
+  outcome: string;
+  reason: string | null;
+  ruleVersion: number;
+};
+
+export async function listDrawNumbers(organizationId: string, runIds: string[]): Promise<DrawNumberRecord[]> {
+  if (runIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("consortium_draw_numbers")
+    .select("run_id, attempt, number_text, number_type, candidate_order, quota_number, outcome, reason, rule_version")
+    .eq("organization_id", organizationId)
+    .in("run_id", runIds)
+    .order("attempt");
+  if (error) throw error;
+  type Raw = { run_id: string; attempt: number; number_text: string; number_type: string; candidate_order: number | null; quota_number: number | null; outcome: string; reason: string | null; rule_version: number };
+  return ((data ?? []) as Raw[]).map((r) => ({
+    runId: r.run_id,
+    attempt: r.attempt,
+    numberText: r.number_text,
+    numberType: r.number_type,
+    candidateOrder: r.candidate_order,
+    quotaNumber: r.quota_number,
+    outcome: r.outcome,
+    reason: r.reason,
+    ruleVersion: r.rule_version,
+  }));
+}
+
+/** Lances ainda sem assembleia, de contratos com cota vinculada a este grupo. */
+export async function listAttachableBids(quotaByContract: Record<string, number>) {
+  const contractIds = Object.keys(quotaByContract);
+  if (contractIds.length === 0) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("consortium_bids")
+    .select("id, consortium_contract_id, bid_type, bid_amount, bid_percentage, embedded_amount, bid_date, result")
+    .in("consortium_contract_id", contractIds)
+    .is("assembly_id", null)
+    .in("result", ["pending", "analyzing"])
+    .order("bid_date", { ascending: false });
+  if (error) throw error;
+  type Raw = { id: string; consortium_contract_id: string; bid_type: string; bid_amount: number | null; bid_percentage: number | null; embedded_amount: number | null; bid_date: string; result: string };
+  return ((data ?? []) as Raw[]).map((b) => ({
+    id: b.id,
+    quotaNumber: quotaByContract[b.consortium_contract_id],
+    bidType: b.bid_type,
+    bidAmount: b.bid_amount === null ? null : Number(b.bid_amount),
+    bidPercentage: b.bid_percentage === null ? null : Number(b.bid_percentage),
+    embeddedAmount: b.embedded_amount === null ? null : Number(b.embedded_amount),
+    bidDate: b.bid_date,
+    result: b.result,
+  }));
+}

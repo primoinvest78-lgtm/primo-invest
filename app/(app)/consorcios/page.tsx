@@ -45,6 +45,12 @@ export default async function ConsorciosPage() {
             Parcelas
           </Link>
           <Link
+            href="/consorcios/motor"
+            className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
+          >
+            Motor de apuração
+          </Link>
+          <Link
             href="/consorcios/lances"
             className="rounded-lg border border-white/20 bg-white/10 px-3.5 py-2 text-xs font-semibold text-secondary-foreground transition-colors hover:border-primary hover:bg-white/15"
           >

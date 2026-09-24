@@ -392,6 +392,44 @@ export async function linkContractQuotas(groupId: string): Promise<ActionResult<
   });
 }
 
+/**
+ * Number Allocation — cria a numeração COMPLETA do grupo (faixa inteira)
+ * como cotas "não comercializadas". Só faz sentido quando a alocação é
+ * feita aqui; nunca sobrescreve cota existente. Equivalentes nunca
+ * entram: só a faixa primária do grupo.
+ */
+export async function generateQuotaNumbering(groupId: string): Promise<ActionResult<{ created: number }>> {
+  return run(async () => {
+    const { organizationId } = await guard("operate");
+    const group = await getEngineGroup(organizationId, groupId);
+    if (!group) return fail("Grupo não encontrado.");
+    if (group.quotaCount > 20_000) return fail("Grupo grande demais para gerar a numeração de uma vez.");
+    const supabase = await createClient();
+    const { data: existing, error } = await supabase.from("consortium_quotas").select("quota_number").eq("group_id", groupId);
+    if (error) throw error;
+    const have = new Set((existing ?? []).map((r) => r.quota_number as number));
+    const rows: Record<string, unknown>[] = [];
+    for (let n = group.numbering.numberStart; n <= group.numbering.numberEnd; n += 1) {
+      if (!have.has(n)) {
+        rows.push({ organization_id: organizationId, group_id: groupId, quota_number: n, status: "AVAILABLE", eligibility_source: "MANUAL" });
+      }
+    }
+    for (let i = 0; i < rows.length; i += 1000) {
+      const { error: insError } = await supabase.from("consortium_quotas").insert(rows.slice(i, i + 1000));
+      if (insError) throw insError;
+    }
+    await logEvent(supabase, organizationId, {
+      groupId,
+      entityType: "group",
+      entityId: groupId,
+      eventType: "QUOTA_NUMBERING_GENERATED",
+      payload: { created: rows.length, numberStart: group.numbering.numberStart, numberEnd: group.numbering.numberEnd },
+    });
+    revalidateEngine([`/consorcios/motor/grupos/${groupId}`]);
+    return { ok: true, data: { created: rows.length }, message: `${rows.length} número(s) de cota criado(s) como "não comercializada".` };
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════
 // REGRAS
 // ═══════════════════════════════════════════════════════════════
