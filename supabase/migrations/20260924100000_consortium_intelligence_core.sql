@@ -751,11 +751,18 @@ begin
     end loop;
   end if;
 
+  -- A 1ª gravação (fase DRAW) aplica a retificação; a 2ª (fase BIDS,
+  -- recalculada sobre o novo sorteio) só precisa que ela já esteja aplicada.
   if p_retification_id is not null then
     update public.consortium_retifications
       set new_run_id = v_run_id, new_result_hash = p_run->>'result_hash', status = 'APPLIED'
       where id = p_retification_id and status = 'APPROVED';
-    if not found then raise exception 'Retificação não está aprovada.'; end if;
+    if not found and not exists (
+      select 1 from public.consortium_retifications
+       where id = p_retification_id and status = 'APPLIED' and assembly_id = p_assembly_id
+    ) then
+      raise exception 'Retificação não está aprovada.';
+    end if;
   end if;
 
   insert into public.consortium_engine_events (organization_id, group_id, assembly_id, entity_type, entity_id, event_type, payload)
