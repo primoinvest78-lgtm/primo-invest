@@ -42,7 +42,17 @@ export function LancesView({
         onSelectResult={(result) => setFilters((f) => ({ ...f, result }))}
       />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Alerta de contrato abre o contrato; alerta de lance abre o contrato do lance.
+          const byContract = /^(deadline|assembly)-(.+)$/.exec(a.id);
+          if (byContract) return `/consorcios/contratos/${byContract[2]}`;
+          const byBid = /^(stuck-analyzing|recent-win)-(.+)$/.exec(a.id);
+          const bid = byBid ? bids.find((b) => b.id === byBid[2]) : null;
+          return bid ? `/consorcios/contratos/${bid.contractId}` : null;
+        }}
+      />
 
       <NextAssemblyHighlight contracts={contracts} />
 
