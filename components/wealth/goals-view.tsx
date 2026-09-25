@@ -35,7 +35,14 @@ export function GoalsView({
     <div className="space-y-6">
       <GoalsKpis goals={goals} onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))} />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Todo alerta de meta é sobre uma meta específica: abre a própria meta.
+          const m = /^(overdue|due-soon|at-risk|behind-pace)-(.+)$/.exec(a.id);
+          return m ? `/patrimonio/metas/${m[2]}` : null;
+        }}
+      />
 
       <GoalsComparisonSection goals={goals} />
 
