@@ -137,7 +137,7 @@ export function ScheduleDialog({ state }: { state: GeneratorState }) {
               Próxima emissão: {formatDateOnly(nextRun)}
             </p>
             <p className="mt-1 text-caption text-card-beige-muted-foreground">
-              A emissão não é automática: na data, o relatório aparece em &ldquo;Pendentes&rdquo; no
+              A emissão não é automática: na data, o relatório aparece em &ldquo;Pendentes&rdquo; na
               Central de Relatórios para ser gerado com um clique — com os dados daquele momento.
             </p>
           </div>
