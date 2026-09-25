@@ -30,7 +30,7 @@ O módulo é dividido em duas telas: a **lista de clientes** e a **ficha do clie
 
 **Título "Clientes"** — logo abaixo aparece o total, por exemplo *"Base de relacionamento e carteira ativa — 48 clientes."*
 
-**Botão "Relatório executivo"** — abre o Report Center com o relatório executivo já selecionado, para gerar um documento de resumo da carteira.
+**Botão "Relatório executivo"** — abre a Central de Relatórios com o relatório executivo já selecionado, para gerar um documento de resumo da carteira.
 
 **Botão "+ Novo cliente"** — abre o assistente de cadastro (explicado na seção 3).
 
@@ -205,7 +205,7 @@ Mostra o **nome do cliente** e o **assessor responsável** (ou *"Sem assessor vi
 
 **"Voltar a Clientes"** — retorna à lista.
 
-**"Relatório do cliente"** — abre o Report Center com o relatório deste cliente já selecionado. Você não precisa escolher o cliente de novo.
+**"Relatório do cliente"** — abre a Central de Relatórios com o relatório deste cliente já selecionado. Você não precisa escolher o cliente de novo.
 
 ### 4.2 Ações rápidas
 

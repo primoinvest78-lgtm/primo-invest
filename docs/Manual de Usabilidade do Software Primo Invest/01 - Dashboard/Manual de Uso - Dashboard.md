@@ -38,17 +38,18 @@ Antes de falar do conteúdo do Dashboard, vale conhecer a moldura do sistema. El
 É a lista de todos os módulos do sistema, organizada em grupos:
 
 - **Dashboard**
-- **Relacionamento:** Hub CRM, Clientes, Leads, Oportunidades e Tarefas.
+- **Treinamento · Roleta** (com a etiqueta *Teste*) — atalho para praticar o sorteio da roleta com um grupo fictício. Veja o manual do **Motor de apuração**.
+- **Relacionamento:** Painel de Relacionamento, Clientes, Leads, Oportunidades e Tarefas.
 - **Patrimônio:** Visão geral, Investimentos, Contas, Passivos e Metas.
 - **Consórcios:** Contratos, Parcelas, Lances e Motor de apuração.
 - **Pagamentos**
 - **Documentos:** Cofre digital e Documentos.
-- **Relatórios:** Report Center e Relatórios gerados.
-- **Integrações:** Centro de Integrações e Histórico de sincronização.
+- **Relatórios:** Central de Relatórios e Relatórios gerados.
+- **Integrações:** Integrações e Histórico de sincronização.
 - **Inteligência**
 - **Administração**
 
-O item da tela em que você está fica destacado em verde. Basta clicar em qualquer item para ir até ele.
+Os nomes dos grupos (RELACIONAMENTO, PATRIMÔNIO, CONSÓRCIOS…) aparecem em verde-menta, com um tracinho à esquerda, para separar bem cada área. O item da tela em que você está fica destacado em verde. Basta clicar em qualquer item para ir até ele.
 
 No celular, o menu abre por cima da tela. Para fechá-lo, toque no **X** no canto do menu ou em qualquer ponto escuro fora dele.
 
@@ -105,17 +106,21 @@ Ao lado ficam os botões de período: **Hoje**, **7 dias**, **30 dias**, **90 di
 
 Fica ao lado dos botões de período.
 
-Ao clicar, você é levado ao **Report Center** (módulo de Relatórios) com o tipo **Relatório executivo** já selecionado. Lá você escolhe os detalhes e gera um documento com o resumo da operação — pronto para apresentar ou arquivar.
+Ao clicar, você é levado ao **Central de Relatórios** (módulo de Relatórios) com o tipo **Relatório executivo** já selecionado. Lá você escolhe os detalhes e gera um documento com o resumo da operação — pronto para apresentar ou arquivar.
 
 É um atalho: você não precisa ir até Relatórios e escolher tudo de novo.
 
 ### 4.3 Resumo operacional (faixa azul-marinho)
 
-Mostra uma saudação com o seu primeiro nome (por exemplo, *"Bom dia, Ana"*) e a frase *"Veja o que precisa da sua atenção hoje"*, seguida do período escolhido.
+Mostra uma saudação de acordo com o horário de Brasília — *"Bom dia"* até 12h, *"Boa tarde"* até 18h e *"Boa noite"* depois disso — com o seu primeiro nome (por exemplo, *"Boa tarde, Ana"*) e a frase *"Veja o que precisa da sua atenção hoje"*, seguida do período escolhido.
 
 À direita aparece o indicador **Ambiente: Produção**, apenas informativo.
 
-### 4.4 Os quatro indicadores principais (cartões)
+### 4.4 Cartão "Treinamento da roleta de sorteio"
+
+Logo abaixo do resumo aparece um cartão com o título **"Treinamento da roleta de sorteio"**. O botão verde **"Abrir treinamento da roleta"** leva à área de treinamento, onde você faz um sorteio completo com um grupo fictício — nada é gravado. É o jeito mais rápido de conhecer a roleta.
+
+### 4.4.1 Os quatro indicadores principais (cartões)
 
 Logo abaixo ficam quatro cartões com os números mais importantes. Ao abrir a página, os valores "sobem" de zero até o valor real — é só uma animação de apresentação.
 
@@ -133,6 +138,7 @@ Logo abaixo ficam quatro cartões com os números mais importantes. Ao abrir a p
 Mostra a evolução do patrimônio mês a mês. No canto aparece quantos meses estão sendo exibidos, por exemplo *"Evolução nos últimos 6 meses"*.
 
 - Passe o mouse (ou toque) sobre um ponto do gráfico para ver o valor exato daquele mês.
+- O botão **"Ver patrimônio →"**, no canto do quadro, leva a **Patrimônio → Visão geral**.
 - Se aparecer *"Sem transações suficientes registradas pra montar a evolução patrimonial"*, é porque ainda não há movimentações suficientes cadastradas em Patrimônio.
 
 ### 4.6 Quadro "O que precisa da sua atenção"
@@ -166,6 +172,8 @@ Mostra quatro números do relacionamento com clientes. Todos são clicáveis:
 Mostra como os investimentos estão distribuídos entre os tipos de produto (por exemplo, renda fixa, ações, fundos), em percentual do total.
 
 Serve para ver rapidamente se a carteira está concentrada demais em um único tipo.
+
+O botão **"Ver investimentos →"**, no canto do quadro, leva a **Patrimônio → Investimentos**.
 
 Se aparecer *"Sem posições registradas suficientes pra montar a alocação"*, cadastre as posições em **Patrimônio → Investimentos**.
 

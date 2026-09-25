@@ -30,7 +30,7 @@ A tela organiza as tarefas por urgência: **atrasadas primeiro**, depois as de *
 
 - **Voltar** — retorna à tela anterior.
 - **Título** — com o total de tarefas abertas, por exemplo *"12 tarefas abertas — atrasadas primeiro, depois hoje e os próximos dias."*
-- **Relatório operacional** — abre o Report Center com o relatório operacional.
+- **Relatório operacional** — abre a Central de Relatórios com o relatório operacional.
 - **Nova tarefa** — abre a janela de criação (seção 3).
 
 ### 2.2 Indicadores

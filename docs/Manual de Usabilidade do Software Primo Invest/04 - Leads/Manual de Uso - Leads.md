@@ -51,7 +51,7 @@ O sistema calcula automaticamente uma **pontuação de interesse** para cada lea
 
 - **Voltar** — retorna à tela anterior.
 - **Título "Leads"** — com o total, por exemplo *"Esteira de captação — 35 leads."*
-- **Relatório operacional** — abre o Report Center com o relatório operacional já selecionado.
+- **Relatório operacional** — abre a Central de Relatórios com o relatório operacional já selecionado.
 
 ### 2.2 Indicadores (cartões clicáveis)
 
@@ -101,7 +101,7 @@ Todos os filtros podem ser combinados:
 
 Quando algum filtro está ativo, aparece o botão **"Limpar filtros"** (com um X), que volta tudo ao padrão.
 
-> Quando você chega aqui clicando em um alerta do Dashboard ou do Hub CRM (por exemplo, "leads sem contato"), a tela já abre com o filtro correspondente aplicado.
+> Quando você chega aqui clicando em um alerta do Dashboard ou do Painel de Relacionamento (por exemplo, "leads sem contato"), a tela já abre com o filtro correspondente aplicado.
 
 ### 2.6 Visualização: Kanban ou Lista
 

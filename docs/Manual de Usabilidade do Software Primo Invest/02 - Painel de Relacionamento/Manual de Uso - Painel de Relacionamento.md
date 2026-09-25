@@ -1,26 +1,26 @@
-# Manual de Uso — Hub CRM
+# Manual de Uso — Painel de Relacionamento
 
 **Software:** Primo Invest
-**Módulo:** Hub CRM
-**Onde fica:** menu lateral → grupo **Relacionamento** → **Hub CRM**.
+**Módulo:** Painel de Relacionamento
+**Onde fica:** menu lateral → grupo **Relacionamento** → **Painel de Relacionamento**.
 
 ---
 
-## 1. Para que serve o Hub CRM
+## 1. Para que serve o Painel de Relacionamento
 
-O Hub CRM responde a uma única pergunta: **"o que eu faço primeiro hoje?"**
+O Painel de Relacionamento responde a uma única pergunta: **"o que eu faço primeiro hoje?"**
 
 O relacionamento com clientes está espalhado em quatro módulos — Leads, Oportunidades, Tarefas e Clientes. Sem o Hub, você precisaria abrir cada um deles e procurar o que está pendente.
 
 O Hub faz isso por você: ele cruza os quatro módulos, encontra o que precisa de ação e mostra tudo em **uma única lista, já ordenada por prioridade**. Cada item da lista leva direto ao registro que precisa ser resolvido.
 
-> **Diferença entre o Hub CRM e o Dashboard:** o Dashboard mostra números gerais da empresa. O Hub CRM mostra **itens concretos para agir**, um a um.
+> **Diferença entre o Painel de Relacionamento e o Dashboard:** o Dashboard mostra números gerais da empresa. O Painel de Relacionamento mostra **itens concretos para agir**, um a um.
 
 ---
 
 ## 2. Como chegar até aqui
 
-- No menu lateral, clique em **Hub CRM** (grupo Relacionamento).
+- No menu lateral, clique em **Painel de Relacionamento** (grupo Relacionamento).
 - Ou, a partir de outras telas, clique em qualquer link que leve para *"Precisa de ação hoje"*.
 
 ---
@@ -31,7 +31,7 @@ O Hub faz isso por você: ele cruza os quatro módulos, encontra o que precisa d
 
 **Botão "Voltar"** — volta para a tela onde você estava antes, exatamente como o botão voltar do navegador. Se você chegou pelo Dashboard, volta para o Dashboard; se chegou pelo menu, volta para a tela anterior.
 
-**Título e descrição** — "Hub CRM", com a explicação do módulo.
+**Título e descrição** — "Painel de Relacionamento", com a explicação do módulo.
 
 **Botões de atalho** (à direita):
 
@@ -107,7 +107,7 @@ Hoje ele apenas informa quantos sinais reais existem. Não há nada para clicar.
 
 ## 4. Rotina recomendada
 
-1. Abra o Hub CRM no início do dia.
+1. Abra o Painel de Relacionamento no início do dia.
 2. Olhe o cartão **"Precisa de ação hoje"**. Se estiver vermelho, há itens críticos.
 3. Na lista, resolva primeiro os itens **Críticos**, depois os de **Atenção**.
 4. Se o volume for grande, use os filtros para trabalhar um tipo de cada vez (por exemplo, todos os leads de uma vez).

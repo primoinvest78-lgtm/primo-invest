@@ -42,7 +42,7 @@ Cada etapa tem uma **probabilidade de fechamento** associada, usada nos cálculo
 
 - **Voltar** — retorna à tela anterior.
 - **Título** — com o total de oportunidades em andamento.
-- **Relatório operacional** — abre o Report Center com o relatório operacional já selecionado.
+- **Relatório operacional** — abre a Central de Relatórios com o relatório operacional já selecionado.
 
 ### 2.2 Indicadores (cartões)
 

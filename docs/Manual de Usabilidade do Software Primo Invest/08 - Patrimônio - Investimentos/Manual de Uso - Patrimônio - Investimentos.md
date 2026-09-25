@@ -33,7 +33,7 @@ Aqui você acompanha:
 ### 2.1 Cabeçalho
 
 - **Título "Investimentos"** — com a quantidade de posições em carteira.
-- **Relatório da carteira** — abre o Report Center com o relatório de investimentos já selecionado.
+- **Relatório da carteira** — abre a Central de Relatórios com o relatório de investimentos já selecionado.
 - **Voltar a Patrimônio** — retorna à Visão Geral.
 
 ### 2.2 Indicadores

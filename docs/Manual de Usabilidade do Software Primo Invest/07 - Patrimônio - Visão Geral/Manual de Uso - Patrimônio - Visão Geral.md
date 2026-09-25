@@ -35,7 +35,7 @@ As telas de detalhe ficam nos outros itens do grupo Patrimônio: **Investimentos
 
 - **Voltar** — retorna à tela anterior.
 - **Título "Visão Geral"** — *"Painel patrimonial consolidado — ativos, passivos e patrimônio líquido de toda a carteira."*
-- **Relatório patrimonial** — abre o Report Center com o relatório patrimonial já selecionado.
+- **Relatório patrimonial** — abre a Central de Relatórios com o relatório patrimonial já selecionado.
 
 ### 2.2 Indicadores
 
