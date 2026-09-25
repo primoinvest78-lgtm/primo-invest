@@ -86,8 +86,8 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
       out.push(
         mk("CALCULATION_REPRODUCTION_MISMATCH", "ANOMALY", "CRITICAL", "HIGH", "reproducao-deterministica", f,
           `Reprodução divergente na ${label}`,
-          `Reexecutar o cálculo ${r.phase === "DRAW" ? "do sorteio" : "dos lances"} com a mesma entrada, a mesma versão da regra e o mesmo snapshot NÃO reproduziu o resultado gravado. Hashes divergentes: ${rep.hashDiffs.join(", ")}.`,
-          { ...ruleEv, calculation: `run ${r.id}`, data: { storedHashes: r.hashes, divergent: rep.hashDiffs } }, r.id),
+          `Reexecutar o cálculo ${r.phase === "DRAW" ? "do sorteio" : "dos lances"} com a mesma entrada, a mesma versão da regra e o mesmo snapshot NÃO reproduziu o resultado gravado. Selos que não conferem: ${rep.hashDiffs.map((h) => ({ inputHash: "dados de entrada", ruleHash: "regra", eligibilityHash: "elegibilidade", calculationHash: "cálculo", resultHash: "resultado" } as Record<string, string>)[h] ?? h).join(", ")}.`,
+          { ...ruleEv, calculation: `cálculo ${r.phase === "DRAW" ? "do sorteio" : "dos lances"}`, data: { divergentes: rep.hashDiffs.map((h) => ({ inputHash: "dados de entrada", ruleHash: "regra", eligibilityHash: "elegibilidade", calculationHash: "cálculo", resultHash: "resultado" } as Record<string, string>)[h] ?? h) } }, r.id),
       );
     }
   }
@@ -97,9 +97,9 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
     if (s.payloadHash !== s.recomputed) {
       out.push(
         mk("CALCULATION_SNAPSHOT_TAMPERED", "ANOMALY", "CRITICAL", "HIGH", "integridade-snapshot", f,
-          `Snapshot de ${s.kind.toLowerCase()} não confere com o hash`,
-          "O conteúdo do snapshot mudou depois de congelado — o hash gravado não corresponde ao conteúdo atual.",
-          { calculation: `snapshot ${s.id}`, data: { stored: s.payloadHash, recomputed: s.recomputed } }, s.id),
+          `Dados congelados de ${({ ELIGIBILITY: "elegibilidade", RULE: "regra", LOTTERY: "resultado oficial", RESOURCES: "recursos", BIDS: "lances" } as Record<string, string>)[s.kind] ?? s.kind} foram alterados`,
+          "O conteúdo mudou depois de congelado — o selo de integridade gravado não corresponde mais ao conteúdo.",
+          { calculation: `dados congelados de ${({ ELIGIBILITY: "elegibilidade", RULE: "regra", LOTTERY: "resultado oficial", RESOURCES: "recursos", BIDS: "lances" } as Record<string, string>)[s.kind] ?? s.kind}` }, s.id),
       );
     }
   }
@@ -108,9 +108,9 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
   if (f.rule?.ruleHash && computeRuleHash(f.rule) !== f.rule.ruleHash) {
     out.push(
       mk("RULE_CONTENT_CHANGED", "ANOMALY", "CRITICAL", "HIGH", "integridade-regra", f,
-        `Regra usada na ${label} não confere com o hash de aprovação`,
-        "O conteúdo da regra não corresponde ao hash registrado na aprovação — alteração posterior.",
-        { ...ruleEv, data: { storedHash: f.rule.ruleHash } }),
+        `Regra usada na ${label} foi alterada depois da aprovação`,
+        "O conteúdo da regra não corresponde ao selo de integridade registrado na aprovação.",
+        { ...ruleEv }),
     );
   }
 
@@ -130,8 +130,8 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
     if (recomputed !== f.lottery.contentHash) {
       out.push(
         mk("SOURCE_CONTENT_TAMPERED", "ANOMALY", "CRITICAL", "HIGH", "integridade-fonte", f,
-          `Resultado oficial do concurso ${f.lottery.contestNumber} não confere com o hash`,
-          "Os prêmios gravados não correspondem ao hash registrado na importação.",
+          `Resultado oficial do concurso ${f.lottery.contestNumber} foi alterado`,
+          "Os prêmios gravados não correspondem ao selo de integridade registrado na importação.",
           { source: `Loteria Federal · concurso ${f.lottery.contestNumber}`, data: { prizes: f.lottery.prizes } }),
       );
     }
@@ -139,7 +139,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
       out.push(
         mk("SOURCE_NOT_VERIFIED", "ANOMALY", "HIGH", "HIGH", "fonte-verificada", f,
           `Assembleia usa resultado não verificado`,
-          `O concurso ${f.lottery.contestNumber} vinculado à ${label} está como ${f.lottery.verificationStatus}.`,
+          `O concurso ${f.lottery.contestNumber} vinculado à ${label} ainda não foi verificado contra a fonte oficial.`,
           { source: `Loteria Federal · concurso ${f.lottery.contestNumber}` }),
       );
     }
@@ -156,7 +156,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
             mk("CALCULATION_QUOTA_OUT_OF_UNIVERSE", "ANOMALY", "CRITICAL", "HIGH", "universo-numerico", f,
               `Cota ${c.quotaNumber} contemplada fora do universo do grupo`,
               `O grupo vai de ${f.group.numbering.numberStart} a ${f.group.numbering.numberEnd}.`,
-              { ...ruleEv, calculation: `run ${r.id}`, data: { quotaNumber: c.quotaNumber } }, `${r.id}:${c.quotaNumber}`),
+              { ...ruleEv, calculation: "cálculo vigente", data: { quotaNumber: c.quotaNumber } }, `${r.id}:${c.quotaNumber}`),
           );
           continue;
         }
@@ -165,8 +165,8 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
           out.push(
             mk("CALCULATION_INELIGIBLE_CONTEMPLATED", "ANOMALY", "CRITICAL", "HIGH", "snapshot-vs-resultado", f,
               `Cota ${c.quotaNumber} contemplada estando inapta no snapshot`,
-              `O snapshot congelado marca a cota como inapta (${entry.reason}), mas ela aparece contemplada.`,
-              { ...ruleEv, calculation: `run ${r.id}`, data: { entry } }, `${r.id}:${c.quotaNumber}`),
+              `A elegibilidade congelada marca a cota como inapta, mas ela aparece contemplada.`,
+              { ...ruleEv, calculation: "cálculo vigente", data: { entry } }, `${r.id}:${c.quotaNumber}`),
           );
         }
       }
@@ -176,7 +176,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
         mk("ELIGIBILITY_PARTIAL_BASE", "RISK", "MEDIUM", "HIGH", "base-parcial", f,
           `Apuração da ${label} sobre base parcial`,
           `O snapshot tem dado de ${f.eligibility.snapshot.entries.length} de ${f.group.quotaCount} cotas. O resultado é de conferência; o oficial é o da administradora.`,
-          { data: { known: f.eligibility.snapshot.entries.length, total: f.group.quotaCount, policy: f.eligibility.snapshot.unknownPolicy } }),
+          { data: { known: f.eligibility.snapshot.entries.length, total: f.group.quotaCount } }),
       );
     }
     if (f.rule && f.eligibility.ruleId !== f.rule.id) {
@@ -184,7 +184,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
         mk("RULE_ELIGIBILITY_MISMATCH", "INCONSISTENCY", "HIGH", "HIGH", "regra-snapshot", f,
           "Snapshot de elegibilidade feito com outra regra",
           "A regra da assembleia não é a mesma usada para gerar o snapshot de elegibilidade.",
-          { ...ruleEv, data: { snapshotRuleId: f.eligibility.ruleId } }),
+          { ...ruleEv }),
       );
     }
   }
@@ -211,7 +211,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
         mk("FINANCIAL_RESOURCES_EXCEEDED", "ANOMALY", "CRITICAL", "HIGH", "recursos-vs-contemplacoes", f,
           `Contemplações acima dos recursos na ${label}`,
           `Créditos contemplados somam ${formatBRL(used)}, mas havia ${formatBRL(draw.available)} disponíveis.`,
-          { calculation: `run ${draw.id}`, data: { used, available: draw.available } }),
+          { calculation: "cálculo do sorteio", data: { used, available: draw.available } }),
       );
     }
     if (!draw.official) {
@@ -219,7 +219,7 @@ export function detectAssemblyAnomalies(f: AssemblyFacts): Finding[] {
         mk("PATTERN_CONFERENCE_ONLY", "PATTERN", "LOW", "HIGH", "resultado-conferencia", f,
           `Resultado da ${label} é de conferência`,
           "O cálculo presumiu elegibilidade de cotas sem dado. Compare com a ata da administradora.",
-          { calculation: `run ${draw.id}` }),
+          { calculation: "cálculo do sorteio" }),
       );
     }
   }
@@ -345,7 +345,7 @@ export function detectOrganizationFindings(f: OrgFacts): Finding[] {
   if (f.chainVerified && !f.chainVerified.ok) {
     out.push(org("AUDIT_CHAIN_BROKEN", "ANOMALY", "CRITICAL", "HIGH", "cadeia-auditoria", "chain",
       "Cadeia de eventos de auditoria quebrada",
-      `O evento ${f.chainVerified.brokenAt} não referencia o hash do evento anterior — possível remoção ou alteração de histórico.`,
+      "Um registro de auditoria não está encadeado ao anterior — possível remoção ou alteração de histórico.",
       { data: f.chainVerified }));
   }
 
@@ -355,7 +355,7 @@ export function detectOrganizationFindings(f: OrgFacts): Finding[] {
     out.push(org("SOURCE_CONFLICT_ATTEMPTS", "ALERT", "HIGH", "HIGH", "tentativas-fonte-divergente", "conflicts",
       `${conflicts.length} tentativa(s) de importar resultado divergente`,
       "Houve tentativa de importar um concurso já registrado com prêmios diferentes. Confirme qual é o publicado pela fonte oficial.",
-      { data: { events: conflicts.map((e) => ({ id: e.id, at: e.createdAt, payload: e.payload })) } }));
+      { data: { ocorrencias: conflicts.length } }));
   }
   return out;
 }

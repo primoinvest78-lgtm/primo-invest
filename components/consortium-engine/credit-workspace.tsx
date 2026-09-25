@@ -20,6 +20,7 @@ import {
   useEngineAction,
 } from "@/components/consortium-engine/ui";
 import { Button } from "@/components/ui/button";
+import { HumanData } from "@/components/ui/human-data";
 import { Input } from "@/components/ui/input";
 import {
   addCreditRequirement,
@@ -468,8 +469,10 @@ export function CreditWorkspaceView({ ws, role, events }: { ws: CreditWorkspace;
                     <td className={tdClass}>{mv.reference ?? "—"}</td>
                     <td className={tdClass}>
                       <details>
-                        <summary className="cursor-pointer text-xs font-semibold text-accent">Ver</summary>
-                        <pre className="mt-1 max-h-48 max-w-md overflow-auto rounded-lg bg-black/5 p-2 text-[11px]">{JSON.stringify(mv.details, null, 2)}</pre>
+                        <summary className="cursor-pointer text-xs font-semibold text-accent">Ver detalhes</summary>
+                        <div className="mt-1 max-w-md rounded-lg bg-black/5 p-2">
+                          <HumanData data={mv.details} />
+                        </div>
                       </details>
                     </td>
                   </tr>

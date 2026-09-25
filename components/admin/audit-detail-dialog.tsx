@@ -1,24 +1,10 @@
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { HumanChanges } from "@/components/ui/human-data";
 import type { AuditLogEntry } from "@/lib/admin/audit-labels";
 import { auditActionLabel, moduleLabelForTable } from "@/lib/admin/audit-labels";
 import { formatDateTime } from "@/lib/utils/format";
-
-function JsonBlock({ label, data }: { label: string; data: Record<string, unknown> | null }) {
-  return (
-    <div>
-      <p className="text-label font-bold uppercase text-card-beige-muted-foreground">{label}</p>
-      {data ? (
-        <pre className="mt-1 max-h-64 overflow-auto rounded-xl border border-border bg-muted/40 p-3 text-caption text-foreground">
-          {JSON.stringify(data, null, 2)}
-        </pre>
-      ) : (
-        <p className="mt-1 text-body-sm text-card-beige-muted-foreground">Não disponível.</p>
-      )}
-    </div>
-  );
-}
 
 export function AuditDetailDialog({
   entry,
@@ -31,7 +17,7 @@ export function AuditDetailDialog({
 }) {
   return (
     <Dialog open={entry !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Detalhe do evento</DialogTitle>
         </DialogHeader>
@@ -55,12 +41,8 @@ export function AuditDetailDialog({
                 <p className="text-foreground">{formatDateTime(entry.createdAt)}</p>
               </div>
               <div>
-                <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Objeto</p>
-                <p className="truncate text-foreground">{entry.recordId ?? "Não disponível"}</p>
-              </div>
-              <div>
-                <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Origem</p>
-                <p className="text-foreground">Não disponível</p>
+                <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Registro</p>
+                <p className="text-foreground">{entry.recordId ? `Registro de ${moduleLabelForTable(entry.tableName)}` : "Não disponível"}</p>
               </div>
               <div>
                 <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Resultado</p>
@@ -68,8 +50,12 @@ export function AuditDetailDialog({
               </div>
             </div>
 
-            <JsonBlock label="Antes" data={entry.oldData} />
-            <JsonBlock label="Depois" data={entry.newData} />
+            <div>
+              <p className="mb-1 text-label font-bold uppercase text-card-beige-muted-foreground">
+                {entry.oldData && entry.newData ? "O que mudou" : entry.newData ? "Dados registrados" : "Dados removidos"}
+              </p>
+              <HumanChanges before={entry.oldData} after={entry.newData} />
+            </div>
           </div>
         ) : null}
       </DialogContent>

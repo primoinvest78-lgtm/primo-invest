@@ -6,11 +6,61 @@ import { useState, type FormEvent } from "react";
 import { EmptyState, Feedback, Field, Hash, NativeSelect, Section, useEngineAction } from "@/components/consortium-engine/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { runSimulationAction } from "@/lib/actions/consortium-intelligence";
 import type { Scenario } from "@/lib/consortium-intelligence/simulation";
 import type { SimulationRow } from "@/lib/data/consortium-intelligence";
 import { formatCurrencyBRL } from "@/lib/utils/format";
+
+const SEQ_OPTIONS = [
+  { value: "", label: "Manter o da regra" },
+  { value: "NONE", label: "Não prevista" },
+  { value: "NEXT_HIGHER", label: "Imediatamente superior" },
+  { value: "NEXT_LOWER", label: "Imediatamente inferior" },
+  { value: "ALTERNATING_UP_FIRST", label: "Alternada (superior primeiro)" },
+  { value: "ALTERNATING_DOWN_FIRST", label: "Alternada (inferior primeiro)" },
+];
+const EQ_OPTIONS = [
+  { value: "", label: "Manter a da regra" },
+  { value: "NONE", label: "Sem equivalência" },
+  { value: "ZERO_AS_MAX", label: "Número zerado = última cota" },
+  { value: "MODULO", label: "Resto da divisão pelo tamanho do grupo" },
+  { value: "SUBTRACT_GROUP_SIZE", label: "Subtração do tamanho do grupo" },
+];
+const POSITION_OPTIONS: { value: string; label: string; positions: number[] }[] = [
+  { value: "", label: "Manter as da regra", positions: [] },
+  { value: "345", label: "3º, 4º e 5º algarismos (centena final)", positions: [3, 4, 5] },
+  { value: "234", label: "2º, 3º e 4º algarismos", positions: [2, 3, 4] },
+  { value: "123", label: "1º, 2º e 3º algarismos", positions: [1, 2, 3] },
+  { value: "2345", label: "2º ao 5º algarismo (milhar)", positions: [2, 3, 4, 5] },
+  { value: "45", label: "4º e 5º algarismos (dezena)", positions: [4, 5] },
+];
+const SEQ_LABEL = Object.fromEntries(SEQ_OPTIONS.map((o) => [o.value, o.label]));
+const EQ_LABEL = Object.fromEntries(EQ_OPTIONS.map((o) => [o.value, o.label]));
+
+/** Cenário em frases — nunca em código. */
+function describeScenario(sc: Record<string, unknown>): string[] {
+  const out: string[] = [];
+  const brl = (n: unknown) => formatCurrencyBRL(Number(n));
+  const nums = (v: unknown) => (Array.isArray(v) ? v.join(", ") : String(v));
+  if (sc.commonFundBalance !== undefined) out.push(`Fundo comum de ${brl(sc.commonFundBalance)}`);
+  if (sc.resourcesDeltaPercent !== undefined) out.push(`Recursos ${Number(sc.resourcesDeltaPercent) >= 0 ? "+" : ""}${sc.resourcesDeltaPercent}%`);
+  if (sc.creditAmount !== undefined) out.push(`Crédito de ${brl(sc.creditAmount)}`);
+  if (sc.plannedDrawContemplations !== undefined) out.push(`${sc.plannedDrawContemplations} contemplação(ões) prevista(s)`);
+  if (sc.quotaCount !== undefined) out.push(`Grupo com ${sc.quotaCount} cotas`);
+  if (sc.extraDelinquencyPercent !== undefined) out.push(`+${sc.extraDelinquencyPercent}% de inadimplência`);
+  if (sc.forceDelinquent) out.push(`Cotas inadimplentes: ${nums(sc.forceDelinquent)}`);
+  if (sc.forceUpToDate) out.push(`Cotas em dia: ${nums(sc.forceUpToDate)}`);
+  if (sc.forceContemplated) out.push(`Cotas já contempladas: ${nums(sc.forceContemplated)}`);
+  const patch = (sc.ruleConfigPatch ?? {}) as Record<string, { method?: string; positions?: number[] } | { prize: number; positions: number[] }[]>;
+  if (Array.isArray(patch.candidatePlan) && patch.candidatePlan[0]) out.push(`Regra hipotética: algarismos ${patch.candidatePlan[0].positions.join(", ")} de cada prêmio`);
+  const fb = patch.fallback as { method?: string } | undefined;
+  if (fb?.method) out.push(`Substituição: ${SEQ_LABEL[fb.method] ?? fb.method}`);
+  const ap = patch.approximation as { method?: string } | undefined;
+  if (ap?.method) out.push(`Aproximação: ${SEQ_LABEL[ap.method] ?? ap.method}`);
+  const eq = patch.equivalence as { method?: string } | undefined;
+  if (eq?.method) out.push(`Equivalência: ${EQ_LABEL[eq.method] ?? eq.method}`);
+  return out.length ? out : ["Mesmos dados da assembleia (sem alteração)"];
+}
 
 const list = (s: string) => s.split(/[,;\s]+/).map((x) => Number(x)).filter((n) => Number.isInteger(n) && n >= 0);
 const num = (s: FormDataEntryValue | null) => {
@@ -40,21 +90,24 @@ export function SimulationPanel({ assemblies, simulations }: { assemblies: { val
     set("forceDelinquent", list(String(f.get("delinquent") ?? "")));
     set("forceUpToDate", list(String(f.get("upToDate") ?? "")));
     set("forceContemplated", list(String(f.get("contemplated") ?? "")));
-    const patch = String(f.get("rulePatch") ?? "").trim();
-    if (patch) {
-      try {
-        scenario.ruleConfigPatch = JSON.parse(patch);
-      } catch {
-        setPatchError("Ajuste de regra não é JSON válido.");
-        return;
-      }
+    const patch: Record<string, unknown> = {};
+    const pos = POSITION_OPTIONS.find((o) => o.value === String(f.get("positions") ?? ""));
+    if (pos && pos.positions.length) {
+      patch.candidatePlan = [1, 2, 3, 4, 5].map((prize) => ({ prize, positions: pos.positions }));
     }
+    const fb = String(f.get("fallback") ?? "");
+    if (fb) patch.fallback = { method: fb, wrapAround: false };
+    const ap = String(f.get("approximation") ?? "");
+    if (ap) patch.approximation = { method: ap, maxSteps: 3, wrapAround: false };
+    const eq = String(f.get("equivalence") ?? "");
+    if (eq) patch.equivalence = { method: eq };
+    if (Object.keys(patch).length) scenario.ruleConfigPatch = patch as Scenario["ruleConfigPatch"];
     execute(() => runSimulationAction(assemblyId, String(f.get("title") ?? ""), scenario));
   }
 
   return (
     <div className="space-y-6">
-      <Section title="Simular cenário (what-if)" subtitle="Roda o mesmo motor sobre uma cópia dos snapshots da assembleia. Nunca altera o resultado oficial.">
+      <Section title="Simular cenário (e se...?)" subtitle="Roda o mesmo motor sobre uma cópia dos dados congelados da assembleia. Nunca altera o resultado oficial.">
         {assemblies.length === 0 ? (
           <EmptyState>Nenhuma assembleia para simular.</EmptyState>
         ) : (
@@ -100,9 +153,21 @@ export function SimulationPanel({ assemblies, simulations }: { assemblies: { val
                 <Input name="quotaCount" type="number" min={1} />
               </Field>
             </div>
-            <Field label="Ajuste de regra (avançado, JSON)" hint='Ex.: {"candidatePlan":[{"prize":1,"positions":[2,3,4]}]} ou {"fallback":{"method":"NEXT_LOWER","wrapAround":false}}'>
-              <Textarea name="rulePatch" rows={2} className="font-mono text-xs" />
-            </Field>
+            <p className="text-label font-bold uppercase text-card-beige-muted-foreground">E se a regra fosse outra?</p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <Field label="Algarismos usados de cada prêmio">
+                <NativeSelect name="positions" defaultValue="" options={POSITION_OPTIONS.map(({ value, label }) => ({ value, label }))} />
+              </Field>
+              <Field label="Equivalência">
+                <NativeSelect name="equivalence" defaultValue="" options={EQ_OPTIONS} />
+              </Field>
+              <Field label="Aproximação">
+                <NativeSelect name="approximation" defaultValue="" options={SEQ_OPTIONS} />
+              </Field>
+              <Field label="Substituição">
+                <NativeSelect name="fallback" defaultValue="" options={SEQ_OPTIONS} />
+              </Field>
+            </div>
             <Feedback errors={patchError ? [patchError, ...errors] : errors} message={message} />
             <Button type="submit" disabled={pending || !assemblyId}>
               {pending ? "Simulando…" : "Simular"}
@@ -121,13 +186,18 @@ export function SimulationPanel({ assemblies, simulations }: { assemblies: { val
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-semibold">
                     SIMULAÇÃO · {s.title}{" "}
-                    <span className="font-mono text-[11px] text-card-beige-muted-foreground">{s.id.slice(0, 8)}</span>
                   </p>
                   <p className="text-xs text-card-beige-muted-foreground">
                     {new Date(s.createdAt).toLocaleString("pt-BR")} · {s.createdByName ?? "—"}
                   </p>
                 </div>
-                <p className="font-mono text-[11px]">{JSON.stringify(s.scenario)}</p>
+                <ul className="flex flex-wrap gap-1.5">
+                  {describeScenario(s.scenario).map((t) => (
+                    <li key={t} className="rounded-full border border-amber-500/40 px-2 py-0.5 text-[11px]">
+                      {t}
+                    </li>
+                  ))}
+                </ul>
                 <p>
                   Resultado ({s.result.status}): {s.result.contemplations.length ? s.result.contemplations.map((c) => `cota ${c.quotaLabel}`).join(", ") : "nenhuma contemplação"}
                   {s.result.resources ? ` · recursos ${formatCurrencyBRL(s.result.resources.available)}, capacidade ${s.result.resources.capacity}` : ""}

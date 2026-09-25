@@ -3,7 +3,7 @@
 import { Pencil } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 
-import { Feedback, Field, NativeSelect, useEngineAction } from "@/components/consortium-engine/ui";
+import { Feedback, Field, NativeSelect, selectClass, useEngineAction } from "@/components/consortium-engine/ui";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -22,21 +22,6 @@ import type { EngineGroup, EngineRule } from "@/lib/data/consortium-engine";
 
 const opts = (m: Record<string, string>, keys?: string[]) => (keys ?? Object.keys(m)).map((k) => ({ value: k, label: m[k] }));
 
-function planToText(plan: RuleConfig["candidatePlan"]) {
-  return plan.map((s) => `${s.prize}: ${s.positions.join(",")}`).join("\n");
-}
-
-function parsePlan(text: string): { plan: RuleConfig["candidatePlan"]; error: string | null } {
-  const plan: RuleConfig["candidatePlan"] = [];
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  for (const [i, line] of lines.entries()) {
-    const m = line.match(/^(\d+)\s*[:;]\s*([\d,\s]+)$/);
-    if (!m) return { plan, error: `Linha ${i + 1} do plano inválida — use "prêmio: posições", ex.: 1: 3,4,5` };
-    plan.push({ prize: Number(m[1]), positions: m[2].split(",").map((p) => Number(p.trim())).filter((p) => p > 0) });
-  }
-  return { plan, error: null };
-}
-
 function mapToText(map: Record<string, number> | undefined) {
   return Object.entries(map ?? {}).map(([k, v]) => `${k}=${v}`).join("\n");
 }
@@ -54,10 +39,12 @@ const numOrNull = (v: FormDataEntryValue | null) => {
 export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?: EngineRule }) {
   const initial = rule?.config ?? blankRuleConfig();
   const [open, setOpen] = useState(false);
-  const [planText, setPlanText] = useState(planToText(initial.candidatePlan));
-  const [genPrizes, setGenPrizes] = useState("1,2,3,4,5");
-  const [genPatterns, setGenPatterns] = useState("3,4,5 | 2,3,4");
+  const [plan, setPlan] = useState<RuleConfig["candidatePlan"]>(initial.candidatePlan.map((p) => ({ prize: p.prize, positions: [...p.positions] })));
+  const [genPrizes, setGenPrizes] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [genPatterns, setGenPatterns] = useState<string[]>(["345"]);
   const [genOrder, setGenOrder] = useState<"PRIZE_MAJOR" | "PATTERN_MAJOR">("PRIZE_MAJOR");
+  const [digits, setDigits] = useState(initial.prizeDigits);
+  const [prizeCount, setPrizeCount] = useState(initial.prizeCount);
   const [equivalence, setEquivalence] = useState<string>(initial.equivalence.method);
   const [fallback, setFallback] = useState<string>(initial.fallback.method);
   const [bidsEnabled, setBidsEnabled] = useState(initial.bids.enabled);
@@ -65,12 +52,35 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
   const { pending, errors, message, execute } = useEngineAction();
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const preview = useMemo(() => parsePlan(planText), [planText]);
+  // Exemplo visual: mostra que número cada passo tiraria de um resultado fictício.
+  const examplePrizes = useMemo(
+    () => ["32940", "89423", "12345", "54321", "22334", "67890", "13579", "24680", "11223", "44556"].map((p) => p.padStart(digits, "0").slice(-digits)),
+    [digits],
+  );
+  const planError = plan.some((p) => p.positions.length === 0) ? "Todo passo precisa de pelo menos um algarismo marcado." : null;
 
   function generatePlan() {
-    const prizes = genPrizes.split(",").map((p) => Number(p.trim())).filter((n) => n > 0);
-    const patterns = genPatterns.split("|").map((p) => p.split(",").map((x) => Number(x.trim())).filter((n) => n > 0)).filter((p) => p.length);
-    setPlanText(planToText(expandCandidatePlan(prizes, patterns, genOrder)));
+    const patterns = genPatterns.map((p) => p.split("").map(Number));
+    setPlan(expandCandidatePlan([...genPrizes].sort((a, b) => a - b), patterns, genOrder));
+  }
+  function updateStep(i: number, patch: Partial<RuleConfig["candidatePlan"][number]>) {
+    setPlan((cur) => cur.map((p, j) => (j === i ? { ...p, ...patch } : p)));
+  }
+  function togglePosition(i: number, pos: number) {
+    setPlan((cur) =>
+      cur.map((p, j) =>
+        j !== i ? p : { ...p, positions: p.positions.includes(pos) ? p.positions.filter((x) => x !== pos) : [...p.positions, pos].sort((a, b) => a - b) },
+      ),
+    );
+  }
+  function moveStep(i: number, dir: -1 | 1) {
+    setPlan((cur) => {
+      const next = [...cur];
+      const j = i + dir;
+      if (j < 0 || j >= next.length) return cur;
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
   }
 
   function toggleBid(t: BidType) {
@@ -81,7 +91,8 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
     e.preventDefault();
     setLocalError(null);
     const f = new FormData(e.currentTarget);
-    if (preview.error) return setLocalError(preview.error);
+    if (plan.length === 0) return setLocalError("Monte o plano de números apurados: pelo menos um passo.");
+    if (planError) return setLocalError(planError);
     const map: Record<string, number> = {};
     for (const line of String(f.get("equivalenceMap") ?? "").split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
       const [k, v] = line.split("=").map((x) => x.trim());
@@ -91,7 +102,7 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
       calculationMethod: "LOTTERY_DIGIT_EXTRACTION",
       prizeDigits: Number(f.get("prizeDigits")),
       prizeCount: Number(f.get("prizeCount")),
-      candidatePlan: preview.plan,
+      candidatePlan: plan,
       equivalence: equivalence === "EXPLICIT_MAP" ? { method: "EXPLICIT_MAP", map } : { method: equivalence as RuleConfig["equivalence"]["method"] },
       approximation: {
         method: String(f.get("approximation")) as RuleConfig["approximation"]["method"],
@@ -210,47 +221,108 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
           </fieldset>
 
           <fieldset className="space-y-3 border-t border-black/10 pt-4">
-            <legend className="text-label font-bold uppercase text-card-beige-muted-foreground">Resultado oficial → candidatos</legend>
+            <legend className="text-label font-bold uppercase text-card-beige-muted-foreground">Resultado oficial → números apurados</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Dígitos por prêmio">
-                <Input name="prizeDigits" type="number" min={3} max={8} defaultValue={initial.prizeDigits} required />
+                <Input name="prizeDigits" type="number" min={3} max={8} value={digits} onChange={(e) => setDigits(Math.min(Math.max(Number(e.target.value) || 5, 3), 8))} required />
               </Field>
               <Field label="Quantidade de prêmios">
-                <Input name="prizeCount" type="number" min={1} max={10} defaultValue={initial.prizeCount} required />
+                <Input name="prizeCount" type="number" min={1} max={10} value={prizeCount} onChange={(e) => setPrizeCount(Math.min(Math.max(Number(e.target.value) || 5, 1), 10))} required />
               </Field>
             </div>
-            <Field
-              label="Plano de candidatos (ordem de apuração)"
-              hint='Uma linha por candidato: "prêmio: posições". Posições contam da esquerda, a partir de 1. Ex.: prêmio 32940 com "1: 3,4,5" gera 940.'
-            >
-              <Textarea value={planText} onChange={(e) => setPlanText(e.target.value)} rows={6} className="font-mono text-xs" />
-            </Field>
-            <div className="grid gap-2 rounded-xl border border-dashed border-black/15 p-3 sm:grid-cols-4">
-              <Field label="Gerar: prêmios">
-                <Input value={genPrizes} onChange={(e) => setGenPrizes(e.target.value)} />
-              </Field>
-              <Field label="Padrões (separe com |)">
-                <Input value={genPatterns} onChange={(e) => setGenPatterns(e.target.value)} />
-              </Field>
-              <Field label="Ordem">
-                <NativeSelect
-                  value={genOrder}
-                  onChange={(v) => setGenOrder(v as "PRIZE_MAJOR" | "PATTERN_MAJOR")}
-                  options={[
-                    { value: "PRIZE_MAJOR", label: "Por prêmio" },
-                    { value: "PATTERN_MAJOR", label: "Por padrão" },
-                  ]}
-                />
-              </Field>
-              <div className="flex items-end">
-                <Button type="button" size="sm" variant="outline" onClick={generatePlan}>
-                  Gerar plano
+            <div className="space-y-2 rounded-xl border border-black/10 p-3">
+              <p className="text-sm font-semibold">Montagem rápida</p>
+              <p className="text-xs text-card-beige-muted-foreground">Marque os prêmios e os grupos de algarismos descritos no regulamento e clique em &quot;Montar plano&quot;.</p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs font-semibold">Prêmios:</span>
+                {Array.from({ length: prizeCount }, (_, i) => i + 1).map((n) => (
+                  <button key={n} type="button" onClick={() => setGenPrizes((cur) => (cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n]))} className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${genPrizes.includes(n) ? "border-primary bg-primary text-primary-foreground" : "border-white/10 bg-secondary text-secondary-foreground hover:border-primary/60"}`}>
+                    {n}º prêmio
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-xs font-semibold">Algarismos:</span>
+                {[
+                  { key: "345", label: "3º, 4º e 5º" },
+                  { key: "234", label: "2º, 3º e 4º" },
+                  { key: "123", label: "1º, 2º e 3º" },
+                  { key: "2345", label: "2º ao 5º" },
+                  { key: "45", label: "4º e 5º" },
+                ].map((p) => (
+                  <button key={p.key} type="button" onClick={() => setGenPatterns((cur) => (cur.includes(p.key) ? cur.filter((x) => x !== p.key) : [...cur, p.key]))} className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${genPatterns.includes(p.key) ? "border-primary bg-primary text-primary-foreground" : "border-white/10 bg-secondary text-secondary-foreground hover:border-primary/60"}`}>
+                    {genPatterns.includes(p.key) ? `${genPatterns.indexOf(p.key) + 1}º · ` : ""}
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-end gap-2">
+                <Field label="Ordem">
+                  <NativeSelect
+                    value={genOrder}
+                    onChange={(v) => setGenOrder(v as "PRIZE_MAJOR" | "PATTERN_MAJOR")}
+                    options={[
+                      { value: "PRIZE_MAJOR", label: "Prêmio a prêmio" },
+                      { value: "PATTERN_MAJOR", label: "Grupo de algarismos primeiro" },
+                    ]}
+                  />
+                </Field>
+                <Button type="button" size="sm" onClick={generatePlan} disabled={genPrizes.length === 0 || genPatterns.length === 0}>
+                  Montar plano
                 </Button>
               </div>
             </div>
-            <p className="text-xs text-card-beige-muted-foreground">
-              {preview.error ?? `${preview.plan.length} candidato(s) por extração.`}
-            </p>
+
+            <div className="space-y-1.5">
+              <p className="text-sm font-semibold">Números apurados, na ordem da apuração</p>
+              <p className="text-xs text-card-beige-muted-foreground">
+                Cada passo diz de qual prêmio e de quais algarismos (contando da esquerda) sai o número apurado. O exemplo usa um resultado fictício só para ilustrar.
+              </p>
+              {plan.length === 0 ? (
+                <p className="rounded-lg border border-dashed border-black/15 px-3 py-3 text-center text-xs text-card-beige-muted-foreground">Nenhum passo ainda. Use a montagem rápida ou adicione um passo.</p>
+              ) : null}
+              {plan.map((step, i) => {
+                const example = examplePrizes[step.prize - 1] ?? "";
+                const extracted = step.positions.map((p) => example[p - 1] ?? "").join("");
+                return (
+                  <div key={i} className="flex flex-wrap items-center gap-2 rounded-lg border border-black/10 px-2.5 py-2 transition-colors hover:bg-black/5">
+                    <span className="w-8 text-xs font-bold">{i + 1}º</span>
+                    <select className={selectClass + " w-auto"} value={step.prize} onChange={(e) => updateStep(i, { prize: Number(e.target.value) })} aria-label={`Prêmio do passo ${i + 1}`}>
+                      {Array.from({ length: prizeCount }, (_, k) => k + 1).map((n) => (
+                        <option key={n} value={n}>
+                          {n}º prêmio
+                        </option>
+                      ))}
+                    </select>
+                    <span className="flex flex-wrap gap-1">
+                      {Array.from({ length: digits }, (_, k) => k + 1).map((pos) => (
+                        <button key={pos} type="button" onClick={() => togglePosition(i, pos)} className={`rounded-lg border px-2.5 py-1 text-xs font-semibold transition-all ${step.positions.includes(pos) ? "border-primary bg-primary text-primary-foreground" : "border-white/10 bg-secondary text-secondary-foreground hover:border-primary/60"}`} aria-label={`${pos}º algarismo`}>
+                          {pos}º
+                        </button>
+                      ))}
+                    </span>
+                    <span className="text-xs text-card-beige-muted-foreground">
+                      exemplo: {example} → <strong className="text-foreground">{extracted || "—"}</strong>
+                    </span>
+                    <span className="ml-auto flex gap-1">
+                      <Button type="button" size="xs" variant="ghost" onClick={() => moveStep(i, -1)} disabled={i === 0} aria-label="Subir passo">
+                        ↑
+                      </Button>
+                      <Button type="button" size="xs" variant="ghost" onClick={() => moveStep(i, 1)} disabled={i === plan.length - 1} aria-label="Descer passo">
+                        ↓
+                      </Button>
+                      <Button type="button" size="xs" variant="ghost" onClick={() => setPlan((cur) => cur.filter((_, j) => j !== i))}>
+                        Remover
+                      </Button>
+                    </span>
+                  </div>
+                );
+              })}
+              <Button type="button" size="sm" variant="outline" onClick={() => setPlan((cur) => [...cur, { prize: 1, positions: [] }])}>
+                Adicionar passo
+              </Button>
+              <p className="text-xs text-card-beige-muted-foreground">{planError ?? `${plan.length} número(s) apurado(s) por resultado oficial.`}</p>
+            </div>
           </fieldset>
 
           <fieldset className="space-y-3 border-t border-black/10 pt-4">
@@ -260,7 +332,7 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
                 <NativeSelect value={equivalence} onChange={setEquivalence} options={opts(EQUIVALENCE_LABEL)} />
               </Field>
               {equivalence === "EXPLICIT_MAP" ? (
-                <Field label="Tabela (uma por linha: número=cota)">
+                <Field label="Tabela de equivalência" hint="Uma por linha: número apurado = cota. Exemplo: 000 = 1000">
                   <Textarea name="equivalenceMap" defaultValue={mapToText(initial.equivalence.map)} rows={3} className="font-mono text-xs" />
                 </Field>
               ) : null}
@@ -336,7 +408,7 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
                       type="button"
                       key={t}
                       onClick={() => toggleBid(t)}
-                      className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${bidOrder.includes(t) ? "border-primary bg-primary/15" : "border-black/15 hover:bg-black/5"}`}
+                      className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${bidOrder.includes(t) ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_18px_-10px_rgba(46,204,155,0.8)]" : "border-white/10 bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:border-primary/60"}`}
                     >
                       {bidOrder.includes(t) ? `${bidOrder.indexOf(t) + 1}º · ` : ""}
                       {BID_TYPE_LABEL[t]}

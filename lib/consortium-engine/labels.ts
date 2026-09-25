@@ -244,6 +244,21 @@ export const EVENT_TYPE_LABEL: Record<string, string> = {
   SIMULATION_RUN: "Simulação executada",
   ANOMALY_SCAN: "Varredura de anomalias",
   RULE_EXTRACTION_DRAFTED: "Regra extraída de documento (rascunho)",
+  REQUIREMENT_PENDING: "Requisito marcado como pendente",
+  REQUIREMENT_RECEIVED: "Documento recebido",
+  REQUIREMENT_APPROVED: "Requisito aprovado",
+  REQUIREMENT_REJECTED: "Requisito reprovado",
+  REQUIREMENT_WAIVED: "Requisito dispensado",
+  GUARANTEE_PENDING: "Garantia pendente",
+  GUARANTEE_UNDER_ANALYSIS: "Garantia em análise",
+  GUARANTEE_APPROVED: "Garantia aprovada",
+  GUARANTEE_REJECTED: "Garantia reprovada",
+  GUARANTEE_EXPIRED: "Garantia vencida",
+  GUARANTEE_RELEASED: "Garantia liberada",
+  CREDIT_PARTIALLY_USED: "Crédito parcialmente utilizado",
+  CREDIT_USED: "Crédito utilizado",
+  OWN_DRAW_COMMITTED: "Sorteio próprio: selo prévio registrado",
+  OWN_DRAW_REVEALED: "Sorteio próprio realizado",
 };
 
 export function labelOf(map: Record<string, string>, key: string | null | undefined): string {

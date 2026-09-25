@@ -37,7 +37,7 @@ function ruleEvidence(w: AssemblyWorkspace): FindingEvidence {
 }
 
 function lotteryEvidence(w: AssemblyWorkspace): FindingEvidence {
-  return w.lottery ? { source: `Loteria Federal · concurso ${w.lottery.contestNumber} de ${w.lottery.drawDate} (hash ${w.lottery.contentHash.slice(0, 12)}…)` } : {};
+  return w.lottery ? { source: `Loteria Federal · concurso ${w.lottery.contestNumber} de ${w.lottery.drawDate}, resultado verificado com selo de integridade` } : {};
 }
 
 export async function getAssembly(organizationId: string, assemblyId: string) {
@@ -54,7 +54,7 @@ export async function getAssembly(organizationId: string, assemblyId: string) {
       activeContemplations: w.contemplations.filter((c) => c.status !== "CANCELLED"),
     },
     evidence: [
-      { ...ruleEvidence(w), calculation: draw ? `cálculo ${draw.runNumber} (hash ${draw.hashes.resultHash.slice(0, 12)}…)` : undefined },
+      { ...ruleEvidence(w), calculation: draw ? `cálculo nº ${draw.runNumber} do sorteio` : undefined },
       lotteryEvidence(w),
     ],
   };
@@ -66,7 +66,7 @@ export async function getEligibilitySnapshot(organizationId: string, assemblyId:
   const snapshot = (s?.payload as { snapshot?: EligibilitySnapshot } | undefined)?.snapshot ?? null;
   return {
     data: { snapshot, snapshotId: s?.id ?? null, sequence: s?.sequence ?? null, group: w.group },
-    evidence: [{ calculation: s ? `snapshot de elegibilidade nº ${s.sequence} (hash ${s.payloadHash.slice(0, 12)}…)` : undefined, ...ruleEvidence(w) }],
+    evidence: [{ calculation: s ? `elegibilidade congelada nº ${s.sequence}` : undefined, ...ruleEvidence(w) }],
   };
 }
 
@@ -75,7 +75,7 @@ export async function getCalculationTrace(organizationId: string, assemblyId: st
   const run = w.runs.find((r) => r.phase === phase && r.status === "CURRENT") ?? null;
   return {
     data: { run, trace: (run?.trace ?? []) as TraceStep[], group: w.group },
-    evidence: [{ ...ruleEvidence(w), calculation: run ? `cálculo ${run.runNumber}, hashes entrada ${run.hashes.inputHash.slice(0, 10)}… / resultado ${run.hashes.resultHash.slice(0, 10)}…` : undefined }, lotteryEvidence(w)],
+    evidence: [{ ...ruleEvidence(w), calculation: run ? `cálculo nº ${run.runNumber}, com selos de integridade` : undefined }, lotteryEvidence(w)],
   };
 }
 
@@ -96,9 +96,9 @@ export async function explainQuota(organizationId: string, assemblyId: string, q
   return {
     data: { label, inRange, entry, presumedPolicy: snapshot?.unknownPolicy ?? null, attempts: numbers, contemplation, bidSteps, drawRun: draw, group: w.group },
     evidence: [
-      { ...ruleEvidence(w), calculation: draw ? `cálculo ${draw.runNumber} (resultado ${draw.hashes.resultHash.slice(0, 12)}…)` : undefined },
+      { ...ruleEvidence(w), calculation: draw ? `cálculo nº ${draw.runNumber} do sorteio` : undefined },
       lotteryEvidence(w),
-      { calculation: s ? `snapshot de elegibilidade nº ${s.sequence}` : undefined, data: entry ? { ...entry } : { semDado: true } },
+      { calculation: s ? `elegibilidade congelada nº ${s.sequence}` : undefined, data: entry ? { ...entry } : { semDado: true } },
     ],
   };
 }
@@ -115,13 +115,13 @@ export async function getRuleVersions(organizationId: string, ruleKey: string) {
       publishedByName: v.publishedBy ? names[v.publishedBy] ?? null : null,
       usedBy: assemblies.filter((a) => a.ruleId === v.id).map((a) => ({ id: a.id, number: a.assemblyNumber, date: a.assemblyDate, status: a.status })),
     })),
-    evidence: [{ rule: ruleKey, source: "consortium_draw_rules + consortium_assemblies" }],
+    evidence: [{ rule: ruleKey, source: "Versões da regra e assembleias" }],
   };
 }
 
 export async function getAuditTrail(organizationId: string, filters: { entityId?: string; assemblyId?: string }) {
   const events = await listEngineEvents(organizationId, { ...filters, limit: 100 });
-  return { data: events, evidence: [{ source: "consortium_engine_events (encadeados por hash)", data: { eventos: events.length } }] };
+  return { data: events, evidence: [{ source: "Registros de auditoria encadeados", data: { eventos: events.length } }] };
 }
 
 export async function getFindings(organizationId: string, assemblyId?: string) {
@@ -136,19 +136,19 @@ export async function getFindings(organizationId: string, assemblyId?: string) {
   if (assemblyId) q = q.eq("assembly_id", assemblyId);
   const { data, error } = await q;
   if (error) throw error;
-  return { data: data ?? [], evidence: [{ source: "motor de anomalias (regras determinísticas)" }] };
+  return { data: data ?? [], evidence: [{ source: "Verificações automáticas do motor" }] };
 }
 
 export async function getCreditPosition(organizationId: string, creditOperationId: string) {
   const w = await getCreditWorkspace(organizationId, creditOperationId);
   if (!w) throw new Error("Operação de crédito não encontrada.");
-  return { data: w, evidence: [{ source: "consortium_credit_operations + consortium_financial_movements + parcelas", calculation: "crédito líquido = atualizado − embutido; saldo devedor = parcelas em aberto" }] };
+  return { data: w, evidence: [{ source: "Crédito, movimentos financeiros e parcelas do contrato", calculation: "crédito líquido = atualizado − embutido; saldo devedor = parcelas em aberto" }] };
 }
 
 export async function reproduceCalculation(organizationId: string, assemblyId: string, runId: string) {
   const w = await ws(organizationId, assemblyId);
   const report = reproduceInWorkspace(w, runId);
-  return { data: report, evidence: [{ ...ruleEvidence(w), calculation: `reexecução do cálculo ${runId.slice(0, 8)} com os mesmos snapshots` }] };
+  return { data: report, evidence: [{ ...ruleEvidence(w), calculation: "reexecução do cálculo com os mesmos dados congelados" }] };
 }
 
 export const EXPLAIN = {

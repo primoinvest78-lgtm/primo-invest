@@ -128,3 +128,27 @@ export const TOOL_SCHEMAS: Record<ToolName, { description: string; parameters: R
 export function agentCanUse(agentId: string, tool: ToolName): boolean {
   return AGENTS.find((a) => a.id === agentId)?.tools.includes(tool) ?? false;
 }
+
+/** Nome legível de cada ferramenta (o identificador técnico nunca aparece na tela). */
+export const TOOL_LABEL: Record<ToolName, string> = {
+  getAssembly: "Consultar assembleia",
+  getRule: "Consultar regra",
+  getRuleVersions: "Consultar versões da regra",
+  getLotteryResult: "Consultar resultado oficial",
+  getEligibilitySnapshot: "Consultar elegibilidade",
+  getCalculationTrace: "Consultar cálculo",
+  getContemplation: "Consultar contemplações",
+  explainQuota: "Explicar cota",
+  getAuditTrail: "Consultar auditoria",
+  getFindings: "Consultar achados",
+  getCreditPosition: "Consultar crédito",
+  runSimulation: "Simular cenário",
+  reproduceCalculation: "Reproduzir cálculo",
+  proposeRuleDraftFromText: "Propor regra a partir de documento",
+};
+
+export const EFFECT_LABEL: Record<ToolEffect, string> = {
+  READ: "somente leitura",
+  SIMULATE: "simulação sem gravar resultado",
+  DRAFT: "cria apenas rascunho",
+};

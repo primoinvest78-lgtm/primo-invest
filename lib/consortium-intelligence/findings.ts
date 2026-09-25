@@ -80,3 +80,39 @@ export function mustReview(category: FindingCategory, severity: FindingSeverity,
 }
 
 export const SEVERITY_ORDER: Record<FindingSeverity, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+
+/** Nome legível de cada regra de detecção (o identificador nunca aparece na tela). */
+export const DETECTOR_LABEL: Record<string, string> = {
+  "reproducao-deterministica": "Reprodução do cálculo",
+  "integridade-snapshot": "Integridade dos dados congelados",
+  "integridade-regra": "Integridade da regra",
+  "versao-vigente": "Versão vigente da regra",
+  "integridade-fonte": "Integridade do resultado oficial",
+  "fonte-verificada": "Verificação do resultado oficial",
+  "universo-numerico": "Faixa de cotas do grupo",
+  "snapshot-vs-resultado": "Elegibilidade × resultado",
+  "base-parcial": "Base de elegibilidade parcial",
+  "regra-snapshot": "Regra × elegibilidade",
+  "duplicidade-contemplacao": "Contemplação em duplicidade",
+  "recursos-vs-contemplacoes": "Recursos × contemplações",
+  "resultado-conferencia": "Resultado de conferência",
+  "resultado-pendente": "Resultado oficial pendente",
+  "regra-pendente": "Regra pendente",
+  "retificacao-pendente": "Retificação pendente",
+  "unicidade-publicacao": "Publicação única de regra",
+  "regra-proxima-assembleia": "Regra da próxima assembleia",
+  "cadastro-cotas": "Cadastro de cotas",
+  "lance-sem-apuracao": "Lance sem apuração",
+  "cadeia-auditoria": "Cadeia de auditoria",
+  "tentativas-fonte-divergente": "Tentativas com fonte divergente",
+  "conferencia-fonte-oficial": "Conferência com a fonte oficial",
+};
+
+/** Nome legível dos selos de integridade (entrada, regra, ...). */
+export const SEAL_LABEL: Record<string, string> = {
+  inputHash: "dados de entrada",
+  ruleHash: "regra",
+  eligibilityHash: "elegibilidade",
+  calculationHash: "cálculo",
+  resultHash: "resultado",
+};

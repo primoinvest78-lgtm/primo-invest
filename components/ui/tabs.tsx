@@ -22,13 +22,18 @@ function Tabs({
   )
 }
 
+/**
+ * Abas com nomes sempre legíveis: cada nome fica num cartão azul-marinho
+ * (texto claro) e a aba ativa em verde-menta — nenhum nome "transparente"
+ * sobre o fundo. Vale para todas as abas do sistema.
+ */
 const tabsListVariants = cva(
-  "group/tabs-list inline-flex w-fit items-center justify-center rounded-lg p-[3px] text-muted-foreground group-data-horizontal/tabs:h-8 group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col data-[variant=line]:rounded-none",
+  "group/tabs-list inline-flex w-fit max-w-full flex-wrap items-center gap-2 group-data-vertical/tabs:flex-col",
   {
     variants: {
       variant: {
-        default: "bg-muted",
-        line: "gap-1 bg-transparent",
+        default: "bg-transparent",
+        line: "bg-transparent",
       },
     },
     defaultVariants: {
@@ -57,10 +62,13 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
       className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-1.5 py-0.5 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
-        "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
-        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
+        "relative inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-secondary px-3.5 py-2 text-sm font-semibold whitespace-nowrap text-secondary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_6px_14px_-8px_rgba(16,27,61,0.6)] transition-all duration-200",
+        "hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_0_0_1px_rgba(46,204,155,0.35),0_10px_20px_-10px_rgba(46,204,155,0.55)]",
+        "data-active:border-primary data-active:bg-primary data-active:text-primary-foreground data-active:shadow-[0_0_0_1px_rgba(46,204,155,0.6),0_10px_22px_-10px_rgba(46,204,155,0.8)]",
+        "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/60",
+        "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
+        "group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

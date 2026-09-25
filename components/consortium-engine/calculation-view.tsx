@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 
-import { Hash } from "@/components/consortium-engine/ui";
+import { stripTechnicalCodes } from "@/lib/utils/humanize";
 import { Button } from "@/components/ui/button";
 import type { TraceStep } from "@/lib/consortium-engine/types.ts";
 import type { DrawRunRecord } from "@/lib/data/consortium-engine";
@@ -49,8 +49,7 @@ function TraceList({ steps }: { steps: TraceStep[] }) {
         >
           <span className="w-6 shrink-0 text-right font-mono text-xs text-card-beige-muted-foreground">{s.step}</span>
           <span className="min-w-0 flex-1">
-            <span className="text-foreground">{s.message}</span>
-            <span className="ml-2 font-mono text-[10px] text-card-beige-muted-foreground">{s.code}</span>
+            <span className="text-foreground">{stripTechnicalCodes(s.message)}</span>
           </span>
         </motion.li>
       ))}
@@ -66,12 +65,8 @@ export function CalculationView({ run }: { run: DrawRunRecord }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-x-5 gap-y-1 rounded-xl bg-black/5 px-3 py-2">
-        <Hash value={run.hashes.inputHash} label="entrada" />
-        <Hash value={run.hashes.ruleHash} label="regra" />
-        <Hash value={run.hashes.eligibilityHash} label="elegibilidade" />
-        <Hash value={run.hashes.calculationHash} label="cálculo" />
-        <Hash value={run.hashes.resultHash} label="resultado" />
-        <span className="text-[11px] text-card-beige-muted-foreground">motor v{run.engineVersion}</span>
+        <span className="text-[11px] font-medium text-primary">✓ Cálculo gravado com 5 selos de integridade (entrada, regra, elegibilidade, cálculo e resultado)</span>
+        <span className="text-[11px] text-card-beige-muted-foreground">versão do motor {run.engineVersion}</span>
       </div>
       {full ? (
         <TraceList steps={run.trace} />

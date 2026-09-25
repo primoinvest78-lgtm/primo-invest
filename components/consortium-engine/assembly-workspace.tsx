@@ -45,6 +45,7 @@ import type {
   EngineRule,
 } from "@/lib/data/consortium-engine";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
+import { SEAL_LABEL } from "@/lib/consortium-intelligence/findings";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
 
 const GOVERN = ["admin", "manager", "compliance"];
@@ -72,7 +73,7 @@ function Pipeline({ status }: { status: WS["assembly"]["status"] }) {
                 ? "border-primary/40 bg-primary/10 text-foreground"
                 : i === current
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-black/10 text-card-beige-muted-foreground"
+                  : "border-white/10 bg-secondary text-secondary-foreground/85"
             }`}
           >
             {i + 1}. {ASSEMBLY_STATUS_LABEL[s]}
@@ -96,10 +97,10 @@ function ReproduceButton({ assemblyId, runId }: { assemblyId: string; runId: str
       </Button>
       {report ? (
         report.identical ? (
-          <p className="text-xs font-semibold text-primary">Reprodução idêntica: mesmos 5 hashes e mesmo resultado.</p>
+          <p className="text-xs font-semibold text-primary">Reprodução idêntica: os 5 selos de integridade conferem e o resultado é o mesmo.</p>
         ) : (
           <p className="text-xs font-semibold text-destructive">
-            ANOMALIA CRÍTICA: reprodução divergente ({report.hashDiffs.join(", ")}). Adicionadas: {report.added.join(", ") || "—"} · removidas:{" "}
+            ANOMALIA CRÍTICA: a reprodução não conferiu ({report.hashDiffs.map((h) => SEAL_LABEL[h] ?? h).join(", ")}). Cotas a mais: {report.added.join(", ") || "—"} · cotas a menos:{" "}
             {report.removed.join(", ") || "—"}. Registrado na auditoria.
           </p>
         )

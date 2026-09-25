@@ -7,7 +7,9 @@ import { useState } from "react";
 import { ActionButton, EmptyState, Section, StatusBadge } from "@/components/consortium-engine/ui";
 import { Input } from "@/components/ui/input";
 import { reviewFinding } from "@/lib/actions/consortium-intelligence";
-import { CATEGORY_LABEL, CONFIDENCE_LABEL, FINDING_STATUS_LABEL, SEVERITY_LABEL } from "@/lib/consortium-intelligence/findings";
+import { HumanData } from "@/components/ui/human-data";
+import { CATEGORY_LABEL, CONFIDENCE_LABEL, DETECTOR_LABEL, FINDING_STATUS_LABEL, SEVERITY_LABEL } from "@/lib/consortium-intelligence/findings";
+import { stripTechnicalCodes } from "@/lib/utils/humanize";
 import type { FindingRow } from "@/lib/data/consortium-intelligence";
 import { formatDate } from "@/lib/utils/format";
 
@@ -30,13 +32,15 @@ function EvidenceBlock({ evidence }: { evidence: Record<string, unknown> }) {
     <div className="space-y-1 rounded-lg bg-black/5 p-2 text-xs">
       {rows.map(([k, v]) => (
         <p key={k}>
-          <span className="font-semibold">{k}:</span> {String(v)}
+          <span className="font-semibold">{k}:</span> {stripTechnicalCodes(String(v))}
         </p>
       ))}
       {evidence.data ? (
         <details>
           <summary className="cursor-pointer font-semibold text-accent">Dados</summary>
-          <pre className="mt-1 max-h-40 overflow-auto text-[11px]">{JSON.stringify(evidence.data, null, 2)}</pre>
+          <div className="mt-1">
+            <HumanData data={evidence.data as Record<string, unknown>} />
+          </div>
         </details>
       ) : null}
       {rows.length === 0 && !evidence.data ? <p className="text-card-beige-muted-foreground">Sem evidência adicional.</p> : null}
@@ -61,7 +65,7 @@ export function FindingsPanel({ findings, role }: { findings: FindingRow[]; role
               key={k}
               type="button"
               onClick={() => setFilter(k)}
-              className={`rounded-lg border px-3 py-1 text-xs font-semibold transition-colors ${filter === k ? "border-primary bg-primary/15" : "border-black/15 hover:bg-black/5"}`}
+              className={`rounded-lg border px-3 py-1 text-xs font-semibold transition-all ${filter === k ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_18px_-10px_rgba(46,204,155,0.8)]" : "border-white/10 bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:border-primary/60"}`}
             >
               {k === "ativos" ? "Ativos" : "Todos"}
             </button>
@@ -85,7 +89,7 @@ export function FindingsPanel({ findings, role }: { findings: FindingRow[]; role
                 <div className="min-w-0">
                   <p className="font-semibold text-foreground">{f.title}</p>
                   <p className="text-xs text-card-beige-muted-foreground">
-                    {CATEGORY_LABEL[f.category]} · severidade {SEVERITY_LABEL[f.severity]} · confiança {CONFIDENCE_LABEL[f.confidence]} · regra de detecção: <span className="font-mono">{f.detector}</span>
+                    {CATEGORY_LABEL[f.category]} · severidade {SEVERITY_LABEL[f.severity]} · confiança {CONFIDENCE_LABEL[f.confidence]} · verificação: {DETECTOR_LABEL[f.detector] ?? "regra automática"}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -93,7 +97,7 @@ export function FindingsPanel({ findings, role }: { findings: FindingRow[]; role
                   <StatusBadge status={f.status === "OPEN" ? "PENDING" : f.status === "RESOLVED" ? "COMPLETED" : f.status === "DISMISSED" ? "ARCHIVED" : "REVIEW"} label={FINDING_STATUS_LABEL[f.status]} />
                 </div>
               </div>
-              <p>{f.explanation}</p>
+              <p>{stripTechnicalCodes(f.explanation)}</p>
               <EvidenceBlock evidence={f.evidence} />
               <p className="text-xs text-card-beige-muted-foreground">
                 Detectado em {formatDate(f.firstDetectedAt)} · última vez {formatDate(f.lastDetectedAt)} · {f.occurrences} ocorrência(s)

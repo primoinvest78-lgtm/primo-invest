@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 
 import { EmptyState, Section, Stat } from "@/components/consortium-engine/ui";
 import { REASON_LABEL, NUMBER_TYPE_LABEL, labelOf } from "@/lib/consortium-engine/labels.ts";
-import { AGENTS, FORBIDDEN_FOR_AI, TOOL_EFFECT, TOOL_SCHEMAS } from "@/lib/consortium-intelligence/agents";
+import { AGENTS, EFFECT_LABEL, FORBIDDEN_FOR_AI, TOOL_EFFECT, TOOL_LABEL, TOOL_SCHEMAS } from "@/lib/consortium-intelligence/agents";
 import { NUMBER_ANALYSIS_DISCLAIMER, type NumberAnalysis } from "@/lib/consortium-intelligence/number-analysis";
 import type { EngineGroup } from "@/lib/data/consortium-engine";
 
@@ -21,7 +21,7 @@ export function NumberAnalysisPanel({ groups, selectedGroupId, analysis }: { gro
             <Link
               key={g.id}
               href={`/consorcios/motor/inteligencia?grupo=${g.id}`}
-              className={`rounded-lg border px-3 py-1 text-xs font-semibold transition-colors ${g.id === selectedGroupId ? "border-primary bg-primary/15" : "border-black/15 hover:bg-black/5"}`}
+              className={`rounded-lg border px-3 py-1 text-xs font-semibold transition-all ${g.id === selectedGroupId ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_18px_-10px_rgba(46,204,155,0.8)]" : "border-white/10 bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:border-primary/60"}`}
             >
               {g.groupCode}
             </Link>
@@ -92,12 +92,11 @@ export function AgentsPanel() {
           {AGENTS.map((a) => (
             <div key={a.id} className="card-premium space-y-2 rounded-xl p-3 text-sm transition-all duration-200 hover:-translate-y-0.5">
               <p className="font-semibold">{a.name}</p>
-              <p className="font-mono text-[11px] text-card-beige-muted-foreground">{a.id}</p>
               <p className="text-xs">{a.mission}</p>
               <div className="flex flex-wrap gap-1">
                 {a.tools.map((t) => (
-                  <span key={t} title={TOOL_SCHEMAS[t].description} className="rounded-md border border-black/15 px-1.5 py-0.5 font-mono text-[10px]">
-                    {t} · {TOOL_EFFECT[t] === "READ" ? "leitura" : TOOL_EFFECT[t] === "SIMULATE" ? "simulação" : "rascunho"}
+                  <span key={t} title={TOOL_SCHEMAS[t].description} className="rounded-md border border-black/15 px-2 py-0.5 text-[11px]">
+                    {TOOL_LABEL[t]} · <span className="text-card-beige-muted-foreground">{EFFECT_LABEL[TOOL_EFFECT[t]]}</span>
                   </span>
                 ))}
               </div>
@@ -114,8 +113,7 @@ export function AgentsPanel() {
           ))}
         </ul>
         <p className="mt-3 text-xs text-card-beige-muted-foreground">
-          Hoje as respostas são determinísticas. Para plugar um modelo de linguagem, ele recebe exatamente estas ferramentas (esquemas prontos em
-          <span className="font-mono"> lib/consortium-intelligence/agents.ts</span>) e continua sujeito às mesmas proibições.
+          Hoje as respostas são calculadas por regras fixas, a partir dos dados do sistema. Quando um modelo de linguagem for conectado, ele usará exatamente estas ferramentas e continuará sujeito às mesmas proibições.
         </p>
       </Section>
     </div>

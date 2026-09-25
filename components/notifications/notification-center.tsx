@@ -38,7 +38,7 @@ export function NotificationCenter({ items, filter }: { items: AppNotification[]
             <Link
               key={f}
               href={f === "todas" ? "/notificacoes" : "/notificacoes?filtro=nao-lidas"}
-              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${filter === f ? "border-primary bg-primary/15" : "border-black/15 hover:bg-black/5"}`}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all ${filter === f ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_18px_-10px_rgba(46,204,155,0.8)]" : "border-white/10 bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:border-primary/60"}`}
             >
               {f === "todas" ? "Todas" : "Não lidas"}
             </Link>

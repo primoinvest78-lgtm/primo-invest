@@ -17,6 +17,7 @@ import {
   TIE_BREAK_LABEL,
   UNKNOWN_POLICY_LABEL,
 } from "@/lib/consortium-engine/labels.ts";
+import { humanizeValue } from "@/lib/utils/humanize";
 import type { RuleFieldChange } from "@/lib/consortium-engine/rule-diff.ts";
 import { ASSEMBLY_STATUS_LABEL } from "@/lib/consortium-engine/state-machine.ts";
 import type { EngineAssembly, EngineEvent, EngineGroup, EngineRule } from "@/lib/data/consortium-engine";
@@ -29,7 +30,7 @@ const pct = (n: number | null) => (n === null ? "—" : `${n}%`);
 function show(v: unknown): string {
   if (v === null || v === undefined) return "—";
   if (typeof v === "boolean") return yes(v);
-  if (Array.isArray(v)) return v.map((x) => (typeof x === "object" ? JSON.stringify(x) : String(x))).join(" · ");
+  if (Array.isArray(v)) return humanizeValue(v);
   return String(v);
 }
 
@@ -105,7 +106,7 @@ export function RuleWorkspace({
         <div className="space-y-3">
           <div className="flex flex-wrap gap-4 text-xs">
             <span>
-              Hash: <Hash value={rule.ruleHash} />
+              <Hash value={rule.ruleHash} />
             </span>
             {hashCheck === false ? <span className="font-semibold text-destructive">Conteúdo NÃO confere com o hash registrado.</span> : null}
             {hashCheck === true ? <span className="text-primary">Conteúdo confere com o hash.</span> : null}
@@ -130,7 +131,7 @@ export function RuleWorkspace({
             <p>
               {c.prizeCount} prêmio(s) de {c.prizeDigits} dígitos.
             </p>
-            <ol className="mt-1 list-decimal space-y-0.5 pl-5 font-mono text-xs">
+            <ol className="mt-1 list-decimal space-y-0.5 pl-5 text-xs">
               {c.candidatePlan.map((s, i) => (
                 <li key={i}>
                   {s.prize}º prêmio · posições {s.positions.join(",")}
@@ -141,7 +142,7 @@ export function RuleWorkspace({
           <div className="space-y-1 rounded-xl border border-black/10 p-3">
             <p className="font-semibold">Equivalência e substituição</p>
             <p>Equivalência: {labelOf(EQUIVALENCE_LABEL, c.equivalence.method)}</p>
-            {c.equivalence.map ? <p className="font-mono text-xs">{Object.entries(c.equivalence.map).map(([k, v]) => `${k}→${v}`).join(" · ")}</p> : null}
+            {c.equivalence.map ? <p className="text-xs">{Object.entries(c.equivalence.map).map(([k, v]) => `número ${k} vira a cota ${v}`).join(" · ")}</p> : null}
             <p>
               Aproximação: {labelOf(SEQUENCE_METHOD_LABEL, c.approximation.method)}
               {c.approximation.method !== "NONE" ? ` (até ${c.approximation.maxSteps} passo(s)${c.approximation.wrapAround ? ", com volta" : ""})` : ""}
@@ -199,9 +200,9 @@ export function RuleWorkspace({
                 className={`rounded-xl border px-3 py-2 text-sm ${d.severity === "HIGH" ? "border-destructive/40 bg-destructive/5" : "border-black/10"}`}
               >
                 <p className="font-semibold">
-                  {d.label} <span className="font-mono text-[11px] text-card-beige-muted-foreground">{d.path}</span>
+                  {d.label}
                 </p>
-                <p className="font-mono text-xs">
+                <p className="text-xs">
                   <span className="text-destructive line-through">{show(d.before)}</span> → <span className="text-primary">{show(d.after)}</span>
                 </p>
                 <p className="text-xs text-card-beige-muted-foreground">{d.impact}</p>

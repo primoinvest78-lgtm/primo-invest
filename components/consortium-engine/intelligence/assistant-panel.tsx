@@ -7,7 +7,7 @@ import { Feedback, Field, NativeSelect, Section, useEngineAction } from "@/compo
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAssistantAction } from "@/lib/actions/consortium-intelligence";
-import { AGENTS } from "@/lib/consortium-intelligence/agents";
+import { AGENTS, TOOL_LABEL } from "@/lib/consortium-intelligence/agents";
 import type { AssistantAnswer } from "@/lib/consortium-intelligence/assistant";
 
 const SUGGESTIONS = [
@@ -70,7 +70,7 @@ export function AssistantPanel({ assemblies }: { assemblies: { value: string; la
               key={s}
               type="button"
               onClick={() => ask(s)}
-              className="rounded-full border border-black/15 px-3 py-1 text-xs transition-colors hover:border-primary hover:bg-primary/10"
+              className="rounded-full border border-white/10 bg-secondary text-secondary-foreground hover:-translate-y-0.5 hover:border-primary/60 px-3 py-1 text-xs font-medium transition-all"
             >
               {s}
             </button>
@@ -101,7 +101,7 @@ export function AssistantPanel({ assemblies }: { assemblies: { value: string; la
                   </div>
                 ) : null}
                 <p className="text-[11px] text-card-beige-muted-foreground">
-                  {agent?.name ?? t.answer.agent} · ferramentas: {t.answer.tools.join(", ") || "nenhuma"} · resposta determinística (sem modelo de linguagem)
+                  {agent?.name ?? "Assistente"} · consultas: {t.answer.tools.map((x) => TOOL_LABEL[x]).join(", ") || "nenhuma"} · resposta calculada a partir dos dados do sistema
                 </p>
               </motion.div>
             );

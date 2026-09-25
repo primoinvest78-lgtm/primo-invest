@@ -200,7 +200,7 @@ export function EngineHub(props: {
                       <th className={thClass}>Versão</th>
                       <th className={thClass}>Administradora</th>
                       <th className={thClass}>Vigência</th>
-                      <th className={thClass}>Hash</th>
+                      <th className={thClass}>Integridade</th>
                       <th className={thClass}>Status</th>
                     </tr>
                   </thead>
@@ -264,7 +264,7 @@ export function EngineHub(props: {
                         <td className={tdClass}>
                           <span className="font-mono text-xs">{l.prizes.join(" · ")}</span>
                           <span className="block">
-                            <Hash value={l.contentHash} label="hash" />
+                            <Hash value={l.contentHash} />
                           </span>
                         </td>
                         <td className={tdClass}>

@@ -116,7 +116,7 @@ export async function askAssistant(organizationId: string, question: string, ctx
     const rule = r.data.workspace.rule;
     const lines = [ruleLine(rule)];
     if (rule) {
-      lines.push(`Status ${rule.status}; vigência ${rule.effectiveFrom} a ${rule.effectiveUntil ?? "indeterminado"}; hash ${rule.ruleHash?.slice(0, 16) ?? "—"}…`);
+      lines.push(`Situação: ${({ DRAFT: "rascunho", REVIEW: "em revisão", APPROVED: "aprovada", PUBLISHED: "publicada", SUPERSEDED: "substituída", ARCHIVED: "arquivada" } as Record<string, string>)[rule.status] ?? rule.status}; vigência ${rule.effectiveFrom} a ${rule.effectiveUntil ?? "indeterminado"}; selo de integridade ${rule.ruleHash ? "registrado" : "ausente"}.`);
       lines.push(`Plano: ${rule.config.candidatePlan.map((s) => `${s.prize}º prêmio [${s.positions.join(",")}]`).join(" → ")}.`);
     }
     return answer("regra-utilizada", "getRule", lines, r.evidence, ["getAssembly"]);
@@ -127,7 +127,7 @@ export async function askAssistant(organizationId: string, question: string, ctx
     const r = await getAssembly(organizationId, need());
     const l = r.data.workspace.lottery;
     const lines = l
-      ? [`Resultado oficial usado: Loteria Federal, concurso ${l.contestNumber} de ${l.drawDate}.`, `Prêmios: ${l.prizes.map((p, i) => `${i + 1}º ${p}`).join(" · ")}.`, `Situação: ${l.verificationStatus}; referência: ${l.sourceReference ?? "—"}; hash ${l.contentHash.slice(0, 16)}…`]
+      ? [`Resultado oficial usado: Loteria Federal, concurso ${l.contestNumber} de ${l.drawDate}.`, `Prêmios: ${l.prizes.map((p, i) => `${i + 1}º ${p}`).join(" · ")}.`, `Situação: ${l.verificationStatus === "VERIFIED" ? "verificado" : l.verificationStatus === "PENDING" ? "aguardando verificação" : "inválido"}; referência: ${l.sourceReference ?? "—"}; selo de integridade registrado.`]
       : ["Nenhum resultado oficial travado nesta assembleia."];
     return answer("resultado-oficial", "getLotteryResult", lines, r.evidence, ["getAssembly"]);
   }
@@ -189,7 +189,7 @@ export async function askAssistant(organizationId: string, question: string, ctx
     const v = await getRuleVersions(organizationId, rule.ruleKey);
     const lines = v.data.map(
       (x) =>
-        `v${x.version} (${x.status}): criada por ${x.createdByName ?? "—"} em ${x.createdAt.slice(0, 10)}` +
+        `v${x.version} (${({ DRAFT: "rascunho", REVIEW: "em revisão", APPROVED: "aprovada", PUBLISHED: "publicada", SUPERSEDED: "substituída", ARCHIVED: "arquivada" } as Record<string, string>)[x.status] ?? x.status}): criada por ${x.createdByName ?? "—"} em ${x.createdAt.slice(0, 10)}` +
         `${x.approvedByName ? `, aprovada por ${x.approvedByName} em ${x.approvedAt?.slice(0, 10)}` : ""}` +
         `${x.publishedByName ? `, publicada por ${x.publishedByName} em ${x.publishedAt?.slice(0, 10)}` : ""}` +
         `${x.usedBy.length ? `; usada nas assembleias ${x.usedBy.map((u) => `nº ${u.number}`).join(", ")}` : ""}.`,
@@ -203,7 +203,7 @@ export async function askAssistant(organizationId: string, question: string, ctx
     const r = await getAssembly(organizationId, need());
     const rets = r.data.workspace.retifications;
     const lines = rets.length
-      ? rets.map((x) => `Retificação ${x.status} (${x.requestedAt.slice(0, 10)}): ${x.reason}. Resultado original ${x.originalResultHash.slice(0, 12)}… → novo ${x.newResultHash?.slice(0, 12) ?? "—"}…`)
+      ? rets.map((x) => `Retificação ${({ REQUESTED: "solicitada", APPROVED: "aprovada", REJECTED: "rejeitada", APPLIED: "aplicada" } as Record<string, string>)[x.status] ?? x.status} em ${x.requestedAt.slice(8, 10)}/${x.requestedAt.slice(5, 7)}/${x.requestedAt.slice(0, 4)}: ${x.reason}. ${x.newResultHash ? "O resultado original foi preservado e um novo resultado foi gerado." : "Ainda sem novo resultado."}`)
       : ["Não houve retificação nesta assembleia."];
     return answer("retificacao", "getAuditTrail", lines, r.evidence, ["getAssembly"]);
   }
@@ -215,7 +215,7 @@ export async function askAssistant(organizationId: string, question: string, ctx
     const lines: string[] = [];
     for (const run of runs) {
       const rep = await reproduceCalculation(organizationId, need(), run.id);
-      lines.push(rep.data?.identical ? `Cálculo de ${run.phase === "DRAW" ? "sorteio" : "lances"} nº ${run.runNumber}: reproduzido com os mesmos 5 hashes.` : `Cálculo de ${run.phase === "DRAW" ? "sorteio" : "lances"} nº ${run.runNumber}: DIVERGENTE (${rep.data?.hashDiffs.join(", ")}) — anomalia crítica.`);
+      lines.push(rep.data?.identical ? `Cálculo de ${run.phase === "DRAW" ? "sorteio" : "lances"} nº ${run.runNumber}: reproduzido de forma idêntica (os 5 selos de integridade conferem).` : `Cálculo de ${run.phase === "DRAW" ? "sorteio" : "lances"} nº ${run.runNumber}: DIVERGENTE em ${rep.data?.hashDiffs.map((h) => ({ inputHash: "dados de entrada", ruleHash: "regra", eligibilityHash: "elegibilidade", calculationHash: "cálculo", resultHash: "resultado" } as Record<string, string>)[h] ?? h).join(", ")} — anomalia crítica.`);
     }
     return answer("reproducao", "reproduceCalculation", lines.length ? lines : ["Nenhum cálculo para reproduzir."], a.evidence);
   }

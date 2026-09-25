@@ -2,9 +2,11 @@
 
 import { motion } from "motion/react";
 
-import { EmptyState, Hash } from "@/components/consortium-engine/ui";
-import { EVENT_TYPE_LABEL, labelOf } from "@/lib/consortium-engine/labels.ts";
+import { EmptyState } from "@/components/consortium-engine/ui";
+import { HumanData } from "@/components/ui/human-data";
+import { EVENT_TYPE_LABEL } from "@/lib/consortium-engine/labels.ts";
 import type { EngineEvent } from "@/lib/data/consortium-engine";
+import { humanizeKey } from "@/lib/utils/humanize";
 
 function when(iso: string) {
   const d = new Date(iso);
@@ -28,21 +30,18 @@ export function AuditTimeline({ events }: { events: EngineEvent[] }) {
           }`}
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-semibold text-foreground">{labelOf(EVENT_TYPE_LABEL, e.eventType)}</p>
+            <p className="text-sm font-semibold text-foreground">{EVENT_TYPE_LABEL[e.eventType] ?? humanizeKey(e.eventType.toLowerCase())}</p>
             <p className="text-xs text-card-beige-muted-foreground">
               {when(e.createdAt)} · {e.actorName ?? "sistema"}
             </p>
           </div>
-          <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
-            <Hash value={e.eventHash} label="evento" />
-            <Hash value={e.prevHash} label="anterior" />
-          </div>
+          <p className="mt-0.5 text-[11px] font-medium text-primary">✓ Registro encadeado ao anterior — não pode ser alterado nem apagado</p>
           {Object.keys(e.payload).length > 0 ? (
             <details className="mt-1">
               <summary className="cursor-pointer text-xs font-semibold text-accent">Detalhes</summary>
-              <pre className="mt-1 max-h-48 overflow-auto rounded-lg bg-black/5 p-2 text-[11px] leading-relaxed">
-                {JSON.stringify(e.payload, null, 2)}
-              </pre>
+              <div className="mt-1 rounded-lg bg-black/5 p-2">
+                <HumanData data={e.payload} />
+              </div>
             </details>
           ) : null}
         </motion.li>

@@ -252,10 +252,11 @@ export function EmptyState({ children }: { children: ReactNode }) {
 
 export function Hash({ value, label }: { value: string | null | undefined; label?: string }) {
   if (!value) return <span className="text-card-beige-muted-foreground">—</span>;
+  // O valor técnico (hash) fica gravado e é conferido pelo sistema, mas
+  // nunca é exibido — a tela só mostra que o selo existe.
   return (
-    <span title={value} className="font-mono text-[11px] text-card-beige-muted-foreground">
-      {label ? `${label} ` : ""}
-      {value.slice(0, 12)}…
+    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-primary">
+      ✓ Selo de integridade{label ? ` (${label})` : ""}
     </span>
   );
 }

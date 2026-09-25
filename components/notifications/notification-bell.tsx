@@ -118,7 +118,7 @@ export function NotificationBell({
                   type="button"
                   onClick={readAll}
                   disabled={unread === 0}
-                  className="inline-flex items-center gap-1 rounded-lg border border-primary/40 px-2.5 py-1 text-xs font-semibold text-foreground transition-colors hover:bg-primary/15 disabled:cursor-default disabled:opacity-40"
+                  className="inline-flex items-center gap-1 rounded-lg border border-primary bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground transition-all hover:-translate-y-0.5 disabled:cursor-default disabled:border-white/10 disabled:bg-secondary disabled:text-secondary-foreground disabled:opacity-70"
                 >
                   <CheckCheck className="h-3.5 w-3.5" /> Ler todas
                 </button>

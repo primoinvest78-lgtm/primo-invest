@@ -380,12 +380,12 @@ export async function generateInternalReport(assemblyId: string): Promise<IntelR
     const d = w.group.numbering.displayDigits;
     const lines = [
       `RELATÓRIO INTERNO — Assembleia nº ${w.assembly.assemblyNumber} · grupo ${w.group.groupCode} (${w.group.administratorName}) · ${w.assembly.assemblyDate}`,
-      `Estado: ${w.assembly.status}.`,
-      w.rule ? `Regra: ${w.rule.name} (${w.rule.ruleKey}) v${w.rule.version}, hash ${w.rule.ruleHash?.slice(0, 16)}…` : "Regra: não definida.",
+      `Etapa: ${({ SCHEDULED: "agendada", PREPARING: "em preparação", ELIGIBILITY_LOCKED: "elegibilidade travada", LOTTERY_LOCKED: "resultado travado", DRAW_READY: "pronta para apuração", DRAWING: "apurando", DRAW_COMPLETED: "sorteio apurado", BID_PROCESSING: "lances apurados", HOMOLOGATION: "em homologação", COMPLETED: "homologada", LOCKED: "travada", RETIFIED: "retificada" } as Record<string, string>)[w.assembly.status] ?? w.assembly.status}.`,
+      w.rule ? `Regra: ${w.rule.name} (${w.rule.ruleKey}) v${w.rule.version}. Selo de integridade ${w.rule.ruleHash ? "registrado" : "ausente"}.` : "Regra: não definida.",
       w.lottery ? `Resultado oficial: concurso ${w.lottery.contestNumber} de ${w.lottery.drawDate} — ${w.lottery.prizes.join(" · ")}.` : "Resultado oficial: não travado.",
       a.data.resources ? `Recursos: ${a.data.resources.justification.join(" ")}` : "Recursos: não apurados.",
-      `Contemplações vigentes: ${a.data.activeContemplations.map((c) => `cota ${String(c.quotaNumber).padStart(d, "0")} (${c.method}, ${c.status})`).join("; ") || "nenhuma"}.`,
-      a.data.drawRun ? `Hashes do sorteio: entrada ${a.data.drawRun.hashes.inputHash.slice(0, 12)}…, resultado ${a.data.drawRun.hashes.resultHash.slice(0, 12)}…` : "",
+      `Contemplações vigentes: ${a.data.activeContemplations.map((c) => `cota ${String(c.quotaNumber).padStart(d, "0")} (${({ DRAW: "sorteio", DRAW_CANCELLED: "sorteio de cancelada", FREE_BID: "lance livre", FIXED_BID: "lance fixo", EMBEDDED_BID: "lance embutido" } as Record<string, string>)[c.method] ?? c.method}, ${({ SELECTED: "apurada", HOMOLOGATED: "homologada", PENDING: "pendente", RETAINED: "retida", RETIRED: "baixada" } as Record<string, string>)[c.status] ?? c.status})`).join("; ") || "nenhuma"}.`,
+      a.data.drawRun ? `Cálculo do sorteio nº ${a.data.drawRun.runNumber} gravado com os 5 selos de integridade.` : "",
       `Retificações: ${w.retifications.length}.`,
       `Achados abertos: ${(f.data as unknown[]).length}.`,
     ].filter(Boolean);
