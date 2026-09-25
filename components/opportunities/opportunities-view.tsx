@@ -10,6 +10,7 @@ import { OpportunitiesFilterBar } from "@/components/opportunities/opportunities
 import { OpportunitiesKpis } from "@/components/opportunities/opportunities-kpis";
 import { OpportunitiesPriorityPanel } from "@/components/opportunities/opportunities-priority-panel";
 import { OpportunitiesTable } from "@/components/opportunities/opportunities-table";
+import { scrollToId } from "@/components/ui/panel-action";
 import type { StageColumn } from "@/lib/data/opportunities";
 import {
   applyOpportunityFilters,
@@ -69,8 +70,16 @@ export function OpportunitiesView({ stages }: { stages: StageColumn[] }) {
 
       <OpportunitiesPriorityPanel opportunities={filteredOpportunities} />
 
-      <OpportunitiesCharts stages={filteredStages} opportunities={filteredOpportunities} />
+      <OpportunitiesCharts
+        stages={filteredStages}
+        opportunities={filteredOpportunities}
+        onApplyFilters={(patch) => {
+          setFilters({ ...DEFAULT_OPPORTUNITY_FILTERS, ...patch });
+          scrollToId("lista-oportunidades");
+        }}
+      />
 
+      <div id="lista-oportunidades" className="scroll-mt-24" />
       <OpportunitiesFilterBar
         stages={stages}
         opportunities={allOpportunities}

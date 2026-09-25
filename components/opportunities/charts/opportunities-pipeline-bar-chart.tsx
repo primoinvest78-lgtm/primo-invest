@@ -5,7 +5,14 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 import { formatCurrencyBRL } from "@/lib/utils/format";
 
-export function OpportunitiesPipelineBarChart({ data }: { data: { stage: string; value: number }[] }) {
+export function OpportunitiesPipelineBarChart({
+  data,
+  onSelect,
+}: {
+  data: { stage: string; value: number; stageId?: string }[];
+  /** Clicar numa barra filtra a lista por aquela etapa. */
+  onSelect?: (stageId: string) => void;
+}) {
   return (
     <div className="h-[260px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -37,7 +44,12 @@ export function OpportunitiesPipelineBarChart({ data }: { data: { stage: string;
           />
           <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={48}>
             {data.map((entry, index) => (
-              <Cell key={entry.stage} fill={CHART_SEQUENCE[index % CHART_SEQUENCE.length]} />
+              <Cell
+                key={entry.stage}
+                fill={CHART_SEQUENCE[index % CHART_SEQUENCE.length]}
+                onClick={onSelect && entry.stageId ? () => onSelect(entry.stageId as string) : undefined}
+                style={onSelect ? { cursor: "pointer" } : undefined}
+              />
             ))}
           </Bar>
         </BarChart>

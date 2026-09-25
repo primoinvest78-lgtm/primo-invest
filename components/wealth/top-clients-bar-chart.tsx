@@ -1,10 +1,17 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { formatCurrencyBRL } from "@/lib/utils/format";
 
-export function TopClientsBarChart({ data }: { data: { name: string; total: number }[] }) {
+export function TopClientsBarChart({
+  data,
+  onSelect,
+}: {
+  data: { name: string; total: number }[];
+  /** Clicar numa barra abre o registro correspondente (índice em `data`). */
+  onSelect?: (index: number) => void;
+}) {
   return (
     <div className="h-[260px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -36,7 +43,16 @@ export function TopClientsBarChart({ data }: { data: { name: string; total: numb
               color: "var(--popover-foreground)",
             }}
           />
-          <Bar dataKey="total" fill="var(--primary)" radius={[0, 6, 6, 0]} maxBarSize={22} />
+          <Bar dataKey="total" fill="var(--primary)" radius={[0, 6, 6, 0]} maxBarSize={22}>
+            {data.map((entry, index) => (
+              <Cell
+                key={`${entry.name}-${index}`}
+                fill="var(--primary)"
+                onClick={onSelect ? () => onSelect(index) : undefined}
+                style={onSelect ? { cursor: "pointer" } : undefined}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

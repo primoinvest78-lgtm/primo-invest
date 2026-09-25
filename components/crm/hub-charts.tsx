@@ -15,6 +15,7 @@ import {
 
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 import type { CrmActivityPoint } from "@/lib/data/crm";
+import { PanelAction } from "@/components/ui/panel-action";
 import type { CrmSignalBundle } from "@/lib/crm/signals";
 import { formatDate } from "@/lib/utils/format";
 
@@ -59,16 +60,26 @@ export function HubCharts({ bundle, activity }: { bundle: CrmSignalBundle; activ
     <div className="grid gap-4 lg:grid-cols-2">
       {showByKind ? (
         <section className="card-premium rounded-2xl p-5">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Composição</p>
-          <h3 className="mt-1 text-h2 font-bold text-foreground">Sinais por tipo de registro</h3>
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Composição</p>
+              <h3 className="mt-1 text-h2 font-bold text-foreground">Sinais por tipo de registro</h3>
+            </div>
+            <PanelAction href="/inteligencia">Ver na Inteligência</PanelAction>
+          </div>
           <DonutMini data={byKind} />
         </section>
       ) : null}
 
       {showActivity ? (
         <section className="card-premium rounded-2xl p-5">
-          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Engajamento</p>
-          <h3 className="mt-1 text-h2 font-bold text-foreground">Interações e notas — 14 dias</h3>
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Engajamento</p>
+              <h3 className="mt-1 text-h2 font-bold text-foreground">Interações e notas — 14 dias</h3>
+            </div>
+            <PanelAction href="/clientes">Ver clientes</PanelAction>
+          </div>
           <div className="mt-4 h-[220px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={activityData} margin={{ left: -18, right: 8 }}>

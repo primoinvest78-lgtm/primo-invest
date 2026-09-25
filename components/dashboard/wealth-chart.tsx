@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { PanelAction } from "@/components/ui/panel-action";
 import type { WealthPoint } from "@/lib/mock/dashboard";
 
 export function WealthChart({ data }: { data: WealthPoint[] }) {
@@ -26,9 +27,12 @@ export function WealthChart({ data }: { data: WealthPoint[] }) {
           </h3>
         </div>
 
-        <p className="shrink-0 text-body-sm text-card-beige-muted-foreground">
-          {data.length > 0 ? `Evolução nos últimos ${data.length} meses` : "Sem histórico disponível"}
-        </p>
+        <div className="flex shrink-0 flex-col items-start gap-1 sm:items-end">
+          <PanelAction href="/patrimonio">Ver patrimônio</PanelAction>
+          <p className="text-body-sm text-card-beige-muted-foreground">
+            {data.length > 0 ? `Evolução nos últimos ${data.length} meses` : "Sem histórico disponível"}
+          </p>
+        </div>
       </div>
 
       {data.length === 0 ? (

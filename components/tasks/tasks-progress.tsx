@@ -2,9 +2,10 @@
 
 import { motion } from "motion/react";
 
+import { PanelAction } from "@/components/ui/panel-action";
 import type { TaskItem } from "@/lib/data/tasks";
 
-export function TasksProgress({ tasks }: { tasks: TaskItem[] }) {
+export function TasksProgress({ tasks, onShowCompleted }: { tasks: TaskItem[]; onShowCompleted?: () => void }) {
   const total = tasks.filter((t) => t.status !== "cancelled").length;
   const completed = tasks.filter((t) => t.status === "completed").length;
   const rate = total > 0 ? (completed / total) * 100 : 0;
@@ -15,9 +16,12 @@ export function TasksProgress({ tasks }: { tasks: TaskItem[] }) {
         <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
           Taxa de conclusão
         </p>
-        <p className="text-sm font-bold text-foreground">
-          {completed}/{total} · {rate.toFixed(0)}%
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-bold text-foreground">
+            {completed}/{total} · {rate.toFixed(0)}%
+          </p>
+          {onShowCompleted ? <PanelAction onClick={onShowCompleted}>Ver concluídas</PanelAction> : null}
+        </div>
       </div>
       <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
         <motion.div

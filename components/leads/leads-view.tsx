@@ -10,6 +10,7 @@ import { LeadsFilterBar } from "@/components/leads/leads-filter-bar";
 import { LeadsKpis } from "@/components/leads/leads-kpis";
 import { LeadsPriorityPanel } from "@/components/leads/leads-priority-panel";
 import { LeadsTable } from "@/components/leads/leads-table";
+import { scrollToId } from "@/components/ui/panel-action";
 import type { LeadListItem } from "@/lib/data/leads";
 import { applyLeadFilters, DEFAULT_LEAD_FILTERS, type LeadFilters } from "@/lib/utils/lead-filters";
 
@@ -51,9 +52,17 @@ export function LeadsView({ leads }: { leads: LeadListItem[] }) {
 
       <LeadsPriorityPanel leads={filteredLeads} />
 
-      <LeadsCharts leads={filteredLeads} />
+      <LeadsCharts
+        leads={filteredLeads}
+        onApplyFilters={(patch) => {
+          setFilters({ ...DEFAULT_LEAD_FILTERS, ...patch });
+          scrollToId("lista-leads");
+        }}
+      />
 
-      <LeadsFilterBar leads={leads} filters={filters} onChange={setFilters} />
+      <div id="lista-leads" className="scroll-mt-24">
+        <LeadsFilterBar leads={leads} filters={filters} onChange={setFilters} />
+      </div>
 
       <div className="flex justify-end gap-1 rounded-xl border border-border bg-card p-1">
         <button

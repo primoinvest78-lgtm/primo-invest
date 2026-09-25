@@ -3,6 +3,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 import type { AllocationItem } from "@/lib/mock/dashboard";
+import { PanelAction } from "@/components/ui/panel-action";
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
 export function AllocationChart({ data }: { data: AllocationItem[] }) {
@@ -11,9 +12,12 @@ export function AllocationChart({ data }: { data: AllocationItem[] }) {
 
   return (
     <section className="card-premium overflow-hidden rounded-2xl p-5 md:p-6">
-      <div className="mb-4">
-        <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Alocação</p>
-        <h3 className="mt-1 text-h2 font-bold text-foreground">Alocação patrimonial</h3>
+      <div className="mb-4 flex items-start justify-between gap-2">
+        <div>
+          <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Alocação</p>
+          <h3 className="mt-1 text-h2 font-bold text-foreground">Alocação patrimonial</h3>
+        </div>
+        <PanelAction href="/patrimonio/investimentos">Ver investimentos</PanelAction>
       </div>
 
       {data.length === 0 ? (

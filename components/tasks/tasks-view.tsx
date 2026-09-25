@@ -8,6 +8,7 @@ import { TasksFilterBar } from "@/components/tasks/tasks-filter-bar";
 import { TasksKpis } from "@/components/tasks/tasks-kpis";
 import { TasksPriorityPanel } from "@/components/tasks/tasks-priority-panel";
 import { TasksProgress } from "@/components/tasks/tasks-progress";
+import { scrollToId } from "@/components/ui/panel-action";
 import type { TaskFormOptions, TaskItem } from "@/lib/data/tasks";
 import { applyTaskFilters, DEFAULT_TASK_FILTERS, type TaskFilters } from "@/lib/utils/task-filters";
 
@@ -40,9 +41,17 @@ export function TasksView({ tasks, options }: { tasks: TaskItem[]; options: Task
 
       <TasksPriorityPanel tasks={filteredTasks} />
 
-      <TasksProgress tasks={filteredTasks} />
+      <TasksProgress
+        tasks={filteredTasks}
+        onShowCompleted={() => {
+          setFilters({ ...DEFAULT_TASK_FILTERS, status: "completed" });
+          scrollToId("lista-tarefas");
+        }}
+      />
 
-      <TasksFilterBar tasks={tasks} filters={filters} onChange={setFilters} />
+      <div id="lista-tarefas" className="scroll-mt-24">
+        <TasksFilterBar tasks={tasks} filters={filters} onChange={setFilters} />
+      </div>
 
       <TasksBoard tasks={filteredTasks} options={options} />
     </div>

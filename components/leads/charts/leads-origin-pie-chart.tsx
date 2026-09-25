@@ -4,7 +4,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 
-export function LeadsOriginPieChart({ data }: { data: { source: string; count: number }[] }) {
+export function LeadsOriginPieChart({ data, onSelect }: { data: { source: string; count: number }[]; onSelect?: (source: string) => void }) {
   const colors = data.map((_, index) => CHART_SEQUENCE[index % CHART_SEQUENCE.length]);
 
   return (
@@ -23,7 +23,12 @@ export function LeadsOriginPieChart({ data }: { data: { source: string; count: n
               strokeWidth={3}
             >
               {data.map((entry, index) => (
-                <Cell key={entry.source} fill={colors[index]} />
+                <Cell
+                  key={entry.source}
+                  fill={colors[index]}
+                  onClick={onSelect ? () => onSelect(entry.source) : undefined}
+                  style={onSelect ? { cursor: "pointer" } : undefined}
+                />
               ))}
             </Pie>
             <Tooltip
