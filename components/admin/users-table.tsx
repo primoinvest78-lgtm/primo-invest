@@ -51,14 +51,6 @@ function StatusToggle({ member, disabled }: { member: OrgMember; disabled: boole
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  if (member.status === "invited") {
-    return (
-      <span className={["inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase", MEMBER_STATUS_BADGE_CLASS.invited].join(" ")}>
-        {MEMBER_STATUS_LABEL.invited}
-      </span>
-    );
-  }
-
   const nextStatus = member.status === "active" ? "inactive" : "active";
 
   function handleToggle() {
@@ -75,9 +67,17 @@ function StatusToggle({ member, disabled }: { member: OrgMember; disabled: boole
       <span className={["inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase", MEMBER_STATUS_BADGE_CLASS[member.status]].join(" ")}>
         {MEMBER_STATUS_LABEL[member.status]}
       </span>
-      <Button size="icon-sm" variant="ghost" disabled={disabled || pending} onClick={handleToggle} aria-label={nextStatus === "active" ? "Ativar" : "Desativar"}>
-        {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : nextStatus === "active" ? <Power className="h-3.5 w-3.5" /> : <PowerOff className="h-3.5 w-3.5" />}
-      </Button>
+      {member.status === "invited" ? (
+        // Convite pendente: o admin libera o acesso com um clique.
+        <Button size="sm" disabled={disabled || pending} onClick={handleToggle}>
+          {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Power className="h-3.5 w-3.5" />}
+          Ativar acesso
+        </Button>
+      ) : (
+        <Button size="icon-sm" variant="ghost" disabled={disabled || pending} onClick={handleToggle} aria-label={nextStatus === "active" ? "Ativar" : "Desativar"}>
+          {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : nextStatus === "active" ? <Power className="h-3.5 w-3.5" /> : <PowerOff className="h-3.5 w-3.5" />}
+        </Button>
+      )}
       {error ? <p className="text-caption text-destructive">{error}</p> : null}
     </div>
   );
