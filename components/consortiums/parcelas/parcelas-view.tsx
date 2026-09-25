@@ -43,7 +43,17 @@ export function ParcelasView({
         onSelectStatus={(status) => setFilters((f) => ({ ...f, status }))}
       />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Alerta de contrato abre o contrato; alerta de parcela abre o contrato da parcela.
+          const byContract = /^(multiple-overdue|closing-soon)-(.+)$/.exec(a.id);
+          if (byContract) return `/consorcios/contratos/${byContract[2]}`;
+          const byInstallment = /^(overdue|due-soon)-(.+)$/.exec(a.id);
+          const inst = byInstallment ? installments.find((i) => i.id === byInstallment[2]) : null;
+          return inst ? `/consorcios/contratos/${inst.contractId}` : null;
+        }}
+      />
 
       <InstallmentsProgressSection installments={installments} />
 
