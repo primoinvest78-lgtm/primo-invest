@@ -24,7 +24,7 @@ export function canAccessIntegrations(role: string): boolean {
 export function assertCanAccessIntegrations(role: string) {
   if (!canAccessIntegrations(role)) {
     throw new Error(
-      "Seu perfil não tem acesso ao Centro de Integrações. Fale com a administração.",
+      "Seu perfil não tem acesso às Integrações. Fale com a administração.",
     );
   }
 }

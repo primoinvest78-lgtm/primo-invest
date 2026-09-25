@@ -20,7 +20,7 @@ export default async function IntegracoesHistoricoPage() {
           disparou e o resultado.
         </p>
       </div>
-      <BackLink href="/integracoes" label="Centro de Integrações" />
+      <BackLink href="/integracoes" label="Integrações" />
     </section>
   );
 

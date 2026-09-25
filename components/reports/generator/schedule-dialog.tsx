@@ -138,7 +138,7 @@ export function ScheduleDialog({ state }: { state: GeneratorState }) {
             </p>
             <p className="mt-1 text-caption text-card-beige-muted-foreground">
               A emissão não é automática: na data, o relatório aparece em &ldquo;Pendentes&rdquo; no
-              Report Center para ser gerado com um clique — com os dados daquele momento.
+              Central de Relatórios para ser gerado com um clique — com os dados daquele momento.
             </p>
           </div>
 

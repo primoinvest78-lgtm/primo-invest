@@ -48,7 +48,7 @@ function Header() {
       <div className="min-w-0">
         <BackButton className="mb-2 inline-flex items-center gap-1.5 text-xs font-semibold text-secondary-foreground/60 transition-colors hover:text-primary" />
         <p className="text-label font-bold uppercase text-primary">CRM</p>
-        <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">Hub CRM</h1>
+        <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">Painel de Relacionamento</h1>
         <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
           Leads, oportunidades, tarefas e clientes cruzados num único feed priorizado — o que precisa de
           ação hoje, em vez de checar quatro telas separadas.

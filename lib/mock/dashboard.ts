@@ -6,6 +6,7 @@ import {
   Cable,
   Calculator,
   CreditCard,
+  Dices,
   FileBarChart,
   FileText,
   FolderKanban,
@@ -86,12 +87,14 @@ export const navigationGroups: SidebarGroup[] = [
   {
     items: [
       { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+      // Acesso rápido ao treinamento da roleta (fase de apresentação aos sócios).
+      { label: "Treinamento · Roleta", icon: Dices, href: "/consorcios/motor/treinamento", badge: "Teste" },
     ],
   },
   {
     title: "Relacionamento",
     items: [
-      { label: "Hub CRM", icon: Radar, href: "/crm" },
+      { label: "Painel de Relacionamento", icon: Radar, href: "/crm" },
       { label: "Clientes", icon: Users, href: "/clientes" },
       { label: "Leads", icon: MessageSquareText, href: "/leads" },
       { label: "Oportunidades", icon: TrendingUp, href: "/oportunidades" },
@@ -128,14 +131,14 @@ export const navigationGroups: SidebarGroup[] = [
   {
     title: "Relatórios",
     items: [
-      { label: "Report Center", icon: FileBarChart, href: "/relatorios" },
+      { label: "Central de Relatórios", icon: FileBarChart, href: "/relatorios" },
       { label: "Relatórios gerados", icon: History, href: "/relatorios/historico" },
     ],
   },
   {
     title: "Integrações",
     items: [
-      { label: "Centro de Integrações", icon: Cable, href: "/integracoes" },
+      { label: "Integrações", icon: Cable, href: "/integracoes" },
       { label: "Histórico de sincronização", icon: History, href: "/integracoes/historico" },
     ],
   },

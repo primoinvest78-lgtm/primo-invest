@@ -32,7 +32,7 @@ export default async function IntegracaoDetailPage({ params }: { params: Promise
           Detalhe da integração
         </h1>
       </div>
-      <BackLink href={backHref} label="Centro de Integrações" />
+      <BackLink href={backHref} label="Integrações" />
     </section>
   );
 

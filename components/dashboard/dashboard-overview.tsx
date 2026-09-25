@@ -11,6 +11,8 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { motion } from "motion/react";
+import Link from "next/link";
 import { useState } from "react";
 
 import type { DashboardData, DashboardIconKey } from "@/lib/data/dashboard";
@@ -112,6 +114,28 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
           </div>
         </div>
       </section>
+
+      {/* TREINAMENTO DA ROLETA — acesso direto na fase de apresentação aos sócios */}
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="card-premium flex min-w-0 flex-col gap-4 rounded-2xl p-5 md:flex-row md:items-center md:justify-between md:p-6"
+      >
+        <div className="min-w-0">
+          <p className="text-label font-bold uppercase text-primary">Consórcios · modo de teste</p>
+          <h2 className="mt-1.5 text-h3 font-bold text-foreground">Treinamento da roleta de sorteio</h2>
+          <p className="mt-1 max-w-2xl text-sm text-card-beige-muted-foreground">
+            Faça um sorteio completo com um grupo fictício: selo, roleta, cotas contempladas e conferência. Nada é gravado.
+          </p>
+        </div>
+        <Link
+          href="/consorcios/motor/treinamento"
+          className="inline-flex shrink-0 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-nav-active transition-transform hover:-translate-y-0.5"
+        >
+          Abrir treinamento da roleta
+        </Link>
+      </motion.section>
 
       {/* KPI GRID */}
       <section className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

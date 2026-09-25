@@ -14,7 +14,7 @@ export function IntegrationsAccessGate() {
       <ShieldAlert className="mx-auto h-9 w-9 text-card-beige-muted-foreground" />
       <h2 className="mt-4 text-h2 font-bold text-foreground">Acesso restrito</h2>
       <p className="mx-auto mt-2 max-w-md text-body-sm text-card-beige-muted-foreground">
-        O Centro de Integrações reúne credenciais e conexões externas — só perfis de administração,
+        A área de Integrações reúne credenciais e conexões externas — só perfis de administração,
         gestão ou operações têm acesso. Fale com a administração se precisar configurar uma
         integração.
       </p>

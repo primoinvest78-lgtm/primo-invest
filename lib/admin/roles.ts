@@ -107,7 +107,7 @@ export const MODULE_ACCESS: ModuleAccessRow[] = [
   { module: "Leads", allowedRoles: "all" },
   { module: "Oportunidades", allowedRoles: "all" },
   { module: "Tarefas", allowedRoles: "all" },
-  { module: "Hub CRM", allowedRoles: "all" },
+  { module: "Painel de Relacionamento", allowedRoles: "all" },
   { module: "Patrimônio", allowedRoles: "all" },
   { module: "Consórcios", allowedRoles: "all" },
   { module: "Documentos", allowedRoles: "all" },

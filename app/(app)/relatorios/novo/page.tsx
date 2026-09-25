@@ -51,7 +51,7 @@ export default async function NovoRelatorioPage({
     <div className="space-y-6">
       <section className="flex flex-col gap-4 block-navy-3d rounded-2xl p-5 md:flex-row md:items-end md:justify-between md:p-6">
         <div className="min-w-0">
-          <p className="text-label font-bold uppercase text-primary">Report Center</p>
+          <p className="text-label font-bold uppercase text-primary">Central de Relatórios</p>
           <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
             Novo relatório
           </h1>
@@ -60,7 +60,7 @@ export default async function NovoRelatorioPage({
           </p>
         </div>
 
-        <BackLink href="/relatorios" label="Voltar ao Report Center" />
+        <BackLink href="/relatorios" label="Voltar à Central de Relatórios" />
       </section>
 
       <GeneratorView

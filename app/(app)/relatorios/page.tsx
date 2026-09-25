@@ -42,7 +42,7 @@ export default async function RelatoriosPage() {
         <div className="min-w-0">
           <p className="text-label font-bold uppercase text-primary">Relatórios</p>
           <h1 className="mt-2 text-h1 font-bold tracking-[-0.04em] text-secondary-foreground">
-            Report Center
+            Central de Relatórios
           </h1>
           <p className="mt-2 max-w-2xl text-body text-secondary-foreground/75">
             Criar, configurar, visualizar, validar, gerar, compartilhar e arquivar — com os mesmos
