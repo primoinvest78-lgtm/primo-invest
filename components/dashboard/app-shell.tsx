@@ -24,7 +24,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
       {navigationGroups.map((group, groupIndex) => (
         <div key={`${group.title ?? "principal"}-${groupIndex}`} className="mb-6 last:mb-0">
           {group.title ? (
-            <p className="mb-2.5 flex items-center gap-2 px-3 text-[13px] font-extrabold uppercase tracking-[0.14em] text-primary">
+            <p className="mb-2.5 flex items-center gap-2 px-3 text-[14px] font-extrabold uppercase tracking-[0.14em] text-primary">
               <span className="h-px w-3 bg-primary/70" aria-hidden="true" />
               {group.title}
             </p>
@@ -60,7 +60,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
                       <Icon className="h-[17px] w-[17px]" strokeWidth={1.8} />
                     </span>
 
-                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    <span className="min-w-0 flex-1 leading-snug">{item.label}</span>
 
                     {item.badge ? (
                       <span
