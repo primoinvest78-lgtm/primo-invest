@@ -197,7 +197,7 @@ export const ENVIRONMENTS = ["sandbox", "production"] as const;
 export type Environment = (typeof ENVIRONMENTS)[number];
 
 export const ENVIRONMENT_LABEL: Record<Environment, string> = {
-  sandbox: "Sandbox",
+  sandbox: "Testes",
   production: "Produção",
 };
 
