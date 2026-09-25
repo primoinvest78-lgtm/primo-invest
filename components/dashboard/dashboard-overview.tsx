@@ -19,6 +19,14 @@ import type { DashboardData, DashboardIconKey } from "@/lib/data/dashboard";
 import { ReportShortcutButton } from "@/components/reports/report-shortcut-button";
 import { formatMonthLabel } from "@/lib/utils/format";
 
+/** Saudação pela hora de Brasília (mesma no servidor e no navegador). */
+function greeting(): string {
+  const hour = Number(new Intl.DateTimeFormat("pt-BR", { hour: "numeric", hourCycle: "h23", timeZone: "America/Sao_Paulo" }).format(new Date()));
+  if (hour >= 5 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
 /**
  * Componentes de ícone não atravessam a fronteira Server -> Client
  * Component (React error #441) — por isso o dado do servidor carrega
@@ -99,7 +107,7 @@ export function DashboardOverview({ data }: { data: DashboardData }) {
             <p className="text-label font-bold uppercase text-primary">Resumo operacional</p>
 
             <h2 className="mt-2 text-h2 font-bold text-secondary-foreground md:text-[27px]">
-              {data.greetingName ? `Bom dia, ${data.greetingName}` : "Bom dia"}
+              {data.greetingName ? `${greeting()}, ${data.greetingName}` : greeting()}
             </h2>
 
             <p className="mt-2 text-body leading-6 text-secondary-foreground/75">

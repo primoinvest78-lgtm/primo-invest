@@ -24,6 +24,9 @@ export type ActiveMembership = {
  * sequenciais em vez de 3. cache() garante que a segunda chamada, dentro
  * do mesmo request, reaproveita a promise da primeira.
  */
+/** Conta logada, mas sem vínculo ativo com nenhuma organização. */
+export const NO_ACTIVE_ORGANIZATION = "Usuário sem organização ativa vinculada.";
+
 export const requireActiveMembership = cache(async function requireActiveMembership(): Promise<ActiveMembership> {
   // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
   // explícita. Retorna uma membership falsa sem chamar o Supabase.
@@ -56,7 +59,7 @@ export const requireActiveMembership = cache(async function requireActiveMembers
     .maybeSingle();
 
   if (error || !membership) {
-    throw new Error("Usuário sem organização ativa vinculada.");
+    throw new Error(NO_ACTIVE_ORGANIZATION);
   }
 
   const { data: profile } = await supabase
