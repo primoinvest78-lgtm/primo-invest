@@ -3,6 +3,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
+import type { TabKey } from "@/components/payments/evidence-queue";
 import type { PaymentDashboardData } from "@/lib/data/payments";
 
 const TOOLTIP_STYLE = {
@@ -15,12 +16,12 @@ const TOOLTIP_STYLE = {
 };
 
 /** Composição por status — só aparece com pelo menos 2 categorias reais. */
-export function PaymentsCharts({ data }: { data: PaymentDashboardData }) {
-  const chartData = [
-    { label: "Conciliados", value: data.reconciled },
-    { label: "Aguardando revisão", value: data.awaitingReview },
-    { label: "Exceções", value: data.exceptions },
-    { label: "Duplicidades", value: data.duplicates },
+export function PaymentsCharts({ data, onSelectTab }: { data: PaymentDashboardData; onSelectTab?: (tab: TabKey) => void }) {
+  const chartData: { label: string; value: number; tab: TabKey }[] = [
+    { label: "Conciliados", value: data.reconciled, tab: "conciliados" as TabKey },
+    { label: "Aguardando revisão", value: data.awaitingReview, tab: "revisao" as TabKey },
+    { label: "Exceções", value: data.exceptions, tab: "excecoes" as TabKey },
+    { label: "Duplicidades", value: data.duplicates, tab: "duplicidades" as TabKey },
   ].filter((d) => d.value > 0);
 
   if (chartData.length < 2) return null;
@@ -38,7 +39,12 @@ export function PaymentsCharts({ data }: { data: PaymentDashboardData }) {
             <PieChart>
               <Pie data={chartData} dataKey="value" nameKey="label" innerRadius={44} outerRadius={68} paddingAngle={2} stroke="var(--card-beige)" strokeWidth={3}>
                 {chartData.map((entry, index) => (
-                  <Cell key={entry.label} fill={colors[index]} />
+                  <Cell
+                    key={entry.label}
+                    fill={colors[index]}
+                    onClick={onSelectTab ? () => onSelectTab(entry.tab) : undefined}
+                    style={onSelectTab ? { cursor: "pointer" } : undefined}
+                  />
                 ))}
               </Pie>
               <Tooltip contentStyle={TOOLTIP_STYLE} />
@@ -47,7 +53,11 @@ export function PaymentsCharts({ data }: { data: PaymentDashboardData }) {
         </div>
         <ul className="min-w-0 space-y-1">
           {chartData.map((entry, index) => (
-            <li key={entry.label} className="flex min-h-[32px] items-center justify-between gap-3 border-b border-border/60 last:border-b-0">
+            <li
+              key={entry.label}
+              onClick={onSelectTab ? () => onSelectTab(entry.tab) : undefined}
+              className={`flex min-h-[32px] items-center justify-between gap-3 border-b border-border/60 last:border-b-0 ${onSelectTab ? "cursor-pointer rounded-md px-1 transition-colors hover:bg-primary/10" : ""}`}
+            >
               <span className="flex min-w-0 items-center gap-2.5">
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colors[index] }} />
                 <span className="truncate text-body-sm font-medium text-card-beige-muted-foreground">{entry.label}</span>

@@ -1,11 +1,11 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import type { DocumentCenterRow } from "@/lib/data/document-center";
 import { CENTER_STATUS_LABEL, type CenterStatus, computeCenterStatus } from "@/lib/utils/document-center-helpers";
 
-function StatusBarChart({ data }: { data: { status: string; total: number }[] }) {
+function StatusBarChart({ data, onSelect }: { data: { status: string; key: CenterStatus; total: number }[]; onSelect?: (s: CenterStatus) => void }) {
   return (
     <div className="h-[240px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -28,14 +28,18 @@ function StatusBarChart({ data }: { data: { status: string; total: number }[] })
               color: "var(--popover-foreground)",
             }}
           />
-          <Bar dataKey="total" fill="var(--primary)" radius={[6, 6, 0, 0]} maxBarSize={40} />
+          <Bar dataKey="total" fill="var(--primary)" radius={[6, 6, 0, 0]} maxBarSize={40}>
+            {data.map((d) => (
+              <Cell key={d.key} fill="var(--primary)" onClick={onSelect ? () => onSelect(d.key) : undefined} style={onSelect ? { cursor: "pointer" } : undefined} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-function ResponsibleBarChart({ data }: { data: { name: string; total: number }[] }) {
+function ResponsibleBarChart({ data, onSelect }: { data: { name: string; total: number }[]; onSelect?: (name: string) => void }) {
   return (
     <div className="h-[240px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -60,21 +64,34 @@ function ResponsibleBarChart({ data }: { data: { name: string; total: number }[]
               color: "var(--popover-foreground)",
             }}
           />
-          <Bar dataKey="total" fill="var(--accent)" radius={[0, 6, 6, 0]} maxBarSize={22} />
+          <Bar dataKey="total" fill="var(--accent)" radius={[0, 6, 6, 0]} maxBarSize={22}>
+            {data.map((d) => (
+              <Cell key={d.name} fill="var(--accent)" onClick={onSelect ? () => onSelect(d.name) : undefined} style={onSelect ? { cursor: "pointer" } : undefined} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export function CenterCharts({ rows }: { rows: DocumentCenterRow[] }) {
+export function CenterCharts({
+  rows,
+  onSelectStatus,
+  onSelectResponsible,
+}: {
+  rows: DocumentCenterRow[];
+  /** Clicar numa barra filtra a lista abaixo. */
+  onSelectStatus?: (status: CenterStatus) => void;
+  onSelectResponsible?: (name: string) => void;
+}) {
   const statusCounts = new Map<CenterStatus, number>();
   for (const row of rows) {
     const status = computeCenterStatus(row);
     statusCounts.set(status, (statusCounts.get(status) ?? 0) + 1);
   }
   const statusData = Array.from(statusCounts.entries())
-    .map(([status, total]) => ({ status: CENTER_STATUS_LABEL[status], total }))
+    .map(([status, total]) => ({ status: CENTER_STATUS_LABEL[status], key: status, total }))
     .sort((a, b) => b.total - a.total);
 
   const pendingByResponsible = new Map<string, number>();
@@ -96,13 +113,13 @@ export function CenterCharts({ rows }: { rows: DocumentCenterRow[] }) {
       {statusData.length >= 2 ? (
         <div className="card-premium rounded-2xl p-5">
           <h3 className="mb-3 text-sm font-bold text-foreground">Documentos por status</h3>
-          <StatusBarChart data={statusData} />
+          <StatusBarChart data={statusData} onSelect={onSelectStatus} />
         </div>
       ) : null}
       {responsibleData.length > 0 ? (
         <div className="card-premium rounded-2xl p-5">
           <h3 className="mb-3 text-sm font-bold text-foreground">Pendentes por responsável</h3>
-          <ResponsibleBarChart data={responsibleData} />
+          <ResponsibleBarChart data={responsibleData} onSelect={onSelectResponsible} />
         </div>
       ) : null}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { AccessMatrix } from "@/components/admin/access-matrix";
@@ -36,7 +37,12 @@ export function AdminShell({
   notificationsCount: number;
   canManage: boolean;
 }) {
-  const [tab, setTab] = useState("dashboard");
+  // ?aba=usuarios (etc.) abre direto na aba — permite link para "Adicionar usuário".
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState(() => {
+    const aba = searchParams.get("aba");
+    return aba && ["dashboard", "usuarios", "perfis", "auditoria", "configuracoes"].includes(aba) ? aba : "dashboard";
+  });
   const [auditUserId, setAuditUserId] = useState<string | null>(null);
 
   function goToUserActivity(userId: string) {
@@ -64,7 +70,7 @@ export function AdminShell({
         <div id="admin-alerts">
           <AdminAlerts alerts={dashboardData.alerts} />
         </div>
-        <AdminCharts countsByRole={dashboardData.countsByRole} activityTrend={activityTrend} byModule={byModule} />
+        <AdminCharts countsByRole={dashboardData.countsByRole} activityTrend={activityTrend} byModule={byModule} onGoToTab={setTab} />
         <RecentActivity entries={dashboardData.recentActivity} members={dashboardData.members} />
       </TabsContent>
 

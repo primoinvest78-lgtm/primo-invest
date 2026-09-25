@@ -16,6 +16,7 @@ import {
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 import type { IntegrationRow, SyncRun } from "@/lib/data/integrations";
 import { integrationStatusLabel } from "@/lib/integrations/catalog";
+import { PanelAction } from "@/components/ui/panel-action";
 import { formatMonthLabel } from "@/lib/utils/format";
 
 /**
@@ -74,9 +75,12 @@ export function CenterCharts({
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {showMonthly ? (
-        <section className="card-premium rounded-2xl p-5">
+        <section className="card-premium relative rounded-2xl p-5">
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Volume</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Sincronizações por período</h3>
+          <div className="absolute right-4 top-4">
+            <PanelAction href="/integracoes/historico">Ver histórico</PanelAction>
+          </div>
           <div className="mt-4 h-[240px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthly} margin={{ left: -18, right: 8 }}>
@@ -92,9 +96,12 @@ export function CenterCharts({
       ) : null}
 
       {showSuccessVsError ? (
-        <section className="card-premium rounded-2xl p-5">
+        <section className="card-premium relative rounded-2xl p-5">
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Qualidade</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Sucesso × erro</h3>
+          <div className="absolute right-4 top-4">
+            <PanelAction href="/integracoes/historico">Ver histórico</PanelAction>
+          </div>
           <DonutMini data={successVsError} />
         </section>
       ) : null}

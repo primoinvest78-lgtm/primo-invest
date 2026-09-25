@@ -9,6 +9,7 @@ import { CenterRequestsSection } from "@/components/documents/center/center-requ
 import { CenterSearchBar } from "@/components/documents/center/center-search-bar";
 import { CenterTable } from "@/components/documents/center/center-table";
 import { RequestCreateDialog } from "@/components/documents/center/request-create-dialog";
+import { scrollToId } from "@/components/ui/panel-action";
 import type { DocumentCenterRow, DocumentRequestListItem } from "@/lib/data/document-center";
 import {
   applyCenterFilters,
@@ -42,9 +43,19 @@ export function CenterView({
 
       <CenterRequestsSection requests={requests} />
 
-      <CenterCharts rows={rows} />
+      <CenterCharts
+        rows={rows}
+        onSelectStatus={(status) => {
+          setFilters({ ...DEFAULT_CENTER_FILTERS, status });
+          scrollToId("lista-documentos");
+        }}
+        onSelectResponsible={(name) => {
+          setFilters({ ...DEFAULT_CENTER_FILTERS, responsible: name === "Sem responsável" ? "none" : name });
+          scrollToId("lista-documentos");
+        }}
+      />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div id="lista-documentos" className="flex scroll-mt-24 flex-wrap items-center justify-between gap-3">
         <h3 className="text-h2 font-bold text-foreground">Central de Documentos</h3>
         <RequestCreateDialog clients={clients} advisors={advisors} consortiumContracts={consortiumContracts} />
       </div>

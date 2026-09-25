@@ -15,6 +15,7 @@ import {
 
 import { CHART_SEQUENCE } from "@/lib/design/chart-colors";
 import { ROLE_LABEL, type AppRole } from "@/lib/admin/roles";
+import { PanelAction } from "@/components/ui/panel-action";
 import { formatDate } from "@/lib/utils/format";
 
 const TOOLTIP_STYLE = {
@@ -36,10 +37,13 @@ export function AdminCharts({
   countsByRole,
   activityTrend,
   byModule,
+  onGoToTab,
 }: {
   countsByRole: { role: AppRole; total: number }[];
   activityTrend: { day: string; total: number }[];
   byModule: { module: string; total: number }[];
+  /** Abre a aba correspondente da Administração. */
+  onGoToTab?: (tab: string) => void;
 }) {
   const roleData = countsByRole
     .filter((r) => r.total > 0)
@@ -57,17 +61,27 @@ export function AdminCharts({
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {showRoles ? (
-        <section className="card-premium rounded-2xl p-5">
+        <section className="card-premium relative rounded-2xl p-5">
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Composição</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Usuários por perfil</h3>
+          {onGoToTab ? (
+            <div className="absolute right-4 top-4">
+              <PanelAction onClick={() => onGoToTab("usuarios")}>Ver usuários</PanelAction>
+            </div>
+          ) : null}
           <DonutMini data={roleData} />
         </section>
       ) : null}
 
       {showTrend ? (
-        <section className="card-premium rounded-2xl p-5">
+        <section className="card-premium relative rounded-2xl p-5">
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Volume</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Atividade por dia — 14 dias</h3>
+          {onGoToTab ? (
+            <div className="absolute right-4 top-4">
+              <PanelAction onClick={() => onGoToTab("auditoria")}>Ver auditoria</PanelAction>
+            </div>
+          ) : null}
           <div className="mt-4 h-[220px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={trendData} margin={{ left: -18, right: 8 }}>
@@ -83,9 +97,14 @@ export function AdminCharts({
       ) : null}
 
       {showModules ? (
-        <section className="card-premium rounded-2xl p-5 lg:col-span-2">
+        <section className="card-premium relative rounded-2xl p-5 lg:col-span-2">
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">Distribuição</p>
           <h3 className="mt-1 text-h2 font-bold text-foreground">Eventos administrativos por módulo</h3>
+          {onGoToTab ? (
+            <div className="absolute right-4 top-4">
+              <PanelAction onClick={() => onGoToTab("auditoria")}>Ver auditoria</PanelAction>
+            </div>
+          ) : null}
           <div className="mt-4 h-[240px] w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={moduleData} layout="vertical" margin={{ left: 8, right: 16 }}>
