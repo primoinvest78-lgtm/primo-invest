@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
+import { PanelAction } from "@/components/ui/panel-action";
 import type { ConsortiumBid } from "@/lib/data/consortiums";
 import { TopClientsBarChart } from "@/components/wealth/top-clients-bar-chart";
 import { WealthEvolutionChart } from "@/components/wealth/wealth-evolution-chart";
@@ -15,6 +18,7 @@ function StatBox({ label, value }: { label: string; value: string }) {
 }
 
 export function GroupHistorySection({ bids }: { bids: ConsortiumBid[] }) {
+  const router = useRouter();
   const won = bids.filter((b) => b.result === "won" && b.bidPercentage !== null && b.bidDate);
 
   if (won.length < 2) {
@@ -40,11 +44,14 @@ export function GroupHistorySection({ bids }: { bids: ConsortiumBid[] }) {
   const topBids = [...won]
     .sort((a, b) => Number(b.bidAmount ?? 0) - Number(a.bidAmount ?? 0))
     .slice(0, 8)
-    .map((b) => ({ name: b.contractLabel, total: Number(b.bidAmount ?? 0) }));
+    .map((b) => ({ id: b.contractId, name: b.contractLabel, total: Number(b.bidAmount ?? 0) }));
 
   return (
     <div className="card-premium rounded-2xl p-5 md:p-6">
-      <h3 className="mb-1 text-h2 font-bold text-foreground">Histórico do grupo</h3>
+      <div className="mb-1 flex items-start justify-between gap-2">
+        <h3 className="text-h2 font-bold text-foreground">Histórico do grupo</h3>
+        <PanelAction href="/consorcios/motor">Ver no Motor de apuração</PanelAction>
+      </div>
       <p className="mb-4 text-sm text-card-beige-muted-foreground">
         Derivado dos lances vencedores reais registrados — resultados passados não garantem resultado
         futuro.
@@ -68,7 +75,7 @@ export function GroupHistorySection({ bids }: { bids: ConsortiumBid[] }) {
           <p className="mb-2 text-xs font-bold uppercase text-card-beige-muted-foreground">
             Maiores lances vencedores
           </p>
-          <TopClientsBarChart data={topBids} />
+          <TopClientsBarChart data={topBids} onSelect={(i) => router.push(`/consorcios/contratos/${topBids[i].id}`)} />
         </div>
       </div>
     </div>

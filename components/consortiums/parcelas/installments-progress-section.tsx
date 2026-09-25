@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 
+import { PanelAction } from "@/components/ui/panel-action";
 import type { ConsortiumInstallment } from "@/lib/data/consortiums";
 import { formatCurrencyBRL } from "@/lib/utils/format";
 
@@ -16,7 +17,10 @@ export function InstallmentsProgressSection({ installments }: { installments: Co
 
   return (
     <div className="card-premium rounded-2xl p-5 md:p-6">
-      <h3 className="mb-1 text-h2 font-bold text-foreground">Progresso financeiro</h3>
+      <div className="mb-1 flex items-start justify-between gap-2">
+        <h3 className="text-h2 font-bold text-foreground">Progresso financeiro</h3>
+        <PanelAction href="/consorcios/contratos">Ver contratos</PanelAction>
+      </div>
       <p className="mb-4 text-sm text-card-beige-muted-foreground">Total pago × saldo restante</p>
 
       <div className="mb-2 flex flex-wrap items-end justify-between gap-2">

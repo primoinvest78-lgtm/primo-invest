@@ -60,22 +60,28 @@ export default async function ConsorciosPage() {
       </section>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+        <Link
+          href="/consorcios/contratos"
+          className="card-premium block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
+        >
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
             Contratos ativos
           </p>
           <p className="mt-2 text-h2 font-bold text-foreground">
             <AnimatedNumber value={String(overview.activeCount)} />
           </p>
-        </div>
-        <div className="card-premium rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70">
+        </Link>
+        <Link
+          href="/consorcios/contratos"
+          className="card-premium block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
+        >
           <p className="text-label font-bold uppercase text-card-beige-muted-foreground">
             Crédito total ativo
           </p>
           <p className="mt-2 text-h2 font-bold text-foreground">
             <AnimatedNumber value={formatCurrencyBRL(overview.totalCreditAmount)} />
           </p>
-        </div>
+        </Link>
         <Link
           href="/consorcios/parcelas"
           className="card-premium block rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"

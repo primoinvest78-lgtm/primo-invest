@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import type { GoalDetail } from "@/lib/data/wealth";
 import { computeGoalStatus, progressPct, remainingAmount } from "@/lib/utils/goal-helpers";
@@ -19,7 +20,10 @@ function ComparisonRow({ goal, delay }: { goal: GoalDetail; delay: number }) {
   const status = computeGoalStatus(goal);
 
   return (
-    <div>
+    <Link
+      href={`/patrimonio/metas/${goal.id}`}
+      className="block rounded-xl p-2 -m-2 transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    >
       <div className="mb-1.5 flex items-center justify-between gap-2 text-sm">
         <span className="min-w-0 truncate font-semibold text-foreground">{goal.name}</span>
         <span className="shrink-0 text-xs font-medium text-card-beige-muted-foreground">
@@ -34,7 +38,7 @@ function ComparisonRow({ goal, delay }: { goal: GoalDetail; delay: number }) {
           className={["h-full rounded-full", STATUS_BAR_COLOR[status]].join(" ")}
         />
       </div>
-    </div>
+    </Link>
   );
 }
 

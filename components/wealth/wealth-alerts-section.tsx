@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Info, TriangleAlert } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 
 import type { WealthAlert } from "@/lib/utils/wealth-helpers";
 
@@ -11,6 +12,12 @@ const ALERT_STYLE = {
   warning: "border-warning/40 bg-warning/10 text-warning",
   info: "border-accent/30 bg-accent/10 text-accent",
 };
+
+/** Onde cada alerta se resolve. */
+function alertHref(id: string): string {
+  if (id === "low-liquidity") return "/patrimonio/contas";
+  return "/patrimonio/investimentos";
+}
 
 export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
   if (alerts.length === 0) return null;
@@ -22,19 +29,21 @@ export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
         {alerts.map((alert, index) => {
           const Icon = ALERT_ICON[alert.severity];
           return (
+            <Link key={alert.id} href={alertHref(alert.id)} className="block">
             <motion.div
-              key={alert.id}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: index * 0.04, ease: "easeOut" }}
               className={[
-                "flex items-start gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium",
+                "flex items-start gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium transition-transform hover:-translate-y-0.5",
                 ALERT_STYLE[alert.severity],
               ].join(" ")}
             >
               <Icon className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{alert.message}</span>
+              <span className="flex-1">{alert.message}</span>
+              <span className="shrink-0 text-xs font-bold underline-offset-2 hover:underline">Ver →</span>
             </motion.div>
+            </Link>
           );
         })}
       </div>

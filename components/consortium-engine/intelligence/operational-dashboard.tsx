@@ -26,6 +26,7 @@ export function OperationalDashboard({
   events,
   credits,
   automation,
+  onShowFindings,
 }: {
   assemblies: EngineAssembly[];
   groups: EngineGroup[];
@@ -33,6 +34,8 @@ export function OperationalDashboard({
   events: EngineEvent[];
   credits: CreditOperation[];
   automation: AutomationRow[];
+  /** Abre a aba de achados logo abaixo. */
+  onShowFindings?: () => void;
 }) {
   const byStatus = ASSEMBLY_PIPELINE.map((s) => ({ label: ASSEMBLY_STATUS_LABEL[s], value: assemblies.filter((a) => a.status === s || (s === "DRAW_READY" && a.status === "DRAWING")).length }));
   const retified = assemblies.filter((a) => a.status === "RETIFIED").length;
@@ -48,12 +51,12 @@ export function OperationalDashboard({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <Stat label="Assembleias em andamento" value={String(inProgress.length)} />
-        <Stat label="Retificadas" value={String(retified)} tone={retified ? "warning" : "default"} delay={0.03} />
-        <Stat label="Achados abertos" value={String(findings.length)} delay={0.06} />
-        <Stat label="Críticos" value={String(critical)} tone={critical ? "danger" : "success"} delay={0.09} />
-        <Stat label="Exigem revisão humana" value={String(review)} tone={review ? "warning" : "default"} delay={0.12} />
-        <Stat label="Crédito líquido em aberto" value={formatCurrencyBRL(creditsOpen.reduce((s, c) => s + c.remainingCredit, 0))} delay={0.15} />
+        <Stat label="Assembleias em andamento" value={String(inProgress.length)} href="/consorcios/motor?aba=assembleias" />
+        <Stat label="Retificadas" value={String(retified)} tone={retified ? "warning" : "default"} delay={0.03} href="/consorcios/motor?aba=assembleias" />
+        <Stat label="Achados abertos" value={String(findings.length)} delay={0.06} onClick={onShowFindings} />
+        <Stat label="Críticos" value={String(critical)} tone={critical ? "danger" : "success"} delay={0.09} onClick={onShowFindings} />
+        <Stat label="Exigem revisão humana" value={String(review)} tone={review ? "warning" : "default"} delay={0.12} onClick={onShowFindings} />
+        <Stat label="Crédito líquido em aberto" value={formatCurrencyBRL(creditsOpen.reduce((s, c) => s + c.remainingCredit, 0))} delay={0.15} href="/consorcios/motor?aba=credito" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">

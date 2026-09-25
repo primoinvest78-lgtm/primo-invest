@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
+import { scrollToId } from "@/components/ui/panel-action";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AssemblyCreateDialog } from "@/components/consortium-engine/assembly-create-dialog";
 import { AuditTimeline } from "@/components/consortium-engine/audit-timeline";
@@ -43,6 +46,8 @@ import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
 
 const GOVERN = ["admin", "manager", "compliance"];
 
+const ABAS = ["assembleias", "grupos", "regras", "loteria", "credito", "auditoria"];
+
 export function EngineHub(props: {
   role: string;
   groups: EngineGroup[];
@@ -57,25 +62,36 @@ export function EngineHub(props: {
   const { groups, rules, lottery, assemblies, events, credits, pendingCredit, inProgress, role } = props;
   const groupById = new Map(groups.map((g) => [g.id, g]));
   const canGovern = GOVERN.includes(role);
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState(() => {
+    const aba = searchParams.get("aba");
+    return aba && ABAS.includes(aba) ? aba : "assembleias";
+  });
   const pendingLottery = lottery.filter((l) => l.verificationStatus === "PENDING").length;
   const creditsOpen = credits.filter((c) => !["CLOSED", "CANCELLED", "USED"].includes(c.status)).length;
+
+  function goTo(aba: string) {
+    setTab(aba);
+    requestAnimationFrame(() => scrollToId("motor-abas"));
+  }
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <Stat label="Grupos" value={String(groups.length)} delay={0} />
-        <Stat label="Assembleias em andamento" value={String(inProgress)} delay={0.05} />
-        <Stat label="Regras publicadas" value={String(rules.filter((r) => r.status === "PUBLISHED").length)} delay={0.1} />
+        <Stat label="Grupos" value={String(groups.length)} delay={0} onClick={() => goTo("grupos")} />
+        <Stat label="Assembleias em andamento" value={String(inProgress)} delay={0.05} onClick={() => goTo("assembleias")} />
+        <Stat label="Regras publicadas" value={String(rules.filter((r) => r.status === "PUBLISHED").length)} delay={0.1} onClick={() => goTo("regras")} />
         <Stat
           label="Resultados a verificar"
           value={String(pendingLottery)}
           tone={pendingLottery > 0 ? "warning" : "default"}
           delay={0.15}
+          onClick={() => goTo("loteria")}
         />
-        <Stat label="Créditos em andamento" value={String(creditsOpen)} hint={`${pendingCredit.length} contemplação(ões) sem crédito aberto`} delay={0.2} />
+        <Stat label="Créditos em andamento" value={String(creditsOpen)} hint={`${pendingCredit.length} contemplação(ões) sem crédito aberto`} delay={0.2} onClick={() => goTo("credito")} />
       </div>
 
-      <Tabs defaultValue="assembleias">
+      <Tabs id="motor-abas" value={tab} onValueChange={(v) => v && setTab(String(v))} className="scroll-mt-24">
         <div className="overflow-x-auto pb-1">
           <TabsList>
             <TabsTrigger value="assembleias">Assembleias</TabsTrigger>

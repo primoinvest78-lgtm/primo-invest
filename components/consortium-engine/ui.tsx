@@ -1,6 +1,8 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type ReactNode } from "react";
 
@@ -196,29 +198,52 @@ export function Stat({
   hint,
   tone = "default",
   delay = 0,
+  href,
+  onClick,
 }: {
   label: string;
   value: string;
   hint?: string;
   tone?: "default" | "warning" | "danger" | "success";
   delay?: number;
+  /** Número clicável: abre outra tela (href) ou uma aba/filtro da página (onClick). */
+  href?: string;
+  onClick?: () => void;
 }) {
   const toneClass =
     tone === "danger" ? "text-destructive" : tone === "warning" ? "text-amber-700" : tone === "success" ? "text-primary" : "text-foreground";
-  return (
+  const card = (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
-      className="card-premium rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70"
+      className={`card-premium h-full rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/70 ${href || onClick ? "cursor-pointer" : ""}`}
     >
-      <p className="text-label font-bold uppercase text-card-beige-muted-foreground">{label}</p>
+      <p className="flex items-center justify-between gap-1 text-label font-bold uppercase text-card-beige-muted-foreground">
+        {label}
+        {href || onClick ? <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" /> : null}
+      </p>
       <p className={`mt-1.5 text-h2 font-bold ${toneClass}`}>
         <AnimatedNumber value={value} />
       </p>
       {hint ? <p className="mt-0.5 text-[11px] text-card-beige-muted-foreground">{hint}</p> : null}
     </motion.div>
   );
+  if (href) {
+    return (
+      <Link href={href} className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        {card}
+      </Link>
+    );
+  }
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className="block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        {card}
+      </button>
+    );
+  }
+  return card;
 }
 
 const STATUS_TONE: Record<string, "default" | "secondary" | "destructive" | "outline"> = {

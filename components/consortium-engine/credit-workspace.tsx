@@ -422,8 +422,8 @@ export function CreditWorkspaceView({ ws, role, events }: { ws: CreditWorkspace;
         {ws.contract && ws.position ? (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-              <Stat label="Situação da cota" value={QUOTA_FINANCIAL_STATUS_LABEL[ws.position.status]} />
-              <Stat label="Saldo devedor" value={formatCurrencyBRL(ws.position.outstanding)} tone={ws.position.outstanding > 0 ? "warning" : "success"} />
+              <Stat label="Situação da cota" value={QUOTA_FINANCIAL_STATUS_LABEL[ws.position.status]} href="/consorcios/parcelas" />
+              <Stat label="Saldo devedor" value={formatCurrencyBRL(ws.position.outstanding)} tone={ws.position.outstanding > 0 ? "warning" : "success"} href="/consorcios/parcelas" />
               <Stat label="Pago" value={formatCurrencyBRL(ws.position.paid)} />
               <Stat label="Amortizado" value={formatCurrencyBRL(ws.position.amortized)} />
               <Stat label="Parcelas em aberto" value={String(ws.position.openInstallments)} />

@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+
+import { scrollToId } from "@/components/ui/panel-action";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AgentsPanel, NumberAnalysisPanel } from "@/components/consortium-engine/intelligence/analysis-panels";
 import { AssistantPanel } from "@/components/consortium-engine/intelligence/assistant-panel";
@@ -26,6 +29,7 @@ export function IntelligenceHub(props: {
   credits: CreditOperation[];
   analysis: NumberAnalysis | null;
 }) {
+  const [tab, setTab] = useState("achados");
   const open = props.findings.filter((f) => f.status === "OPEN" || f.status === "ACKNOWLEDGED");
   const assemblyOptions = props.assemblies.map((a) => {
     const g = props.groups.find((x) => x.id === a.groupId);
@@ -34,9 +38,20 @@ export function IntelligenceHub(props: {
 
   return (
     <div className="space-y-6">
-      <OperationalDashboard assemblies={props.assemblies} groups={props.groups} findings={open} events={props.events} credits={props.credits} automation={props.automation} />
+      <OperationalDashboard
+        assemblies={props.assemblies}
+        groups={props.groups}
+        findings={open}
+        events={props.events}
+        credits={props.credits}
+        automation={props.automation}
+        onShowFindings={() => {
+          setTab("achados");
+          requestAnimationFrame(() => scrollToId("inteligencia-abas"));
+        }}
+      />
 
-      <Tabs defaultValue="achados">
+      <Tabs id="inteligencia-abas" value={tab} onValueChange={(v) => v && setTab(String(v))} className="scroll-mt-24">
         <div className="overflow-x-auto pb-1">
           <TabsList>
             <TabsTrigger value="achados">Achados ({open.length})</TabsTrigger>
