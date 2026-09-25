@@ -77,7 +77,15 @@ export function VaultView({
         onSelectExpiry={(expiry) => setFilters((f) => ({ ...f, expiry }))}
       />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Documento vencido/vencendo abre o próprio documento; cliente sem documento leva a Clientes.
+          const m = /^(expired|expiring)-(.+)$/.exec(a.id);
+          if (m) return `/documentos/cofre?documento=${m[2]}`;
+          return a.id.startsWith("clients-without") ? "/clientes" : null;
+        }}
+      />
 
       <VaultCategoriesGrid documents={documents} activeCategory={effectiveFilters.category} onSelect={selectCategory} />
 
