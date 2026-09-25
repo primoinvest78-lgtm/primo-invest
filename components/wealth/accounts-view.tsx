@@ -34,7 +34,14 @@ export function AccountsView({
         onSelectAttention={() => setFilters((f) => ({ ...DEFAULT_ACCOUNT_FILTERS, attentionOnly: !f.attentionOnly }))}
       />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Alertas de uma conta específica abrem a própria conta.
+          const m = /^(inactive|stale|incomplete)-(.+)$/.exec(a.id);
+          return m ? `/patrimonio/contas/${m[2]}` : null;
+        }}
+      />
 
       <AccountsInstitutionSection accounts={accounts} />
 

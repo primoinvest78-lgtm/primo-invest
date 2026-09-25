@@ -13,13 +13,23 @@ const ALERT_STYLE = {
   info: "border-accent/30 bg-accent/10 text-accent",
 };
 
-/** Onde cada alerta se resolve. */
-function alertHref(id: string): string {
-  if (id === "low-liquidity") return "/patrimonio/contas";
-  return "/patrimonio/investimentos";
+function AlertWrapper({ href, children }: { href: string | null; children: React.ReactNode }) {
+  if (!href) return <>{children}</>;
+  return (
+    <Link href={href} className="block">
+      {children}
+    </Link>
+  );
 }
 
-export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
+export function WealthAlertsSection({
+  alerts,
+  hrefFor,
+}: {
+  alerts: WealthAlert[];
+  /** Onde cada alerta se resolve. Sem destino, o alerta fica só informativo. */
+  hrefFor?: (alert: WealthAlert) => string | null;
+}) {
   if (alerts.length === 0) return null;
 
   return (
@@ -29,7 +39,7 @@ export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
         {alerts.map((alert, index) => {
           const Icon = ALERT_ICON[alert.severity];
           return (
-            <Link key={alert.id} href={alertHref(alert.id)} className="block">
+            <AlertWrapper key={alert.id} href={hrefFor?.(alert) ?? null}>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -41,9 +51,9 @@ export function WealthAlertsSection({ alerts }: { alerts: WealthAlert[] }) {
             >
               <Icon className="mt-0.5 h-4 w-4 shrink-0" />
               <span className="flex-1">{alert.message}</span>
-              <span className="shrink-0 text-xs font-bold underline-offset-2 hover:underline">Ver →</span>
+              {hrefFor?.(alert) ? <span className="shrink-0 text-xs font-bold underline-offset-2 hover:underline">Ver →</span> : null}
             </motion.div>
-            </Link>
+            </AlertWrapper>
           );
         })}
       </div>

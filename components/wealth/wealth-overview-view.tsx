@@ -39,7 +39,10 @@ export function WealthOverviewView({
     <div className="space-y-6">
       <WealthKpis overview={overview} history={history} />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => (a.id === "low-liquidity" ? "/patrimonio/contas" : "/patrimonio/investimentos")}
+      />
 
       <WealthComparisonBars overview={overview} />
 
