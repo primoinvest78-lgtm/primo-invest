@@ -1049,6 +1049,50 @@ export async function lockAssemblyLottery(assemblyId: string, lotteryResultId: s
   });
 }
 
+/**
+ * SORTEIO PRÓPRIO (roleta) — 1. selo prévio. O banco gera o segredo e
+ * só devolve a impressão digital dele; ninguém (nem quem clicou) conhece
+ * o segredo até o sorteio.
+ */
+export async function commitOwnDraw(assemblyId: string): Promise<ActionResult> {
+  return run(async () => {
+    const { organizationId } = await guard("operate");
+    const ws = await loadWorkspace(organizationId, assemblyId);
+    if (ws.rule && ws.rule.source !== "OWN_DRAW") return fail("A regra desta assembleia usa outra fonte de sorteio.");
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("consortium_own_draw_commit", { p_assembly_id: assemblyId });
+    if (error) throw error;
+    revalidateAssembly(ws);
+    return { ok: true, message: "Selo prévio registrado. A partir de agora o resultado não pode ser escolhido por ninguém." };
+  });
+}
+
+/**
+ * SORTEIO PRÓPRIO — 2. sorteio. O banco revela o segredo, combina com a
+ * frase pública e grava o resultado como fonte VERIFICADA; em seguida o
+ * resultado é travado na assembleia pelo mesmo caminho da Loteria Federal.
+ */
+export async function revealOwnDraw(assemblyId: string, phrase: string): Promise<ActionResult<{ prizes: string[] }>> {
+  return run(async () => {
+    const { organizationId } = await guard("govern");
+    const ws = await loadWorkspace(organizationId, assemblyId);
+    if (ws.rule?.source !== "OWN_DRAW") return fail("A roleta só vale para assembleia com regra de sorteio próprio.");
+    const supabase = await createClient();
+    const { data: resultId, error } = await supabase.rpc("consortium_own_draw_reveal", {
+      p_assembly_id: assemblyId,
+      p_phrase: phrase.slice(0, 200),
+    });
+    if (error) throw error;
+    const locked = await lockAssemblyLottery(assemblyId, resultId as string);
+    const { data: own } = await supabase.from("consortium_own_draws").select("prizes").eq("assembly_id", assemblyId).single();
+    const prizes = ((own as { prizes: string[] | null } | null)?.prizes ?? []) as string[];
+    if (!locked.ok) {
+      return { ok: true, data: { prizes }, message: `Sorteio realizado, mas o resultado não pôde ser travado: ${locked.errors.join(" ")}` };
+    }
+    return { ok: true, data: { prizes } };
+  });
+}
+
 /** DRAW READY — congela regra (com hash) e recursos. */
 export async function prepareAssemblyDraw(
   assemblyId: string,

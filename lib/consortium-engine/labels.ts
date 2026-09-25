@@ -31,6 +31,7 @@ export const LOTTERY_STATUS_LABEL: Record<string, string> = {
 export const SOURCE_LABEL: Record<string, string> = {
   FEDERAL_LOTTERY: "Loteria Federal",
   OTHER_REGULATED_SOURCE: "Outra fonte regulada",
+  OWN_DRAW: "Sorteio próprio (roleta)",
 };
 
 export const QUOTA_STATUS_LABEL: Record<string, string> = {

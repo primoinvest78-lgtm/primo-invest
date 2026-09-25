@@ -8,6 +8,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { AssemblySteps } from "@/components/consortium-engine/assembly-steps";
 import { AuditTimeline } from "@/components/consortium-engine/audit-timeline";
 import { CalculationView } from "@/components/consortium-engine/calculation-view";
+import { NumberRoulette, OwnDrawPanel } from "@/components/consortium-engine/own-draw-panel";
 import { RetificationPanel } from "@/components/consortium-engine/retification-panel";
 import {
   EmptyState,
@@ -49,6 +50,7 @@ import { SEAL_LABEL } from "@/lib/consortium-intelligence/findings";
 import { formatCurrencyBRL, formatDate } from "@/lib/utils/format";
 
 const GOVERN = ["admin", "manager", "compliance"];
+const OPERATE = [...GOVERN, "operations", "advisor"];
 const TOOLTIP_STYLE = {
   borderRadius: 14,
   border: "1px solid var(--border)",
@@ -133,6 +135,10 @@ export function AssemblyWorkspace({
   const d = group.numbering.displayDigits;
   const canGovern = GOVERN.includes(role);
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
+  const [replayLottery, setReplayLottery] = useState(false);
+  const ruleIsOwnDraw = ws.rule ? ws.rule.source === "OWN_DRAW" : null;
+  const showOwnDraw = Boolean(ws.ownDraw) || ruleIsOwnDraw === true || (ruleIsOwnDraw === null && publishedRules.some((r) => r.source === "OWN_DRAW"));
+  const ownDrawDigits = ws.rule?.config.prizeDigits ?? publishedRules.find((r) => r.source === "OWN_DRAW")?.config.prizeDigits ?? 5;
 
   const eligSnap = ws.snapshots.filter((s) => s.kind === "ELIGIBILITY").sort((a, b) => b.sequence - a.sequence)[0];
   const snapshot = (eligSnap?.payload as { snapshot?: EligibilitySnapshot } | undefined)?.snapshot ?? null;
@@ -186,9 +192,28 @@ export function AssemblyWorkspace({
             attachable={attachable}
             bidsCount={ws.bids.length}
             bidsEnabled={Boolean(ws.rule?.config.bids.enabled)}
+            ruleSource={ws.rule?.source ?? null}
           />
         </div>
       </Section>
+
+      {showOwnDraw ? (
+        <Section
+          title="Roleta · sorteio próprio"
+          subtitle="Vale quando o contrato do grupo prevê sorteio próprio. O resultado é selado antes, sorteado na hora e pode ser conferido por qualquer pessoa."
+        >
+          <OwnDrawPanel
+            assemblyId={assembly.id}
+            assemblyNumber={assembly.assemblyNumber}
+            status={assembly.status}
+            ownDraw={ws.ownDraw}
+            canOperate={OPERATE.includes(role)}
+            canGovern={canGovern}
+            ruleIsOwnDraw={ruleIsOwnDraw}
+            prizeDigits={ownDrawDigits}
+          />
+        </Section>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
         <Stat label="Cotas" value={String(group.quotaCount)} />
@@ -243,7 +268,14 @@ export function AssemblyWorkspace({
         </Section>
 
         <Section title="Resultado oficial" subtitle={ws.lottery ? `${labelOf(SOURCE_LABEL, ws.lottery.source)} · concurso ${ws.lottery.contestNumber} · ${formatDate(ws.lottery.drawDate)}` : "Ainda não travado."}>
-          {ws.lottery ? (
+          {ws.lottery && replayLottery ? (
+            <div className="space-y-3">
+              <NumberRoulette prizes={ws.lottery.prizes} digits={ws.lottery.prizes[0]?.length ?? 5} play onDone={() => undefined} />
+              <Button size="xs" variant="outline" onClick={() => setReplayLottery(false)}>
+                Fechar roleta
+              </Button>
+            </div>
+          ) : ws.lottery ? (
             <div className="space-y-3">
               <div className="grid grid-cols-5 gap-2">
                 {ws.lottery.prizes.map((p, i) => (
@@ -264,6 +296,9 @@ export function AssemblyWorkspace({
                   </Link>
                 </p>
               ) : null}
+              <Button size="xs" variant="outline" onClick={() => setReplayLottery(true)}>
+                Ver na roleta
+              </Button>
             </div>
           ) : (
             <EmptyState>Nenhum resultado oficial travado.</EmptyState>

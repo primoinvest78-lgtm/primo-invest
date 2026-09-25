@@ -529,6 +529,21 @@ export type AssemblyWorkspace = {
   bids: AssemblyBid[];
   /** Cotas conhecidas → contrato, pra associar lance (contrato) ↔ cota. */
   quotaByContract: Record<string, number>;
+  /** Sorteio próprio (roleta): selo prévio e, depois do sorteio, a revelação. */
+  ownDraw: OwnDrawRecordView | null;
+};
+
+export type OwnDrawRecordView = {
+  id: string;
+  commitmentHash: string;
+  committedAt: string;
+  publicPhrase: string | null;
+  publicEntropy: string | null;
+  revealedSeed: string | null;
+  prizes: string[] | null;
+  prizeDigits: number | null;
+  revealedAt: string | null;
+  lotteryResultId: string | null;
 };
 
 /**
@@ -540,7 +555,7 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
   if (!assembly) return null;
   const supabase = await createClient();
 
-  const [group, ruleRes, lotteryRes, snapRes, runRes, contRes, retRes, evRes, bidRes, quotaRes] = await Promise.all([
+  const [group, ruleRes, lotteryRes, snapRes, runRes, contRes, retRes, evRes, bidRes, quotaRes, ownRes] = await Promise.all([
     getEngineGroup(organizationId, assembly.groupId),
     assembly.ruleId
       ? supabase.from("consortium_draw_rules").select(RULE_SELECT).eq("id", assembly.ruleId).maybeSingle()
@@ -579,9 +594,14 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
       .eq("assembly_id", assemblyId)
       .order("created_at"),
     supabase.from("consortium_quotas").select("quota_number, contract_id").eq("group_id", assembly.groupId).not("contract_id", "is", null),
+    supabase
+      .from("consortium_own_draws")
+      .select("id, commitment_hash, committed_at, public_phrase, public_entropy, revealed_seed, prizes, prize_digits, revealed_at, lottery_result_id")
+      .eq("assembly_id", assemblyId)
+      .maybeSingle(),
   ]);
 
-  for (const r of [ruleRes, lotteryRes, snapRes, runRes, contRes, retRes, bidRes, quotaRes]) {
+  for (const r of [ruleRes, lotteryRes, snapRes, runRes, contRes, retRes, bidRes, quotaRes, ownRes]) {
     if (r.error) throw r.error;
   }
   if (!group) return null;
@@ -633,6 +653,20 @@ export async function getAssemblyWorkspace(organizationId: string, assemblyId: s
       result: b.result, createdAt: b.created_at,
     })),
     quotaByContract,
+    ownDraw: ownRes.data ? mapOwnDraw(ownRes.data as RawOwnDraw) : null,
+  };
+}
+
+type RawOwnDraw = {
+  id: string; commitment_hash: string; committed_at: string; public_phrase: string | null; public_entropy: string | null;
+  revealed_seed: string | null; prizes: string[] | null; prize_digits: number | null; revealed_at: string | null; lottery_result_id: string | null;
+};
+
+function mapOwnDraw(r: RawOwnDraw): OwnDrawRecordView {
+  return {
+    id: r.id, commitmentHash: r.commitment_hash, committedAt: r.committed_at, publicPhrase: r.public_phrase,
+    publicEntropy: r.public_entropy, revealedSeed: r.revealed_seed, prizes: r.prizes, prizeDigits: r.prize_digits,
+    revealedAt: r.revealed_at, lotteryResultId: r.lottery_result_id,
   };
 }
 

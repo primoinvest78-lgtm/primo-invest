@@ -111,6 +111,7 @@ export function AssemblySteps({
   attachable,
   bidsCount,
   bidsEnabled,
+  ruleSource,
 }: {
   assembly: EngineAssembly;
   group: EngineGroup;
@@ -120,6 +121,7 @@ export function AssemblySteps({
   attachable: Attachable[];
   bidsCount: number;
   bidsEnabled: boolean;
+  ruleSource: string | null;
 }) {
   const [ruleId, setRuleId] = useState(publishedRules[0]?.id ?? "");
   const [lotteryId, setLotteryId] = useState(verifiedLottery[0]?.id ?? "");
@@ -150,6 +152,13 @@ export function AssemblySteps({
         </div>
       );
     case "ELIGIBILITY_LOCKED":
+      if (ruleSource === "OWN_DRAW") {
+        return (
+          <p className="text-sm text-card-beige-muted-foreground">
+            Esta regra usa <strong>sorteio próprio</strong>. Faça o sorteio no painel <strong>Roleta</strong>, logo abaixo. O resultado é travado nesta assembleia automaticamente.
+          </p>
+        );
+      }
       return verifiedLottery.length === 0 ? (
         <p className="text-sm text-amber-700">Nenhum resultado oficial VERIFICADO. Importe e verifique o resultado na aba Resultado oficial.</p>
       ) : (

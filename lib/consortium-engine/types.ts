@@ -27,7 +27,12 @@ export type GroupNumbering = {
 export const RULE_STATUSES = ["DRAFT", "REVIEW", "APPROVED", "PUBLISHED", "SUPERSEDED", "ARCHIVED"] as const;
 export type RuleStatus = (typeof RULE_STATUSES)[number];
 
-export type DrawSource = "FEDERAL_LOTTERY" | "OTHER_REGULATED_SOURCE";
+/**
+ * OWN_DRAW = sorteio próprio auditável (roleta), permitido quando o
+ * contrato do grupo prevê essa forma de sorteio (Circular BCB 3.432/2009
+ * art. 5º, X). Ver own-draw.ts.
+ */
+export type DrawSource = "FEDERAL_LOTTERY" | "OTHER_REGULATED_SOURCE" | "OWN_DRAW";
 
 /** Um passo do plano de candidatos: quais posições (1-indexadas, da esquerda) de qual prêmio. */
 export type CandidateStep = { prize: number; positions: number[] };

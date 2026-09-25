@@ -6,7 +6,11 @@ import type { LotteryResult, RuleConfig, SourceValidationStatus } from "./types.
  * gera número: só consome o que a fonte publicou.
  */
 
-const KNOWN_SOURCES = ["FEDERAL_LOTTERY", "OTHER_REGULATED_SOURCE"];
+const KNOWN_SOURCES = ["FEDERAL_LOTTERY", "OTHER_REGULATED_SOURCE", "OWN_DRAW"];
+
+/** Sorteio próprio é identificado por "SP-AAAAMMDD-nº da assembleia". */
+const CONTEST_PATTERN: Record<string, RegExp> = { OWN_DRAW: /^SP-\d{8}-\d{1,6}$/ };
+const DEFAULT_CONTEST_PATTERN = /^\d{1,8}$/;
 
 export function lotteryContentHash(result: LotteryResult): string {
   return hashOf({
@@ -54,7 +58,7 @@ export function validateLotteryResult(
     return { status: "INVALID_SOURCE", errors: [`Fonte "${result.source}" não reconhecida.`] };
   }
   const errors: string[] = [];
-  if (!/^\d{1,8}$/.test(result.contestNumber.trim())) errors.push("Número do concurso inválido.");
+  if (!(CONTEST_PATTERN[result.source] ?? DEFAULT_CONTEST_PATTERN).test(result.contestNumber.trim())) errors.push("Número do concurso inválido.");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(result.drawDate) || Number.isNaN(Date.parse(result.drawDate))) {
     errors.push("Data do sorteio inválida.");
   } else if (result.drawDate > asOf) {

@@ -222,6 +222,7 @@ const VALUE_LABEL: Record<string, string> = {
   UNKNOWN: "Sem dado",
   FEDERAL_LOTTERY: "Loteria Federal",
   OWN_DRAW: "Sorteio próprio",
+  OTHER_REGULATED_SOURCE: "Outra fonte regulada",
   AUTOMATED_FETCH: "Coleta automática",
   MANUAL: "Manual",
   PENDING_DOCUMENTS: "Documentação pendente",

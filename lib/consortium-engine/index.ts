@@ -15,6 +15,7 @@
  *   RETIFY   retification.ts  retificação e reprodução
  *   CREDIT   credit.ts        direito ao crédito, líquido, documentação, uso
  *   SETTLE   settlement.ts    posição financeira, amortização, quitação
+ *   OWN DRAW own-draw.ts      conferência do sorteio próprio (roleta)
  *
  * Tudo puro — ver comentário em types.ts.
  */
@@ -35,3 +36,4 @@ export * from "./state-machine.ts";
 export * from "./retification.ts";
 export * from "./credit.ts";
 export * from "./settlement.ts";
+export * from "./own-draw.ts";

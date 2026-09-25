@@ -35,7 +35,8 @@ export default async function AssembleiaMotorPage({ params }: { params: Promise<
   const publishedRules = rules.filter(
     (r) => r.status === "PUBLISHED" && r.administratorName.trim().toLowerCase() === admin && (!r.groupId || r.groupId === ws.group.id),
   );
-  const verifiedLottery = lottery.filter((l) => l.verificationStatus === "VERIFIED");
+  // Resultado de sorteio próprio pertence à assembleia que o sorteou — nunca é oferecido a outra.
+  const verifiedLottery = lottery.filter((l) => l.verificationStatus === "VERIFIED" && l.source !== "OWN_DRAW");
 
   return (
     <div className="space-y-6">

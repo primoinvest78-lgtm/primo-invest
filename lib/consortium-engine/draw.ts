@@ -7,6 +7,12 @@ import { assessResources } from "./resources.ts";
 import { computeRuleHash, ruleApplicabilityErrors, validateRuleConfig } from "./rules.ts";
 import { fallbackSequence, neighborSequence } from "./sequences.ts";
 import { validateLotteryForAssembly } from "./source.ts";
+
+const SOURCE_NAME: Record<string, string> = {
+  FEDERAL_LOTTERY: "Loteria Federal",
+  OTHER_REGULATED_SOURCE: "Outra fonte regulada",
+  OWN_DRAW: "Sorteio próprio",
+};
 import { TraceBuilder } from "./trace.ts";
 import {
   ENGINE_VERSION,
@@ -163,7 +169,7 @@ export function runDraw(input: DrawInput): RunOutput {
   // 6–7. Resultado oficial + validação
   t.add(
     "LOTTERY",
-    `Resultado oficial: ${input.lottery.source === "FEDERAL_LOTTERY" ? "Loteria Federal" : input.lottery.source}, concurso ${input.lottery.contestNumber} de ${input.lottery.drawDate}.`,
+    `Resultado oficial: ${SOURCE_NAME[input.lottery.source] ?? input.lottery.source}, concurso ${input.lottery.contestNumber} de ${input.lottery.drawDate}.`,
     { prizes: input.lottery.prizes },
   );
   const validation = validateLotteryForAssembly(input.lottery, cfg, input.rule.source, input.assembly.date);

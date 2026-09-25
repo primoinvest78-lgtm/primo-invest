@@ -17,7 +17,7 @@ import {
   UNKNOWN_POLICY_LABEL,
 } from "@/lib/consortium-engine/labels.ts";
 import { blankRuleConfig, expandCandidatePlan } from "@/lib/consortium-engine/rule-config.ts";
-import type { BidType, RuleConfig } from "@/lib/consortium-engine/types.ts";
+import type { BidType, DrawRule, RuleConfig } from "@/lib/consortium-engine/types.ts";
 import type { EngineGroup, EngineRule } from "@/lib/data/consortium-engine";
 
 const opts = (m: Record<string, string>, keys?: string[]) => (keys ?? Object.keys(m)).map((k) => ({ value: k, label: m[k] }));
@@ -151,7 +151,7 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
       groupId: groupId || null,
       effectiveFrom: String(f.get("effectiveFrom") ?? ""),
       effectiveUntil: String(f.get("effectiveUntil") ?? "") || null,
-      source: String(f.get("source")) as "FEDERAL_LOTTERY",
+      source: String(f.get("source")) as DrawRule["source"],
       regulationReference: String(f.get("regulationReference") ?? ""),
       config,
     };
@@ -196,13 +196,14 @@ export function RuleFormDialog({ groups, rule }: { groups: EngineGroup[]; rule?:
                   options={[{ value: "", label: "Todos os grupos da administradora" }, ...groups.map((g) => ({ value: g.id, label: `${g.administratorName} · ${g.groupCode}` }))]}
                 />
               </Field>
-              <Field label="Fonte oficial">
+              <Field label="Fonte do sorteio" hint="Sorteio próprio só quando o contrato do grupo prevê.">
                 <NativeSelect
                   name="source"
                   defaultValue={rule?.source ?? "FEDERAL_LOTTERY"}
                   options={[
                     { value: "FEDERAL_LOTTERY", label: "Loteria Federal" },
                     { value: "OTHER_REGULATED_SOURCE", label: "Outra fonte regulada" },
+                    { value: "OWN_DRAW", label: "Sorteio próprio (roleta)" },
                   ]}
                 />
               </Field>
