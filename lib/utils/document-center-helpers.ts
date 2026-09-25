@@ -17,7 +17,7 @@ export function requestStatusLabel(status: string): string {
 export const RESPONSIBLE_ROLE_LABEL: Record<string, string> = {
   cliente: "Cliente",
   assessor: "Assessor",
-  backoffice: "Backoffice",
+  backoffice: "Operações internas",
   compliance: "Compliance",
   administracao: "Administração",
 };
