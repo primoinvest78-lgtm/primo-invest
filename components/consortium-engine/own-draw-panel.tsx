@@ -91,7 +91,20 @@ function Drum({ digit, rolling, delay }: { digit: number | null; rolling: boolea
  * Roleta de apresentação: gira uma vez por prêmio e revela os números já
  * definidos (sorteio próprio selado ou resultado da Loteria Federal).
  */
-export function NumberRoulette({ prizes, digits, play, onDone }: { prizes: string[]; digits: number; play: boolean; onDone?: () => void }) {
+export function NumberRoulette({
+  prizes,
+  digits,
+  play,
+  onDone,
+  idle = false,
+}: {
+  prizes: string[];
+  digits: number;
+  play: boolean;
+  onDone?: () => void;
+  /** Roleta parada, antes do sorteio: tambores vazios. */
+  idle?: boolean;
+}) {
   const [revealedCount, setRevealedCount] = useState(0);
   const [prevPlay, setPrevPlay] = useState(play);
   const [rotation, setRotation] = useState(0);
@@ -104,7 +117,7 @@ export function NumberRoulette({ prizes, digits, play, onDone }: { prizes: strin
     setPrevPlay(play);
     if (play) setRevealedCount(0);
   }
-  const shown = play ? revealedCount : prizes.length;
+  const shown = idle ? 0 : play ? revealedCount : prizes.length;
   const setShown = setRevealedCount;
 
   useEffect(() => {
