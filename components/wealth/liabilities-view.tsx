@@ -42,7 +42,14 @@ export function LiabilitiesView({
         }
       />
 
-      <WealthAlertsSection alerts={alerts} />
+      <WealthAlertsSection
+        alerts={alerts}
+        hrefFor={(a) => {
+          // Todo alerta de passivo é sobre um passivo específico: abre o próprio passivo.
+          const m = /^(maturity|overdue|status|near-payoff|concentration|heavy-installment)-(.+)$/.exec(a.id);
+          return m ? `/patrimonio/passivos/${m[2]}` : null;
+        }}
+      />
 
       <LiabilitiesChartsSection liabilities={liabilities} />
 
