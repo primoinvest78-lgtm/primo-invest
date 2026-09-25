@@ -7,11 +7,11 @@ import { CheckCircle2, Lock, XCircle } from "lucide-react";
  * perfil, trilha de auditoria); a segunda é o que ainda não existe.
  */
 const ACTIVE_PROTECTIONS = [
-  "Row Level Security em todas as tabelas — cada consulta já filtra pela organização do usuário logado.",
+  "Segurança por linha em todas as tabelas do banco — cada consulta já filtra pela organização do usuário logado.",
   "Ações administrativas sensíveis (alterar perfil, ativar/desativar, conceder permissão) passam por funções com checagem de perfil embutida, não por acesso direto às tabelas.",
   "A organização nunca fica sem nenhum Administrador ativo — o sistema recusa a última remoção/rebaixamento.",
   "Toda alteração em usuários, permissões e dados operacionais gera um evento na auditoria, com o que mudou antes e depois.",
-  "Nenhuma chave de serviço (service role) é usada pela aplicação — todo acesso respeita a mesma sessão e as mesmas regras do usuário logado.",
+  "Nenhuma chave de serviço com acesso total é usada pela aplicação — todo acesso respeita a mesma sessão e as mesmas regras do usuário logado.",
 ];
 
 const NOT_IMPLEMENTED = [
