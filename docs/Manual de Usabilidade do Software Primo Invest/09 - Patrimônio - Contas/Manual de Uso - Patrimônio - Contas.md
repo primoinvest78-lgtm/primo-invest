@@ -58,7 +58,7 @@ Uma conta entra em **atenção** quando:
 
 ### 2.3 Alertas
 
-Logo abaixo, podem aparecer avisos coloridos. Cada um tem o botão **"Ver →"**:
+Logo abaixo, podem aparecer avisos coloridos. Os avisos sobre **uma conta específica** têm o botão **"Ver →"**, que abre a própria conta:
 
 - *"Conta inativa: … está com status …"*;
 - *"Conta sem atualização há mais de 90 dias: …"*;
