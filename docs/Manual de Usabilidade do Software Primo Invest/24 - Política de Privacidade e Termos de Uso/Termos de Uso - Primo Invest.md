@@ -11,7 +11,7 @@ Estes Termos definem **as regras para usar a plataforma Primo Invest**. Leia com
 ## 1. Definições
 
 - **Primo Invest** — [A PREENCHER — razão social], CNPJ nº [A PREENCHER], responsável pela plataforma.
-- **Plataforma** — o sistema Primo Invest, disponível em primo-invest.vercel.app, com todos os seus módulos.
+- **Plataforma** — o sistema Primo Invest, disponível em www.primoinvest.com.br, com todos os seus módulos.
 - **Usuário** — pessoa com acesso liberado à plataforma (sócio, gestor, assessor ou colaborador).
 - **Cliente** — pessoa física ou jurídica atendida pela Primo Invest, cujos dados são registrados na plataforma.
 - **Administrador** — usuário com o perfil que libera acessos, define perfis e configura a organização.

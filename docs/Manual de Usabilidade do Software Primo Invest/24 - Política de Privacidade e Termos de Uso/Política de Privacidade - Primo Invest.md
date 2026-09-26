@@ -72,6 +72,17 @@ Dados de menores só são registrados quando informados pelo cliente responsáve
 - recebidos de administradoras de consórcio, instituições financeiras e custodiantes, quando o cliente autoriza ou quando necessário para o serviço;
 - gerados pela própria plataforma (cálculos, alertas, auditoria).
 
+### Dados obtidos pelo login com o Google
+
+Quando o usuário entra na plataforma com a Conta Google, recebemos do Google **apenas o nome, o e-mail, a foto de perfil e um identificador da conta**.
+
+- Esses dados são usados **somente para criar e identificar o acesso** do usuário à plataforma.
+- **Não acessamos** o Gmail, o Drive, a Agenda, os Contatos nem a senha da Conta Google.
+- Esses dados **não são vendidos, alugados nem usados para publicidade**. Eles ficam guardados no Supabase, nosso provedor de autenticação, apenas para o login.
+- O usuário pode revogar o acesso a qualquer momento em [https://myaccount.google.com/permissions](https://myaccount.google.com/permissions) e pedir a exclusão dos dados ao Encarregado (item 1).
+
+O uso e a transferência, para qualquer outro aplicativo, das informações recebidas das APIs do Google seguem a [Política de Dados do Usuário dos Serviços de API do Google](https://developers.google.com/terms/api-services-user-data-policy), incluindo os requisitos de Uso Limitado.
+
 ---
 
 ## 4. Para que usamos os dados e com qual base legal

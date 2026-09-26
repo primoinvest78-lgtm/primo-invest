@@ -2,7 +2,7 @@
 
 **Software:** Primo Invest
 **Módulo:** Consórcios → Contratos
-**Onde fica:** menu lateral → grupo **Consórcios** → **Contratos**. A visão geral de consórcios fica em **primo-invest.vercel.app/consorcios**.
+**Onde fica:** menu lateral → grupo **Consórcios** → **Contratos**. A visão geral de consórcios fica em **www.primoinvest.com.br/consorcios**.
 
 ---
 

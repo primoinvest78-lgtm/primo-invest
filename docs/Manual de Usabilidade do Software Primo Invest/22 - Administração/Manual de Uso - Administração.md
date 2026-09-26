@@ -2,7 +2,7 @@
 
 **Software:** Primo Invest
 **Módulo:** Administração (Centro de Administração e Governança)
-**Onde fica:** menu lateral → **Administração**. Para abrir direto na lista de usuários: **primo-invest.vercel.app/administracao?aba=usuarios**.
+**Onde fica:** menu lateral → **Administração**. Para abrir direto na lista de usuários: **www.primoinvest.com.br/administracao?aba=usuarios**.
 
 ---
 

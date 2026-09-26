@@ -2,13 +2,13 @@
 
 **Software:** Primo Invest
 **Assunto:** entrar no sistema, recuperar a senha, conta sem acesso e notificações
-**Endereço do sistema:** **https://primo-invest.vercel.app**
+**Endereço do sistema:** **https://www.primoinvest.com.br**
 
 ---
 
 ## 1. Entrar no sistema
 
-Para entrar, abra **primo-invest.vercel.app**. A tela **"Entrar na plataforma"** oferece duas formas:
+Para entrar, abra **www.primoinvest.com.br**. A tela **"Entrar na plataforma"** oferece duas formas:
 
 ### 1.1 Com e-mail e senha
 
