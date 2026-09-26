@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
+  BookOpen,
   BriefcaseBusiness,
   Building2,
   Cable,
@@ -14,10 +15,12 @@ import {
   Gauge,
   Landmark,
   LayoutDashboard,
+  Lock,
   MessageSquareText,
   PiggyBank,
   Radar,
   Receipt,
+  ScrollText,
   ShieldCheck,
   TrendingUp,
   Users,
@@ -144,4 +147,12 @@ export const navigationGroups: SidebarGroup[] = [
   },
   { items: [{ label: "Inteligência", icon: TrendingUp, href: "/inteligencia" }] },
   { items: [{ label: "Administração", icon: FolderKanban, href: "/administracao" }] },
+  {
+    title: "Ajuda e documentos",
+    items: [
+      { label: "Manual de uso", icon: BookOpen, href: "/ajuda" },
+      { label: "Política de Privacidade", icon: Lock, href: "/privacidade" },
+      { label: "Termos de Uso", icon: ScrollText, href: "/termos" },
+    ],
+  },
 ];

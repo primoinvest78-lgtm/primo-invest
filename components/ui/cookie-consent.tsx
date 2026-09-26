@@ -1,6 +1,7 @@
 "use client";
 
 import { Cookie } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,10 @@ export function CookieConsent() {
         <p className="flex-1 text-body-sm text-muted-foreground">
           Usamos apenas cookies essenciais — necessários para manter sua sessão conectada e
           proteger o acesso à plataforma. Não usamos cookies de rastreamento ou publicidade. Ao
-          continuar navegando, você concorda com o uso desses cookies essenciais.
+          continuar navegando, você concorda com o uso desses cookies essenciais.{" "}
+          <Link href="/privacidade" className="font-semibold text-foreground underline underline-offset-2">
+            Política de Privacidade
+          </Link>
         </p>
 
         <Button size="sm" onClick={accept} className="w-full shrink-0 sm:w-auto">

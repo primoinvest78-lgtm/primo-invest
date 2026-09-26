@@ -176,6 +176,14 @@ function LoginForm() {
           <GoogleIcon />
           {googleLoading ? "Redirecionando..." : "Entrar com Google"}
         </Button>
+
+        <nav className="mt-6 flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs font-semibold text-muted-foreground" aria-label="Ajuda e documentos">
+          <Link href="/ajuda" className="hover:text-foreground hover:underline">Manual de uso</Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/privacidade" className="hover:text-foreground hover:underline">Política de Privacidade</Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/termos" className="hover:text-foreground hover:underline">Termos de Uso</Link>
+        </nav>
       </div>
     </div>
   );
