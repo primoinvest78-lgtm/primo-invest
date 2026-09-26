@@ -19,6 +19,12 @@ const PUBLIC_PATHS = [
   "/api/integracoes/calendario",
 ];
 
+/**
+ * Área externa de ajuda e documentos legais: abre com ou sem login e
+ * nunca redireciona (quem está logado também precisa consultá-la).
+ */
+const PUBLIC_OPEN_PATHS = ["/ajuda", "/privacidade", "/termos"];
+
 export async function updateSession(request: NextRequest) {
   // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
   // explícita. Deixa a requisição passar sem checar sessão nenhuma.
@@ -55,6 +61,10 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (PUBLIC_OPEN_PATHS.some((path) => request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(`${path}/`))) {
+    return supabaseResponse;
+  }
 
   const isPublicPath = PUBLIC_PATHS.some((path) =>
     request.nextUrl.pathname.startsWith(path),

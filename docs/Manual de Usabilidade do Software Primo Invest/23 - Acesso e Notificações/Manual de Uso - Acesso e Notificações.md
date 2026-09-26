@@ -8,7 +8,7 @@
 
 ## 1. Entrar no sistema
 
-Abra o endereço acima. A tela **"Entrar na plataforma"** oferece duas formas:
+Para entrar, abra **primo-invest.vercel.app**. A tela **"Entrar na plataforma"** oferece duas formas:
 
 ### 1.1 Com e-mail e senha
 
