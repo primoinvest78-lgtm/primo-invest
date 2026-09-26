@@ -12,7 +12,7 @@ O Cofre Digital **guarda com segurança todos os arquivos** dos clientes e da op
 
 ### Cofre Digital × Central de Documentos
 
-A página **Documentos** (www.primoinvest.com.br/documentos) explica a diferença e tem um cartão para cada área, com o botão **Abrir módulo →**:
+A página **Documentos** (https://www.primoinvest.com.br/documentos) explica a diferença e tem um cartão para cada área, com o botão **Abrir módulo →**:
 
 - **Cofre Digital** — onde os arquivos ficam guardados;
 - **Central de Documentos** — onde se controlam pendências, prazos, aprovações e pedidos de documentos (veja o manual específico).
