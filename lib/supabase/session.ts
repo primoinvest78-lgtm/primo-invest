@@ -55,6 +55,9 @@ export const requireActiveMembership = cache(async function requireActiveMembers
     .select("organization_id, role")
     .eq("user_id", user.id)
     .eq("status", "active")
+    // Acesso provisório vencido não conta — o banco já recusa os dados
+    // (is_org_member/has_org_role); aqui a pessoa cai em /sem-acesso.
+    .or(`access_expires_at.is.null,access_expires_at.gt.${new Date().toISOString()}`)
     .limit(1)
     .maybeSingle();
 

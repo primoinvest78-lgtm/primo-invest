@@ -1,13 +1,13 @@
 "use client";
 
-import { Loader2, Power, PowerOff } from "lucide-react";
+import { CalendarPlus, Infinity as InfinityIcon, Loader2, Power, PowerOff, TimerOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { AddUserDialog } from "@/components/admin/add-user-dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { setMemberStatus, updateMemberRole } from "@/lib/actions/admin";
+import { setMemberAccessExpiry, setMemberStatus, updateMemberRole } from "@/lib/actions/admin";
 import type { OrgMember } from "@/lib/admin/types";
 import { APP_ROLES, MEMBER_STATUS_BADGE_CLASS, MEMBER_STATUS_LABEL, ROLE_LABEL, type AppRole } from "@/lib/admin/roles";
 import { formatDate, formatDateTime } from "@/lib/utils/format";
@@ -83,6 +83,68 @@ function StatusToggle({ member, disabled }: { member: OrgMember; disabled: boole
   );
 }
 
+/**
+ * Prazo do acesso provisório. O vencimento vale no banco
+ * (is_org_member/has_org_role); aqui o admin só enxerga e ajusta.
+ */
+function AccessExpiry({ member, disabled }: { member: OrgMember; disabled: boolean }) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  if (!member.accessExpiresAt) {
+    return <span className="text-caption font-semibold text-card-beige-muted-foreground">Permanente</span>;
+  }
+
+  const expiresAt = new Date(member.accessExpiresAt);
+  const expired = expiresAt <= new Date();
+
+  function apply(next: string | null) {
+    setError(null);
+    startTransition(async () => {
+      const result = await setMemberAccessExpiry(member.memberId, next);
+      if (result.message) setError(result.message);
+      router.refresh();
+    });
+  }
+
+  // Estender soma 7 dias a partir de agora se já venceu, ou do prazo atual se ainda vale.
+  function extend() {
+    const from = Math.max(Date.now(), expiresAt.getTime());
+    apply(new Date(from + 7 * 86_400_000).toISOString());
+  }
+
+  return (
+    <div className="flex min-w-[210px] flex-col gap-1.5">
+      <span
+        className={[
+          "inline-flex w-fit rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase",
+          expired ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-warning/40 bg-warning/15 text-warning",
+        ].join(" ")}
+      >
+        {expired ? "Vencido em " : "Provisório — vence em "}
+        {formatDateTime(member.accessExpiresAt)}
+      </span>
+      <div className="flex items-center gap-1">
+        <Button size="xs" variant="outline" disabled={disabled || pending} onClick={extend}>
+          {pending ? <Loader2 className="animate-spin" /> : <CalendarPlus />}
+          +7 dias
+        </Button>
+        {!expired ? (
+          <Button size="xs" variant="destructive" disabled={disabled || pending} onClick={() => apply(new Date().toISOString())}>
+            <TimerOff />
+            Encerrar agora
+          </Button>
+        ) : null}
+        <Button size="xs" variant="ghost" disabled={disabled || pending} onClick={() => apply(null)} aria-label="Tornar permanente" title="Tornar permanente">
+          <InfinityIcon />
+        </Button>
+      </div>
+      {error ? <p className="text-caption text-destructive">{error}</p> : null}
+    </div>
+  );
+}
+
 export function UsersTable({
   members,
   addedByNames,
@@ -112,6 +174,7 @@ export function UsersTable({
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">E-mail</th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Perfil</th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Status</th>
+              <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Acesso</th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Último acesso</th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Criado em</th>
               <th className="px-4 py-3 text-label font-bold uppercase text-card-beige-muted-foreground">Responsável</th>
@@ -121,7 +184,7 @@ export function UsersTable({
           <tbody>
             {members.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-10 text-center text-body-sm text-card-beige-muted-foreground">
+                <td colSpan={9} className="px-4 py-10 text-center text-body-sm text-card-beige-muted-foreground">
                   Nenhum usuário encontrado.
                 </td>
               </tr>
@@ -135,6 +198,9 @@ export function UsersTable({
                   </td>
                   <td className="px-4 py-3">
                     <StatusToggle member={member} disabled={!canManage} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <AccessExpiry member={member} disabled={!canManage} />
                   </td>
                   <td className="px-4 py-3 text-card-beige-muted-foreground">
                     {member.lastSignInAt ? formatDateTime(member.lastSignInAt) : "Não disponível"}

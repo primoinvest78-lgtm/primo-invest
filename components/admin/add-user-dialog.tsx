@@ -24,6 +24,14 @@ const RESULT_MESSAGE: Record<string, string> = {
   not_found: "Nenhuma conta encontrada com esse e-mail. A pessoa precisa criar uma conta na Primo Invest antes de ser adicionada.",
 };
 
+const DURATION_LABEL: Record<string, string> = {
+  permanent: "Permanente",
+  "1": "Provisório: 24 horas",
+  "3": "Provisório: 3 dias",
+  "7": "Provisório: 7 dias",
+  "30": "Provisório: 30 dias",
+};
+
 /**
  * Duas saídas: "Enviar convite" (principal) manda um link de acesso por
  * e-mail, cria a conta se preciso e já libera o acesso — a pessoa cria a
@@ -38,6 +46,7 @@ export function AddUserDialog() {
   const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
 
   const [mode, setMode] = useState<"invite" | "link">("invite");
+  const [duration, setDuration] = useState<string>("permanent");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,7 +58,7 @@ export function AddUserDialog() {
 
     startTransition(async () => {
       if (submitMode === "invite") {
-        const result = await inviteOrgMember({ email, role });
+        const result = await inviteOrgMember({ email, role, durationDays: duration === "permanent" ? null : Number(duration) });
         setFeedback({ ok: result.ok, text: result.message });
         if (result.ok) router.refresh();
         return;
@@ -106,6 +115,27 @@ export function AddUserDialog() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-label font-bold uppercase text-card-beige-muted-foreground">
+              Duração do acesso
+            </label>
+            <Select value={duration} onValueChange={(v) => setDuration(v ?? "permanent")}>
+              <SelectTrigger className="w-full">
+                <SelectValue>{() => DURATION_LABEL[duration]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(DURATION_LABEL).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="mt-1 text-caption text-card-beige-muted-foreground">
+              No provisório, a pessoa entra direto até o prazo acabar. Depois disso o acesso deixa de valer, e você pode estender pela lista de usuários.
+            </p>
           </div>
 
           {feedback ? (

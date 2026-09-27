@@ -21,11 +21,15 @@ export default async function SemAcessoPage() {
 
   const { data: membership } = await supabase
     .from("organization_members")
-    .select("status")
+    .select("status, access_expires_at")
     .eq("user_id", user.id)
     .limit(1)
     .maybeSingle();
-  if (membership?.status === "active") redirect("/dashboard");
+  const expired =
+    membership?.status === "active" &&
+    membership.access_expires_at !== null &&
+    new Date(membership.access_expires_at) <= new Date();
+  if (membership?.status === "active" && !expired) redirect("/dashboard");
   const pending = membership?.status === "invited";
 
   return (
@@ -37,12 +41,18 @@ export default async function SemAcessoPage() {
           </div>
           <p className="mt-4 text-label font-bold uppercase text-accent">Primo Invest</p>
           <h1 className="mt-1 text-h2 font-heading font-bold text-foreground">
-            {pending ? "Acesso aguardando liberação" : "Esta conta não tem acesso"}
+            {expired
+              ? "Seu acesso provisório terminou"
+              : pending
+                ? "Acesso aguardando liberação"
+                : "Esta conta não tem acesso"}
           </h1>
           <p className="mt-3 text-sm text-card-beige-muted-foreground">Você entrou com a conta:</p>
           <p className="mt-1 break-all rounded-lg bg-secondary px-3 py-2 font-semibold text-secondary-foreground">{user.email}</p>
           <p className="mt-4 text-sm leading-6 text-foreground">
-            {pending
+            {expired
+              ? `O prazo do seu acesso terminou em ${new Date(membership!.access_expires_at!).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" })}. Se precisar de mais tempo, peça a um administrador para estender o acesso.`
+              : pending
               ? "O convite desta conta já foi criado. Falta um administrador clicar em “Ativar acesso” em Administração → Usuários."
               : "Ela ainda não foi liberada no Primo Invest. Peça a um administrador para adicioná-la em Administração → Usuários, ou entre com outra conta."}
           </p>

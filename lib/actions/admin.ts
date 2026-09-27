@@ -17,6 +17,7 @@ const FRIENDLY_ERROR: Record<string, string> = {
   not_found: "Registro não encontrado.",
   already_member: "Essa pessoa já faz parte da organização.",
   last_admin: "Não é possível remover o último Administrador ativo da organização.",
+  admin_not_temporary: "Administrador não pode ter acesso provisório. Escolha outro perfil ou acesso permanente.",
 };
 
 /**
@@ -55,7 +56,7 @@ const INVITE_ERROR: Record<string, string> = {
  * abre o e-mail é outro navegador: no PKCE o verificador ficaria preso
  * neste servidor. A página /definir-senha lê o fragmento e grava a sessão.
  */
-export async function inviteOrgMember(input: { email: string; role: AppRole }) {
+export async function inviteOrgMember(input: { email: string; role: AppRole; durationDays: number | null }) {
   const { organizationId } = await requireActiveMembership();
   const supabase = await createClient();
   const email = input.email.trim().toLowerCase();
@@ -94,14 +95,46 @@ export async function inviteOrgMember(input: { email: string; role: AppRole }) {
     if (statusError) throw statusError;
   }
 
+  let expiryNote = "";
+  if (member) {
+    const expiresAt = input.durationDays ? new Date(Date.now() + input.durationDays * 86_400_000) : null;
+    const { data: expiryStatus, error: expiryError } = await supabase.rpc("set_member_access_expiry", {
+      p_org_id: organizationId,
+      p_member_id: member.memberId,
+      p_expires_at: expiresAt?.toISOString() ?? null,
+    });
+    if (expiryError) throw expiryError;
+    if (expiryStatus === "admin_not_temporary") {
+      expiryNote = " Atenção: Administrador não pode ser provisório, então o acesso ficou permanente.";
+    } else if (expiresAt) {
+      expiryNote = ` Acesso provisório até ${expiresAt.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" })}.`;
+    }
+  }
+
   revalidateAdmin();
   return {
     ok: true,
     message:
-      addStatus === "already_member"
+      (addStatus === "already_member"
         ? "Essa pessoa já fazia parte da organização. Um novo link de acesso foi enviado."
-        : "Convite enviado! A pessoa recebe um link por e-mail para entrar e criar a senha.",
+        : "Convite enviado! A pessoa recebe um link por e-mail para entrar e criar a senha.") + expiryNote,
   };
+}
+
+/** Define, estende ou encerra (data no passado/agora) o acesso provisório; null = permanente. */
+export async function setMemberAccessExpiry(memberId: string, expiresAt: string | null) {
+  const { organizationId } = await requireActiveMembership();
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("set_member_access_expiry", {
+    p_org_id: organizationId,
+    p_member_id: memberId,
+    p_expires_at: expiresAt,
+  });
+  if (error) throw error;
+
+  revalidateAdmin();
+  return { status: data as string, message: FRIENDLY_ERROR[data as string] ?? null };
 }
 
 export async function updateMemberRole(memberId: string, role: AppRole) {

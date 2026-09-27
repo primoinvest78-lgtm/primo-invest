@@ -18,6 +18,7 @@ type RawMemberRow = {
   is_active: boolean;
   last_sign_in_at: string | null;
   invited_at: string | null;
+  access_expires_at: string | null;
 };
 
 /**
@@ -44,6 +45,7 @@ export async function listOrgMembers(organizationId: string): Promise<OrgMember[
     isActive: row.is_active,
     lastSignInAt: row.last_sign_in_at,
     invitedAt: row.invited_at,
+    accessExpiresAt: row.access_expires_at,
   }));
 }
 

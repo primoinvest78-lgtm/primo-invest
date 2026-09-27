@@ -18,6 +18,8 @@ export type OrgMember = {
   isActive: boolean;
   lastSignInAt: string | null;
   invitedAt: string | null;
+  /** Fim do acesso provisório; null = permanente. */
+  accessExpiresAt: string | null;
 };
 
 export type RolePermissionGrant = { role: AppRole; permissionCode: string };
