@@ -29,6 +29,20 @@ Se algo falhar: *"Não foi possível iniciar o login com Google."* ou *"Não foi
 
 Na primeira visita aparece um aviso explicando que o sistema usa **apenas cookies essenciais** (para manter a sessão e proteger o acesso) — nada de rastreamento ou publicidade. Clique em **Entendi**.
 
+### 1.4 Recebi um convite por e-mail
+
+Se um Administrador te convidou, chega um e-mail com um link (confira também o spam).
+
+1. Clique no link. Abre a tela **"Bem-vindo! Crie sua senha"**, mostrando o seu e-mail.
+2. Digite a **Senha** (mínimo de **8 caracteres**) e repita em **Confirmar senha**.
+3. Clique em **Salvar senha e entrar**. Você entra direto no painel.
+
+Se preferir, clique em **Agora não, ir direto para o painel**. Depois é possível criar a senha pelo **Esqueci minha senha**.
+
+Se aparecer **"Link inválido ou vencido"**, o link já foi usado ou passou da validade. Peça um novo convite ao Administrador ou use **Esqueci minha senha**.
+
+**Não tem senha?** O sistema nunca cria senha sozinho. Se o seu e-mail for do Google (Gmail), use **Entrar com Google**. Se não for, crie a senha pelo convite ou pelo **Esqueci minha senha**.
+
 ---
 
 ## 2. Esqueci minha senha
@@ -50,14 +64,15 @@ Entrar com uma conta Google **não dá acesso automático** ao sistema. Uma cont
 Se a sua conta ainda não foi liberada, aparece a tela:
 
 - **"Esta conta não tem acesso"** — a conta não foi adicionada à organização; ou
-- **"Acesso aguardando liberação"** — o convite existe, mas falta o Administrador clicar em **Ativar acesso**.
+- **"Acesso aguardando liberação"** — o convite existe, mas falta o Administrador clicar em **Ativar acesso**; ou
+- **"Seu acesso provisório terminou"** — você tinha um acesso com prazo, e ele acabou. A tela mostra a data e a hora do fim. Peça a um Administrador para estender o prazo: a sua conta continua existindo e volta a funcionar na hora.
 
 A tela mostra **qual e-mail entrou** e tem dois botões:
 
 - **Sair e entrar com outra conta** — para trocar de conta;
 - **Já fui liberado, tentar de novo** — depois que o Administrador liberar.
 
-Como liberar: veja o manual de **Administração**, seção *"Liberar o acesso de uma pessoa"*.
+Como liberar ou estender: veja o manual de **Administração**, seções *"Convidar uma pessoa"* e *"Acesso provisório (com prazo)"*.
 
 ---
 

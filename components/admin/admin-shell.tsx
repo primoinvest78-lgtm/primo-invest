@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { AccessMatrix } from "@/components/admin/access-matrix";
+import { AddUserDialog } from "@/components/admin/add-user-dialog";
 import { AdminAlerts } from "@/components/admin/admin-alerts";
 import { AdminCharts } from "@/components/admin/admin-charts";
 import { AdminKpis } from "@/components/admin/admin-kpis";
@@ -37,7 +38,7 @@ export function AdminShell({
   notificationsCount: number;
   canManage: boolean;
 }) {
-  // ?aba=usuarios (etc.) abre direto na aba — permite link para "Adicionar usuário".
+  // ?aba=usuarios (etc.) abre direto na aba — permite link direto para a lista de usuários.
   const searchParams = useSearchParams();
   const [tab, setTab] = useState(() => {
     const aba = searchParams.get("aba");
@@ -52,6 +53,15 @@ export function AdminShell({
 
   return (
     <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))}>
+      {/* Convite sempre à vista, em qualquer aba — antes só existia dentro de "Usuários". */}
+      {canManage ? (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-warning/50 bg-warning/10 px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-500">
+          <p className="text-body-sm text-foreground">
+            <strong>Convide alguém</strong> por e-mail, com acesso permanente ou provisório (24 horas a 30 dias).
+          </p>
+          <AddUserDialog />
+        </div>
+      ) : null}
       <TabsList variant="line" className="w-full justify-start overflow-x-auto">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="usuarios">Usuários</TabsTrigger>

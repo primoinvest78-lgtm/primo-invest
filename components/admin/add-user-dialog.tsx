@@ -80,13 +80,25 @@ export function AddUserDialog() {
         if (!next) setFeedback(null);
       }}
     >
-      <DialogTrigger render={<Button size="sm" />}>
+      {/* Destaque laranja com pulso: é a porta de entrada do convite (com ou sem prazo). */}
+      <DialogTrigger
+        render={
+          <Button
+            size="sm"
+            className="relative bg-warning font-bold text-warning-foreground shadow-[0_0_0_3px_color-mix(in_oklch,var(--warning),transparent_70%)] transition-all hover:-translate-y-0.5 hover:bg-warning hover:shadow-[0_0_18px_2px_color-mix(in_oklch,var(--warning),transparent_40%)]"
+          />
+        }
+      >
+        <span className="absolute -right-1 -top-1 flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning opacity-75 motion-reduce:hidden" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-warning ring-2 ring-background" />
+        </span>
         <UserPlus className="h-3.5 w-3.5" />
-        Adicionar usuário
+        Convidar pessoa
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Adicionar usuário à organização</DialogTitle>
+          <DialogTitle>Convidar pessoa para o Primo Invest</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
@@ -117,9 +129,10 @@ export function AddUserDialog() {
             </Select>
           </div>
 
-          <div>
-            <label className="mb-1 block text-label font-bold uppercase text-card-beige-muted-foreground">
+          <div className="rounded-xl border-2 border-warning/60 bg-warning/10 p-3">
+            <label className="mb-1 flex items-center gap-2 text-label font-bold uppercase text-foreground">
               Duração do acesso
+              <span className="rounded-full bg-warning px-1.5 py-0.5 text-[9px] font-bold text-warning-foreground">Novo</span>
             </label>
             <Select value={duration} onValueChange={(v) => setDuration(v ?? "permanent")}>
               <SelectTrigger className="w-full">
