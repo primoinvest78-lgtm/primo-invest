@@ -23,7 +23,14 @@ const PUBLIC_PATHS = [
  * Área externa de ajuda e documentos legais: abre com ou sem login e
  * nunca redireciona (quem está logado também precisa consultá-la).
  */
-const PUBLIC_OPEN_PATHS = ["/ajuda", "/privacidade", "/termos"];
+const PUBLIC_OPEN_PATHS = [
+  "/ajuda",
+  "/privacidade",
+  "/termos",
+  // Chegada pelo link do convite: entra sem sessão (ela vem no
+  // fragmento da URL) e precisa continuar ali depois de gravá-la.
+  "/definir-senha",
+];
 
 export async function updateSession(request: NextRequest) {
   // Ver lib/dev/auth-bypass.ts — só ativa fora de produção e com a env var
